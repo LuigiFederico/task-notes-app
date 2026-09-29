@@ -12,7 +12,7 @@ Tutti i dati sono **file Markdown in una cartella a tua scelta**, per esempio in
 ## Avvio in sviluppo
 
 ```powershell
-cd task-manager
+cd task-notes-app
 npm install
 npm start
 ```
