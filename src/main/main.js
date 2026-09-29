@@ -1,0 +1,151 @@
+'use strict';
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const { Store } = require('./store');
+
+// Per sviluppo e test: TACCUINO_USERDATA sposta le impostazioni locali in un'altra cartella.
+if (process.env.TACCUINO_USERDATA) app.setPath('userData', process.env.TACCUINO_USERDATA);
+
+// Interfaccia in italiano anche per i controlli nativi (es. il selettore di date).
+app.commandLine.appendSwitch('lang', 'it-IT');
+
+const CONFIG_FILE = () => path.join(app.getPath('userData'), 'config.json');
+let win = null;
+let store = null;
+let watcher = null;
+let watchTimer = null;
+
+function readConfig() {
+  try { return JSON.parse(fs.readFileSync(CONFIG_FILE(), 'utf8')); } catch { return {}; }
+}
+function writeConfig(cfg) {
+  fs.mkdirSync(path.dirname(CONFIG_FILE()), { recursive: true });
+  fs.writeFileSync(CONFIG_FILE(), JSON.stringify(cfg, null, 2));
+}
+
+function suggestedFolder() {
+  const base = process.env.OneDriveCommercial || process.env.OneDrive || app.getPath('documents');
+  return path.join(base, 'Taccuino');
+}
+
+// Ricarica l'interfaccia quando i file cambiano da fuori (es. sincronizzazione OneDrive da un altro PC).
+function watch(dir) {
+  if (watcher) { watcher.close(); watcher = null; }
+  try {
+    watcher = fs.watch(dir, { recursive: true }, (_evt, file) => {
+      if (!file || /\.tmp-\d+$/.test(file)) return;
+      if (store && Date.now() - store.lastWrite < 1500) return;
+      clearTimeout(watchTimer);
+      watchTimer = setTimeout(() => { if (win && !win.isDestroyed()) win.webContents.send('data:changed'); }, 600);
+    });
+  } catch (err) { console.error('Impossibile osservare la cartella', err); }
+}
+
+async function openStore(dir, opts) {
+  const s = new Store(dir);
+  await s.init(opts);
+  store = s;
+  watch(dir);
+  return s;
+}
+
+function createWindow() {
+  const cfg = readConfig();
+  const bounds = cfg.window || { width: 1440, height: 900 };
+  win = new BrowserWindow({
+    ...bounds,
+    minWidth: 1024,
+    minHeight: 640,
+    title: 'Taccuino',
+    backgroundColor: '#F6F5F1',
+    show: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      spellcheck: true
+    }
+  });
+  if (cfg.maximized) win.maximize();
+  win.once('ready-to-show', () => win.show());
+  win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
+
+  // Link esterni nel browser, mai dentro l'app.
+  win.webContents.setWindowOpenHandler(({ url }) => { if (/^https?:/.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+  win.webContents.on('will-navigate', (e) => e.preventDefault());
+
+  win.webContents.on('before-input-event', (_e, input) => {
+    if (!app.isPackaged && input.type === 'keyDown' && input.control && input.shift && input.key.toLowerCase() === 'i') win.webContents.toggleDevTools();
+    if (input.type === 'keyDown' && input.key === 'F5') win.webContents.reload();
+  });
+
+  win.on('close', () => {
+    const c = readConfig();
+    c.maximized = win.isMaximized();
+    if (!c.maximized) c.window = win.getBounds();
+    writeConfig(c);
+  });
+}
+
+function handle(channel, fn) {
+  ipcMain.handle(channel, async (_e, ...args) => {
+    try { return { ok: true, value: await fn(...args) }; } catch (err) { return { ok: false, error: err.message || String(err) }; }
+  });
+}
+
+function requireStore() { if (!store) throw new Error('Nessuna cartella dati aperta.'); return store; }
+
+handle('config:get', async () => {
+  const cfg = readConfig();
+  let ready = false;
+  if (cfg.dataDir && fs.existsSync(cfg.dataDir) && (await Store.isDataFolder(cfg.dataDir))) {
+    if (!store || store.dir !== cfg.dataDir) await openStore(cfg.dataDir);
+    ready = true;
+  }
+  return { dataDir: cfg.dataDir || null, ready, suggested: suggestedFolder(), version: app.getVersion(), openAtLogin: app.getLoginItemSettings().openAtLogin };
+});
+
+handle('config:chooseFolder', async (current) => {
+  const r = await dialog.showOpenDialog(win, { title: 'Scegli la cartella dei dati', defaultPath: current || suggestedFolder(), properties: ['openDirectory', 'createDirectory'] });
+  return r.canceled ? null : r.filePaths[0];
+});
+
+handle('config:setDataDir', async (dir, mode) => {
+  if (!dir) throw new Error('Indica una cartella.');
+  dir = path.resolve(dir);
+  const exists = await Store.isDataFolder(dir);
+  if (mode === 'open' && !exists) throw new Error('In questa cartella non ci sono dati di Taccuino. Scegli "Crea una nuova cartella".');
+  await openStore(dir, { withDefaultProject: !exists });
+  const cfg = readConfig();
+  cfg.dataDir = dir;
+  writeConfig(cfg);
+  return dir;
+});
+
+handle('config:openAtLogin', async (on) => { app.setLoginItemSettings({ openAtLogin: !!on }); return !!on; });
+handle('shell:openDataFolder', async () => { await shell.openPath(requireStore().dir); return true; });
+
+handle('data:load', async () => requireStore().loadAll());
+handle('task:save', async (t) => requireStore().saveTask(t));
+handle('task:delete', async (id) => requireStore().deleteTask(id));
+handle('project:save', async (p) => requireStore().saveProject(p));
+handle('project:delete', async (codice) => requireStore().deleteProject(codice));
+handle('category:save', async (c) => requireStore().saveCategory(c));
+handle('category:delete', async (id) => requireStore().deleteCategory(id));
+handle('tag:save', async (catId, t) => requireStore().saveTag(catId, t));
+handle('tag:delete', async (catId, id) => requireStore().deleteTag(catId, id));
+handle('tag:merge', async (catId, from, to) => requireStore().mergeTag(catId, from, to));
+
+const single = app.requestSingleInstanceLock();
+if (!single) app.quit();
+else {
+  app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
+  app.whenReady().then(() => {
+    Menu.setApplicationMenu(null);
+    app.setAppUserModelId('it.miroglio.luigi.taccuino');
+    createWindow();
+  });
+  app.on('window-all-closed', () => app.quit());
+}

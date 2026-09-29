@@ -1,0 +1,45 @@
+import { S, activeProjects, openCount, isClosed } from '../state.js';
+import { esc, safeColor } from '../lib/util.js';
+import { icon } from '../lib/icons.js';
+
+function shortPath(p) {
+  if (!p) return '';
+  const parts = p.split(/[\\/]/).filter(Boolean);
+  const od = parts.findIndex((x) => /^OneDrive/i.test(x));
+  if (od !== -1) return 'OneDrive › ' + parts.slice(od + 1).join(' › ');
+  return parts.slice(-2).join(' › ');
+}
+
+export function sidebar() {
+  const v = S.view.name;
+  const openTotal = S.data.tasks.filter((t) => !isClosed(t)).length;
+  const nav = (name, label, ic, count, active) => `
+    <button class="nav-item${active ? ' active' : ''}" data-action="go" data-view="${name}" ${active ? 'aria-current="page"' : ''}>
+      ${ic}<span class="grow">${label}</span>${count != null ? `<span class="count">${count}</span>` : ''}
+    </button>`;
+  const projects = activeProjects().map((p) => {
+    const active = v === 'project' && S.view.code === p.codice;
+    return `<button class="side-project${active ? ' active' : ''}" data-action="go" data-view="project" data-code="${esc(p.codice)}">
+      <span class="dot" style="background:${safeColor(p.colore)}"></span><span class="grow ellipsis">${esc(p.nome)}</span><span class="count">${openCount(p.codice)}</span>
+    </button>`;
+  }).join('');
+  return `
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">${icon.book(18)}</div><span class="brand-name">Taccuino</span></div>
+    <button class="folder-pill" data-action="go" data-view="settings" title="${esc(S.data.dir)}">
+      ${icon.folder(14)}<span class="grow ellipsis mono">${esc(shortPath(S.data.dir))}</span><span class="sync-dot" aria-label="Cartella collegata"></span>
+    </button>
+    <nav aria-label="Sezioni" class="nav">
+      ${nav('tasks', 'Task', icon.tasks(18), openTotal, v === 'tasks')}
+      ${nav('projects', 'Progetti', icon.folder(18), activeProjects().length, v === 'projects' || v === 'project')}
+      ${nav('tags', 'Tag', icon.tag(18), null, v === 'tags' || v === 'tag')}
+    </nav>
+    <div class="side-section">
+      <div class="side-label">PROGETTI</div>
+      ${projects}
+      <button class="side-project muted" data-action="new-project">${icon.plus(12)}<span>Nuovo progetto</span></button>
+    </div>
+    <div class="grow"></div>
+    ${nav('settings', 'Impostazioni', icon.settings(18), null, v === 'settings')}
+  </aside>`;
+}

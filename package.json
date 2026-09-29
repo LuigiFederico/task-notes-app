@@ -1,0 +1,36 @@
+{
+  "name": "task-manager",
+  "productName": "Taccuino",
+  "version": "0.1.0",
+  "description": "Task manager personale in locale: task, progetti e tag salvati come file Markdown in una cartella (es. OneDrive).",
+  "main": "src/main/main.js",
+  "author": "Luigi Federico",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "dist": "electron-builder --win"
+  },
+  "dependencies": {
+    "@fontsource/geist-mono": "^5.3.0",
+    "@fontsource/geist-sans": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "it.miroglio.luigi.taccuino",
+    "productName": "Taccuino",
+    "files": ["src/**/*", "package.json", "node_modules/@fontsource/**/*"],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }]
+    },
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+  }
+}
