@@ -29,6 +29,7 @@
     "productName": "Taccuino",
     "files": ["src/**/*", "package.json", "node_modules/@fontsource/**/*"],
     "win": {
+      "icon": "src/renderer/assets/icona.png",
       "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }]
     },
     "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }

@@ -60,6 +60,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 640,
     title: 'Taccuino',
+    icon: path.join(__dirname, '..', 'renderer', 'assets', 'icona.png'),
     backgroundColor: '#F6F5F1',
     show: false,
     webPreferences: {
