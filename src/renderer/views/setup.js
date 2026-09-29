@@ -81,6 +81,29 @@ function trashSection() {
     </section>`;
 }
 
+const RELEASES = 'https://github.com/LuigiFederico/task-notes-app/releases';
+
+export function updateStatus() {
+  const u = S.ui.update;
+  return `Scaricamento di Taccuino ${u.versione}… ${u.percento}%`;
+}
+
+function updateSection() {
+  const cfg = S.config;
+  const u = S.ui.update;
+  let body;
+  if (cfg.updateBlock) body = `<p class="muted small">${esc(cfg.updateBlock)} <a href="${RELEASES}" target="_blank">Apri la pagina delle release</a></p>`;
+  else if (u && u.stato === 'scarico') body = `<p class="small" id="update-status" role="status">${esc(updateStatus())}</p>`;
+  else if (u && u.stato === 'pronto') body = `<p class="small">Taccuino ${esc(u.versione)} è pronto. Al riavvio si installa e si riapre da solo.</p><div class="row-10"><button class="btn primary" data-action="update-install">Riavvia e installa</button></div>`;
+  else body = `<div class="row-10"><button class="btn" data-action="update-check" ${u ? 'disabled' : ''}>${u ? 'Controllo…' : 'Controlla aggiornamenti'}</button></div>`;
+  return `
+    <section class="card pad stack-12">
+      <h2 class="h2">Aggiornamenti</h2>
+      <p class="muted small">Versione installata: ${esc(cfg.version)}. Le nuove versioni si scaricano da GitHub.</p>
+      ${body}
+    </section>`;
+}
+
 export function settingsView() {
   const cfg = S.config;
   return `
@@ -97,6 +120,7 @@ export function settingsView() {
       <h2 class="h2">Avvio</h2>
       <label class="toggle"><input type="checkbox" data-change="open-at-login" ${cfg.openAtLogin ? 'checked' : ''}>Avvia Taccuino all'accesso a Windows</label>
     </section>
+    ${updateSection()}
     <section class="card pad stack-12">
       <h2 class="h2">Il corvo</h2>
       <label class="toggle"><input type="checkbox" data-change="mascot-visible" ${mascot.prefs.visible ? 'checked' : ''}>Mostra il corvo</label>

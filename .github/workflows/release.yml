@@ -1,0 +1,24 @@
+# Pubblica una versione: al push di un tag v* compila il Setup su Windows e crea la release su GitHub,
+# da cui l'app installata scarica l'aggiornamento (Impostazioni › Aggiornamenti).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

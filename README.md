@@ -2,7 +2,7 @@
 
 Task manager personale per Windows che sostituisce l'agenda cartacea. Gestisce task, progetti (con descrizione e registro delle decisioni) e tag personalizzabili.
 
-Tutti i dati sono **file Markdown in una cartella a tua scelta**, per esempio in OneDrive. L'app non usa database né servizi esterni.
+Tutti i dati sono **file Markdown in una cartella a tua scelta**, per esempio in OneDrive. L'app non usa database né servizi esterni. Va in rete solo quando premi "Controlla aggiornamenti" nelle Impostazioni.
 
 ## Requisiti
 
@@ -42,6 +42,20 @@ In `dist/` trovi due file:
 - una versione portabile (`Taccuino x.y.z.exe`), che non richiede installazione.
 
 Gli eseguibili non sono firmati digitalmente, quindi al primo avvio Windows SmartScreen può mostrare un avviso: usa "Ulteriori informazioni" › "Esegui comunque".
+
+## Pubblicare un aggiornamento
+
+Le versioni si pubblicano come [release su GitHub](https://github.com/LuigiFederico/task-notes-app/releases). Con il push di un tag `v*`, GitHub Actions (`.github/workflows/release.yml`) compila installer e portabile su Windows e crea la release.
+
+```powershell
+npm test
+npm version minor        # oppure patch: aggiorna package.json, fa il commit e crea il tag (es. v0.2.0)
+git push --follow-tags
+```
+
+Nell'app, Impostazioni › Aggiornamenti › "Controlla aggiornamenti" scarica la versione nuova. "Riavvia e installa" la installa in silenzio e riapre l'app. I dati non cambiano: stanno nella cartella dati, e le impostazioni locali in `%APPDATA%\Taccuino`.
+
+Si aggiorna da sola solo la copia installata con `Taccuino Setup x.y.z.exe`. La versione portabile, lo zip e `npm start` mostrano un avviso al posto del pulsante.
 
 ## Struttura del codice
 

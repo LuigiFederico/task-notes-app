@@ -18,7 +18,8 @@
   "dependencies": {
     "@fontsource/geist-mono": "^5.3.0",
     "@fontsource/geist-sans": "^5.3.0",
-    "@fontsource/instrument-serif": "^5.3.0"
+    "@fontsource/instrument-serif": "^5.3.0",
+    "electron-updater": "^6.8.9"
   },
   "devDependencies": {
     "electron": "^44.4.5",
@@ -32,6 +33,7 @@
       "icon": "src/renderer/assets/icona.png",
       "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }]
     },
-    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true }
+    "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true },
+    "publish": { "provider": "github", "owner": "LuigiFederico", "repo": "task-notes-app", "releaseType": "release" }
   }
 }

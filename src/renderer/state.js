@@ -33,6 +33,7 @@ export const S = {
     unsaved: null,      // { id, titolo?, descrizione? }: testo scritto nel pannello e non ancora salvato
     saved: {},          // campi del task aperto salvati in questa apertura
     pendingTag: null,   // { cat, nome }: tag nuovo in attesa del secondo Invio
+    update: null,       // { stato: 'controllo' | 'scarico' | 'pronto', versione, percento }
     setupMode: 'new'
   },
   toast: null

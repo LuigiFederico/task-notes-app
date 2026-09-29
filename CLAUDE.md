@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Taccuino: a personal Electron task manager for Windows. There is no database and no network. Every task, project, tag category and tag is a Markdown file with YAML front matter, kept in a user-chosen data folder (usually on OneDrive). The UI, code comments, user-facing strings and data keys (`titolo`, `stato`, `priorita`, `scadenza`, `progetto`…) are all in **Italian**, and new code should follow suit. The README (also in Italian) documents the on-disk data format in detail.
+Taccuino: a personal Electron task manager for Windows. There is no database, and the only network use is the on-demand update check (see below). Every task, project, tag category and tag is a Markdown file with YAML front matter, kept in a user-chosen data folder (usually on OneDrive). The UI, code comments, user-facing strings and data keys (`titolo`, `stato`, `priorita`, `scadenza`, `progetto`…) are all in **Italian**, and new code should follow suit. The README (also in Italian) documents the on-disk data format in detail.
 
 ## Commands
 
@@ -27,6 +27,7 @@ npm run dist                                     # Windows installer + portable 
 - `store.js`: the `Store` class holds all file I/O and data rules: default categories, sequential task IDs (`T-001`, computed from the highest existing file), the automatic `storico` (history) lines written when state, priority, due date or project change, setting and clearing `completato` based on states flagged `chiuso`, tag merge, and project decisions. Writes are atomic (a `.tmp-<pid>` file, then rename) so OneDrive never syncs a half-written file. `p()` checks every path segment with `isSafeName`.
 - `frontmatter.js`: a hand-written parser/serializer for a **YAML subset** (scalars, inline lists, block lists). It is not a full YAML library, so any new field shape must fit that subset. Files may also be edited by hand (CRLF, inline lists).
 - `main.js`: window setup, IPC and the folder watcher. Every IPC handler goes through `handle()`, which wraps the result as `{ok, value}` or `{ok:false, error}`. `fs.watch` sends `data:changed` to the renderer after external edits; it ignores `.tmp-*` files and anything within 1.5 s of the store's own `lastWrite`.
+- Updates: `electron-updater` against GitHub Releases (`build.publish` in `package.json`), triggered only by the Settings button (`update:check` → `update:download` → `update:install`, silent NSIS install and relaunch). Only NSIS installs can update; `updateBlock()` detects them by the `Uninstall Taccuino.exe` next to the exe and otherwise returns the message shown instead of the button. Releases are built by `.github/workflows/release.yml` on a `v*` tag push (`npm version minor && git push --follow-tags`).
 - `preload.js`: exposes `window.api` through `contextBridge`, and turns `{ok:false}` back into a thrown `Error`. The renderer runs sandboxed with no Node access.
 
 **Adding a data operation** touches all three layers: a `Store` method → `handle('x:y', …)` in `main.js` → an entry in `window.api` in `preload.js`.
@@ -37,7 +38,7 @@ npm run dist                                     # Windows installer + portable 
 - `app.js`: `render()` rebuilds `#app` with `innerHTML` on every change, then restores focus, text selection and scroll positions. Events are delegated from the root element through data attributes that map to handler tables: `data-action` → `actions`, `data-change` → `changes`, `data-input` → `inputs`, `data-keydown` → `keydowns`, `data-submit` → `submits`. A new interaction means adding the attribute in a view and a handler in the matching table. Wrap async work in `run()`, which shows errors as a toast and triggers the mascot's error pose. After a save, the usual pattern is `await reload()`: reload everything from disk, then re-render.
 - An external `data:changed` event is deferred while the user is typing (`pendingReload`) and applied on focus-out.
 - `mascot.js`: the crow mascot. It lives outside `#app` so re-renders don't interrupt its animations. Event → pose sequences are in `REACTIONS`, and the animations are at the bottom of `styles.css`.
-- The CSP in `index.html` blocks inline scripts and all network access. Fonts come from `@fontsource` packages in `node_modules` (listed in the `build.files` array of `package.json`).
+- The CSP in `index.html` blocks inline scripts and all network access from the renderer (updates run in the main process). Fonts come from `@fontsource` packages in `node_modules` (listed in the `build.files` array of `package.json`).
 
 ## Data model rules worth knowing
 

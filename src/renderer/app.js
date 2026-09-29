@@ -7,7 +7,7 @@ import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView, TAG_COLORS } from './views/tags.js';
 import { tagView } from './views/tag.js';
-import { setupView, settingsView } from './views/setup.js';
+import { setupView, settingsView, updateStatus } from './views/setup.js';
 import { mascot } from './mascot.js';
 
 const api = window.api;
@@ -337,6 +337,17 @@ const actions = {
   }),
   'change-folder': () => { S.ui.setupDir = S.data.dir; S.ui.setupMode = 'open'; S.view = { name: 'setup' }; render(); },
   'open-data-folder': () => run(() => api.openDataFolder()),
+  'update-check': () => run(async () => {
+    S.ui.update = { stato: 'controllo' }; render();
+    try {
+      const versione = await api.checkUpdate();
+      if (!versione) { S.ui.update = null; render(); toast(`Hai già l'ultima versione (${S.config.version})`); return; }
+      S.ui.update = { stato: 'scarico', versione, percento: 0 }; render();
+      await api.downloadUpdate();
+      S.ui.update.stato = 'pronto'; render();
+    } catch (err) { S.ui.update = null; render(); throw err; }
+  }),
+  'update-install': () => run(async () => { await flush(); await api.installUpdate(); }),
   'trash-restore': (el) => run(async () => { await api.restoreTrash(el.dataset.id); await reload(); toast('Ripristinato dal Cestino'); }),
   'trash-delete': (el) => run(async () => { await api.deleteTrash(el.dataset.id); S.ui.confirm = null; await reload(); toast('Eliminato per sempre'); }),
   'trash-empty': () => run(async () => { await api.emptyTrash(); S.ui.confirm = null; await reload(); toast('Cestino svuotato'); })
@@ -509,6 +520,14 @@ document.addEventListener('keydown', (e) => {
 
 // Chiusura della finestra: prima si salva il campo in modifica. Se non riesce, la finestra resta aperta.
 api.onBeforeClose(() => flush().then(() => api.closeOk(), (err) => { mascot.react('error'); toast(err.message || String(err), 'error'); api.closeFail(); }));
+
+// Avanzamento del download di un aggiornamento: si aggiorna solo il testo, senza ridisegnare.
+api.onUpdateProgress((percento) => {
+  if (!S.ui.update || S.ui.update.stato !== 'scarico') return;
+  S.ui.update.percento = percento;
+  const el = document.getElementById('update-status');
+  if (el) el.textContent = updateStatus();
+});
 
 // Cambiamenti arrivati da fuori (OneDrive, un altro PC, modifiche a mano ai file).
 api.onDataChanged(() => { if (isTyping()) pendingReload = true; else run(reload); });

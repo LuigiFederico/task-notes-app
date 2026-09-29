@@ -133,6 +133,30 @@ function handle(channel, fn) {
 
 function requireStore() { if (!store) throw new Error('Nessuna cartella dati aperta.'); return store; }
 
+// Aggiornamenti da GitHub Releases, solo quando li si chiede dalle Impostazioni.
+// Si aggiorna solo la copia installata con il Setup: lo zip e il portabile non hanno il programma di disinstallazione accanto.
+function updateBlock() {
+  if (!app.isPackaged) return 'Gli aggiornamenti funzionano solo nella versione installata, non in sviluppo.';
+  if (!fs.existsSync(path.join(path.dirname(process.execPath), 'Uninstall Taccuino.exe'))) return 'Questa copia di Taccuino non è installata (zip o versione portabile), quindi non si aggiorna da sola. Scarica e installa «Taccuino Setup» dalla pagina delle release.';
+  return null;
+}
+
+let updater = null;
+function getUpdater() {
+  if (!updater) {
+    updater = require('electron-updater').autoUpdater;
+    updater.autoDownload = false;
+    updater.on('error', (err) => console.error('Aggiornamento non riuscito', err));
+    updater.on('download-progress', (p) => { if (win && !win.isDestroyed()) win.webContents.send('update:progress', Math.floor(p.percent)); });
+  }
+  return updater;
+}
+
+// Gli errori di electron-updater possono contenere la risposta HTTP intera: basta la prima riga.
+async function updateStep(what, fn) {
+  try { return await fn(); } catch (err) { throw new Error(`${what} non riuscito: ${String(err.message || err).split('\n')[0]}`); }
+}
+
 handle('config:get', async () => {
   const cfg = readConfig();
   let ready = false;
@@ -140,7 +164,7 @@ handle('config:get', async () => {
     if (!store || store.dir !== cfg.dataDir) await openStore(cfg.dataDir);
     ready = true;
   }
-  return { dataDir: cfg.dataDir || null, ready, suggested: suggestedFolder(), version: app.getVersion(), openAtLogin: app.getLoginItemSettings().openAtLogin };
+  return { dataDir: cfg.dataDir || null, ready, suggested: suggestedFolder(), version: app.getVersion(), openAtLogin: app.getLoginItemSettings().openAtLogin, updateBlock: updateBlock() };
 });
 
 handle('config:chooseFolder', async (current) => {
@@ -162,6 +186,14 @@ handle('config:setDataDir', async (dir, mode) => {
 
 handle('config:openAtLogin', async (on) => { app.setLoginItemSettings({ openAtLogin: !!on }); return !!on; });
 handle('shell:openDataFolder', async () => { await shell.openPath(requireStore().dir); return true; });
+
+handle('update:check', () => updateStep('Controllo degli aggiornamenti', async () => {
+  const r = await getUpdater().checkForUpdates();
+  return r && r.isUpdateAvailable ? r.updateInfo.version : null;
+}));
+handle('update:download', () => updateStep('Scaricamento', async () => { await getUpdater().downloadUpdate(); return true; }));
+// Il renderer ha già salvato il campo in modifica: la finestra può chiudersi subito. Il Setup gira in silenzio e riapre l'app.
+handle('update:install', async () => { closeOk = true; getUpdater().quitAndInstall(true, true); return true; });
 
 handle('data:load', async () => requireStore().loadAll());
 handle('task:save', async (t) => requireStore().saveTask(t));
