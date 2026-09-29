@@ -58,6 +58,11 @@ export function taskHeader(showProject = true) {
   return `<div class="task-row head${showProject ? '' : ' no-project'}"><span></span><span>ID</span><span>TITOLO</span>${showProject ? '<span class="h-proj">PROGETTO</span>' : ''}<span class="h-prio">PRIORITÀ</span><span>SCADENZA</span><span>STATO</span></div>`;
 }
 
+// Conferma di un'azione distruttiva: una frase con l'effetto, il pulsante dell'azione e Annulla.
+export function confirmBox(text, attrs, label = 'Elimina') {
+  return `<div class="confirm" role="alert"><span class="grow">${esc(text)}</span><button type="button" class="btn danger small" ${attrs}>${esc(label)}</button><button type="button" class="btn small" data-action="cancel-confirm">Annulla</button></div>`;
+}
+
 export function emptyState(text, action = '') {
   return `<div class="empty">${esc(text)}${action}</div>`;
 }

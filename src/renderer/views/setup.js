@@ -1,7 +1,10 @@
 import { S } from '../state.js';
-import { esc } from '../lib/util.js';
+import { esc, iso, fmtFull, plural } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { mascot } from '../mascot.js';
+import { confirmBox } from './components.js';
+
+const TRASH_KIND = { task: 'Task', progetto: 'Progetto', categoria: 'Categoria', tag: 'Tag' };
 
 const TREE = `Taccuino/
   tasks/
@@ -58,6 +61,26 @@ export function setupView() {
   </div>`;
 }
 
+function trashSection() {
+  const list = S.data.cestino || [];
+  const rows = list.map((v) => `
+    <div class="trash-row">
+      <span class="pill xs">${esc(TRASH_KIND[v.tipo] || v.tipo)}</span>
+      <span class="stack-2 grow minw0"><span class="ellipsis">${esc(v.nome)}</span><span class="muted small">eliminato il ${esc(fmtFull(iso(new Date(v.eliminato))))}</span></span>
+      ${S.ui.confirm === 'trash:' + v.id
+        ? confirmBox(`Eliminare per sempre «${v.nome}»? Non si potrà più recuperare.`, `data-action="trash-delete" data-id="${esc(v.id)}"`)
+        : `<button class="btn small" data-action="trash-restore" data-id="${esc(v.id)}">Ripristina</button><button class="btn-link small danger-text" data-action="ask-confirm" data-key="trash:${esc(v.id)}">Elimina definitivamente</button>`}
+    </div>`).join('');
+  const emptying = S.ui.confirm === 'trash-empty';
+  return `
+    <section class="card pad stack-12">
+      <div class="row-between"><h2 class="h2">Cestino</h2>${list.length && !emptying ? '<button class="btn-link small danger-text" data-action="ask-confirm" data-key="trash-empty">Svuota cestino</button>' : ''}</div>
+      ${emptying ? confirmBox(`Eliminare per sempre ${plural(list.length, 'elemento', 'elementi')}? ${list.length === 1 ? 'Non si potrà più recuperare.' : 'Non si potranno più recuperare.'}`, 'data-action="trash-empty"', 'Svuota') : ''}
+      ${list.length ? `<div>${rows}</div>` : '<p class="muted small">Il cestino è vuoto.</p>'}
+      <p class="muted small">Gli elementi restano qui 30 giorni, poi vengono eliminati per sempre. Ripristinando un tag o una categoria, i task da cui era stato tolto non lo riprendono.</p>
+    </section>`;
+}
+
 export function settingsView() {
   const cfg = S.config;
   return `
@@ -69,6 +92,7 @@ export function settingsView() {
       <p class="muted small">Tutti i dati sono file Markdown in questa cartella. Per spostarli, chiudi l'app, sposta la cartella e poi scegli la nuova posizione qui sotto.</p>
       <div class="row-10"><button class="btn" data-action="change-folder">Cambia cartella…</button></div>
     </section>
+    ${trashSection()}
     <section class="card pad stack-12">
       <h2 class="h2">Avvio</h2>
       <label class="toggle"><input type="checkbox" data-change="open-at-login" ${cfg.openAtLogin ? 'checked' : ''}>Avvia Taccuino all'accesso a Windows</label>

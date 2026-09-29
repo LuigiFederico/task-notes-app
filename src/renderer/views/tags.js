@@ -1,6 +1,7 @@
 import { S, cat, isClosed, values, PROJECT_COLORS, projectTasks } from '../state.js';
 import { esc, safeColor } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
+import { confirmBox } from './components.js';
 
 export const TAG_COLORS = [...PROJECT_COLORS, '#4A473F', '#146C43', '#2346A8', '#8A4B06'];
 
@@ -46,6 +47,8 @@ export function tagsView() {
     const c = cat(sel);
     if (!c) return `<div class="page">Categoria non trovata.</div>`;
     const editingCat = S.ui.editing === 'cat-edit';
+    const confirmCat = S.ui.confirm === 'cat:' + c.id;
+    const catUsed = S.data.tasks.filter((t) => values(t, c.id).length > 0).length;
     const rows = c.tags.map((t, i) => {
       const u = tagUsage(c.id, t.id);
       if (S.ui.editing === 'tag:' + t.id) {
@@ -81,8 +84,9 @@ export function tagsView() {
         ${c.sistema ? '' : `<label class="field"><span>Tipo</span><span class="select-wrap"><select name="tipo"><option value="multipla"${c.tipo !== 'singola' ? ' selected' : ''}>Scelta multipla</option><option value="singola"${c.tipo === 'singola' ? ' selected' : ''}>Scelta singola</option></select>${icon.chevron(12)}</span></label>`}
         <label class="field grow2"><span>Descrizione</span><input name="descrizione" value="${esc(c.descrizione)}"></label>
         <div class="row-8 self-end">
-          ${c.sistema ? '' : S.ui.confirm === 'cat:' + c.id ? `<button type="button" class="btn danger small" data-action="category-delete" data-cat="${esc(c.id)}">Elimina davvero</button>` : `<button type="button" class="btn-link small danger-text" data-action="ask-confirm" data-key="cat:${esc(c.id)}">Elimina</button>`}
+          ${c.sistema || confirmCat ? '' : `<button type="button" class="btn-link small danger-text" data-action="ask-confirm" data-key="cat:${esc(c.id)}">Elimina</button>`}
           <button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Salva</button></div>
+        ${confirmCat ? `<div class="full-row">${confirmBox(`Eliminare «${c.nome}»? ${catUsed ? `Il valore viene tolto da ${catUsed} task. ` : ''}Potrai ripristinarla dal Cestino.`, `data-action="category-delete" data-cat="${esc(c.id)}"`)}</div>` : ''}
       </form>` : `
       <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">${esc(c.nome)}</h2><span class="muted small">${esc(c.descrizione || '')}</span></div>
         <span class="pill">${kindLabel(c)}</span>${c.sistema ? '<span class="pill">Di sistema</span>' : ''}

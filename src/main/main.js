@@ -15,6 +15,7 @@ let win = null;
 let store = null;
 let watcher = null;
 let watchTimer = null;
+let closeOk = false;
 
 function readConfig() {
   try { return JSON.parse(fs.readFileSync(CONFIG_FILE(), 'utf8')); } catch { return {}; }
@@ -45,6 +46,7 @@ function watch(dir) {
 async function openStore(dir, opts) {
   const s = new Store(dir);
   await s.init(opts);
+  try { await s.purgeTrash(30); } catch (err) { console.error('Pulizia del cestino non riuscita', err); }
   store = s;
   watch(dir);
   return s;
@@ -81,17 +83,50 @@ function createWindow() {
     if (input.type === 'keyDown' && input.key === 'F5') win.webContents.reload();
   });
 
-  win.on('close', () => {
+  // Prima di chiudere, il renderer salva il campo in modifica. Se il salvataggio fallisce la finestra resta aperta.
+  let closeTimer = null;
+  win.on('close', (e) => {
+    if (!closeOk) {
+      e.preventDefault();
+      win.webContents.send('app:before-close');
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(allowClose, 5000);  // renderer bloccato: chiudi comunque
+      return;
+    }
     const c = readConfig();
     c.maximized = win.isMaximized();
     if (!c.maximized) c.window = win.getBounds();
     writeConfig(c);
   });
+  win.webContents.on('render-process-gone', allowClose);
+  ipcMain.removeAllListeners('app:close-ok');
+  ipcMain.removeAllListeners('app:close-fail');
+  ipcMain.on('app:close-ok', allowClose);
+  ipcMain.on('app:close-fail', () => clearTimeout(closeTimer));
+
+  function allowClose() {
+    clearTimeout(closeTimer);
+    closeOk = true;
+    if (win && !win.isDestroyed()) win.close();
+  }
+}
+
+// Errori del file system in parole comprensibili. Gli errori dello Store (già in italiano) non hanno code.
+const FS_ERRORS = {
+  EPERM: 'Il file è bloccato, forse da OneDrive che lo sta sincronizzando. Riprova tra qualche secondo.',
+  EBUSY: 'Il file è bloccato, forse da OneDrive che lo sta sincronizzando. Riprova tra qualche secondo.',
+  EACCES: 'Taccuino non ha il permesso di scrivere nella cartella dati. Controlla i permessi della cartella.',
+  ENOENT: 'Un file non si trova più: forse è stato spostato o eliminato da fuori. Premi F5 per ricaricare.',
+  ENOSPC: 'Il disco è pieno: libera spazio e riprova.'
+};
+function errorMessage(err) {
+  if (err && FS_ERRORS[err.code]) return `${FS_ERRORS[err.code]} (${err.code})`;
+  return (err && err.message) || String(err);
 }
 
 function handle(channel, fn) {
   ipcMain.handle(channel, async (_e, ...args) => {
-    try { return { ok: true, value: await fn(...args) }; } catch (err) { return { ok: false, error: err.message || String(err) }; }
+    try { return { ok: true, value: await fn(...args) }; } catch (err) { return { ok: false, error: errorMessage(err) }; }
   });
 }
 
@@ -137,6 +172,9 @@ handle('category:delete', async (id) => requireStore().deleteCategory(id));
 handle('tag:save', async (catId, t) => requireStore().saveTag(catId, t));
 handle('tag:delete', async (catId, id) => requireStore().deleteTag(catId, id));
 handle('tag:merge', async (catId, from, to) => requireStore().mergeTag(catId, from, to));
+handle('trash:restore', async (id) => requireStore().restoreTrash(id));
+handle('trash:delete', async (id) => requireStore().deleteTrash(id));
+handle('trash:empty', async () => requireStore().emptyTrash());
 
 const single = app.requestSingleInstanceLock();
 if (!single) app.quit();

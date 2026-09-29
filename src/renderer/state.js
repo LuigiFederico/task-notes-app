@@ -1,12 +1,22 @@
 // Stato dell'interfaccia e funzioni di lettura sui dati caricati.
 
+// Raggruppamento e "Mostra completati" restano uguali tra un avvio e l'altro (solo su questo PC).
+const VIEW_KEY = 'taccuino.vista';
+function readView() {
+  try { return JSON.parse(localStorage.getItem(VIEW_KEY) || '{}'); } catch { return {}; }
+}
+export function saveView() {
+  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ groupBy: S.ui.groupBy, showDone: S.ui.showDone })); } catch { /* preferenza solo locale */ }
+}
+const vista = readView();
+
 export const S = {
   config: null,
   data: null,
   view: { name: 'tasks' },
   ui: {
-    groupBy: 'progetto',
-    showDone: false,
+    groupBy: typeof vista.groupBy === 'string' ? vista.groupBy : 'progetto',
+    showDone: vista.showDone === true,
     search: '',
     fProject: '',
     fPrio: '',
@@ -19,6 +29,10 @@ export const S = {
     hoverWeek: null,
     editing: null,      // quale blocco di testo è in modifica (es. 'project-desc')
     confirm: null,      // azione distruttiva in attesa di conferma
+    mergeTo: null,      // tag di destinazione di un'unione in attesa di conferma
+    unsaved: null,      // { id, titolo?, descrizione? }: testo scritto nel pannello e non ancora salvato
+    saved: {},          // campi del task aperto salvati in questa apertura
+    pendingTag: null,   // { cat, nome }: tag nuovo in attesa del secondo Invio
     setupMode: 'new'
   },
   toast: null

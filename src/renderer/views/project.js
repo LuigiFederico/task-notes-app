@@ -1,7 +1,7 @@
 import { S, project, projectTasks, isClosed, sortTasks, PROJECT_COLORS } from '../state.js';
 import { esc, safeColor, md, fmtFull, todayISO } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { taskRow, taskHeader, segmented, emptyState } from './components.js';
+import { taskRow, taskHeader, segmented, emptyState, confirmBox } from './components.js';
 import { kpiTile } from './projects.js';
 
 function colorPicker(current, action) {
@@ -48,8 +48,9 @@ export function projectView(code) {
         <label class="field"><span>Stato</span><span class="select-wrap"><select name="stato"><option value="attivo"${p.stato !== 'archiviato' ? ' selected' : ''}>Attivo</option><option value="archiviato"${p.stato === 'archiviato' ? ' selected' : ''}>Archiviato</option></select>${icon.chevron(12)}</span></label>
       </div>
       <div class="field"><span>Colore</span>${colorPicker(p.colore, 'project-color')}</div>
+      ${confirmDel ? confirmBox(`Eliminare «${p.nome}»? Potrai ripristinarlo dal Cestino.`, 'data-action="project-delete"') : ''}
       <div class="row-10">
-        ${all.length === 0 ? (confirmDel ? `<button type="button" class="btn danger" data-action="project-delete">Conferma eliminazione</button>` : `<button type="button" class="btn-link danger-text" data-action="ask-confirm" data-key="project:${esc(code)}">Elimina progetto</button>`) : '<span class="muted small">Un progetto con task si può archiviare, non eliminare.</span>'}
+        ${all.length === 0 ? (confirmDel ? '' : `<button type="button" class="btn-link danger-text" data-action="ask-confirm" data-key="project:${esc(code)}">Elimina progetto</button>`) : '<span class="muted small">Un progetto con task si può archiviare, non eliminare.</span>'}
         <span class="grow"></span><button type="button" class="btn" data-action="cancel-edit">Annulla</button><button type="submit" class="btn primary">Salva</button>
       </div>
     </form>` : `
@@ -72,8 +73,9 @@ export function projectView(code) {
       <div class="rail"><span class="dot round" style="background:${i === 0 ? c : 'var(--line-strong)'}"></span>${i < p.decisioni.length - 1 ? '<span class="line"></span>' : ''}</div>
       <div class="stack-4 grow">
         <div class="row-between"><span class="mono muted small">${esc(fmtFull(d.data))}</span>
-          ${S.ui.confirm === `decision:${i}` ? `<span class="row-6"><button class="btn danger xsmall" data-action="decision-delete" data-index="${i}">Elimina</button><button class="btn xsmall" data-action="cancel-confirm">No</button></span>` : `<button class="icon-btn sm" data-action="ask-confirm" data-key="decision:${i}" aria-label="Elimina decisione">${icon.trash(14)}</button>`}</div>
+          ${S.ui.confirm === `decision:${i}` ? '' : `<button class="icon-btn sm" data-action="ask-confirm" data-key="decision:${i}" aria-label="Elimina decisione">${icon.trash(14)}</button>`}</div>
         <span class="strong">${esc(d.titolo)}</span>
+        ${S.ui.confirm === `decision:${i}` ? confirmBox('Eliminare questa decisione?', `data-action="decision-delete" data-index="${i}"`) : ''}
         ${d.testo ? `<div class="md small-md">${md(d.testo)}</div>` : ''}
         ${d.task ? `<button class="btn-link small" data-action="open-task" data-id="${esc(d.task)}">Da ${esc(d.task)}</button>` : ''}
       </div>

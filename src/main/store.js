@@ -7,6 +7,7 @@
 //     projects/VEND.md              un file per progetto (descrizione + decisioni)
 //     tags/<categoria>/_categoria.md
 //     tags/<categoria>/<tag>.md     un file per tag (descrizione nel corpo)
+//     .cestino/<data_ora>/…         elementi eliminati, con voce.json (tipo, nome, percorso)
 
 const fs = require('fs');
 const fsp = fs.promises;
@@ -14,6 +15,9 @@ const path = require('path');
 const fm = require('./frontmatter');
 
 const SYSTEM_CATEGORIES = ['stato', 'priorita'];
+const TRASH = '.cestino';
+const RETRY_CODES = ['EPERM', 'EBUSY'];
+const RETRY_WAIT = [100, 200, 300, 400];
 const TASK_KEYS = ['id', 'titolo', 'progetto', 'stato', 'priorita', 'scadenza', 'creato', 'aggiornato', 'completato'];
 
 const DEFAULT_CATEGORIES = [
@@ -56,11 +60,29 @@ async function readDirSafe(dir) {
   try { return await fsp.readdir(dir, { withFileTypes: true }); } catch { return []; }
 }
 
+function stamp(d = new Date()) {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+}
+
+// OneDrive può tenere bloccato un file per qualche istante: riprova prima di arrendersi.
+async function renameRetry(from, to) {
+  for (let i = 0; ; i++) {
+    try { return await fsp.rename(from, to); } catch (err) {
+      if (!RETRY_CODES.includes(err.code) || i >= RETRY_WAIT.length) throw err;
+      await new Promise((r) => setTimeout(r, RETRY_WAIT[i]));
+    }
+  }
+}
+
 async function writeAtomic(file, content) {
   await fsp.mkdir(path.dirname(file), { recursive: true });
   const tmp = file + '.tmp-' + process.pid;
   await fsp.writeFile(tmp, content, 'utf8');
-  await fsp.rename(tmp, file);
+  try { await renameRetry(tmp, file); } catch (err) {
+    await fsp.rm(tmp, { force: true }).catch(() => {});
+    throw err;
+  }
 }
 
 class Store {
@@ -74,8 +96,12 @@ class Store {
     return path.join(this.dir, ...parts);
   }
 
-  async write(file, content) { this.lastWrite = Date.now(); await writeAtomic(file, content); }
+  async write(file, content) { this.lastWrite = Date.now(); await writeAtomic(file, content); this.lastWrite = Date.now(); }
   async remove(file) { this.lastWrite = Date.now(); await fsp.rm(file, { force: true, recursive: true }); }
+
+  async readConfig() {
+    try { return JSON.parse(await fsp.readFile(path.join(this.dir, 'taccuino.json'), 'utf8')); } catch { return {}; }
+  }
 
   static async isDataFolder(dir) {
     try { await fsp.access(path.join(dir, 'taccuino.json')); return true; } catch { return false; }
@@ -105,7 +131,7 @@ class Store {
 
   async loadAll() {
     const [categories, projects, tasks] = await Promise.all([this.loadCategories(), this.loadProjects(), this.loadTasks()]);
-    return { dir: this.dir, categories, projects, tasks };
+    return { dir: this.dir, categories, projects, tasks, cestino: await this.listTrash() };
   }
 
   // ---------- Task ----------
@@ -154,9 +180,11 @@ class Store {
     return fm.stringify(data, t.descrizione || '');
   }
 
+  // Conta anche i task nel cestino e quelli già cancellati per sempre (ultimoId): un ID non torna mai.
   async nextTaskId() {
     const tasks = await this.loadTasks();
-    const max = tasks.reduce((m, t) => Math.max(m, idNum(t.id)), 0);
+    const trashed = (await this.listTrash()).filter((v) => v.tipo === 'task').map((v) => idNum(path.basename(v.percorso)));
+    const max = Math.max(0, Number((await this.readConfig()).ultimoId) || 0, ...trashed, ...tasks.map((t) => idNum(t.id)));
     return 'T-' + String(max + 1).padStart(3, '0');
   }
 
@@ -190,7 +218,10 @@ class Store {
     return this.parseTask(this.serializeTask(t), t.id);
   }
 
-  async deleteTask(id) { await this.remove(this.p('tasks', id + '.md')); }
+  async deleteTask(id) {
+    const titolo = await this.displayName(this.p('tasks', id + '.md'), '');
+    await this.trash('task', titolo ? `${id} · ${titolo}` : id, 'tasks', id + '.md');
+  }
 
   // ---------- Progetti ----------
   async loadProjects() {
@@ -251,7 +282,7 @@ class Store {
   async deleteProject(codice) {
     const tasks = await this.loadTasks();
     if (tasks.some((t) => t.progetto === codice)) throw new Error('Il progetto ha dei task: archivialo invece di eliminarlo.');
-    await this.remove(this.p('projects', codice + '.md'));
+    await this.trash('progetto', await this.displayName(this.p('projects', codice + '.md'), codice), 'projects', codice + '.md');
   }
 
   // ---------- Categorie e tag ----------
@@ -291,7 +322,7 @@ class Store {
 
   async deleteCategory(id) {
     if (SYSTEM_CATEGORIES.includes(id)) throw new Error('Stato e Priorità non si possono eliminare.');
-    await this.remove(this.p('tags', id));
+    await this.trash('categoria', await this.displayName(this.p('tags', id, '_categoria.md'), id), 'tags', id);
     await this.stripFromTasks(id, null);
   }
 
@@ -314,21 +345,28 @@ class Store {
       const tasks = await this.loadTasks();
       if (tasks.some((t) => t[catId] === id)) throw new Error('Il valore è usato da alcuni task: cambiali prima di eliminarlo.');
     }
-    await this.remove(this.p('tags', catId, id + '.md'));
+    await this.trash('tag', await this.displayName(this.p('tags', catId, id + '.md'), id), 'tags', catId, id + '.md');
     if (!SYSTEM_CATEGORIES.includes(catId)) await this.stripFromTasks(catId, id);
   }
 
   // Unisce il tag "fromId" in "toId" (stessa categoria) e poi elimina "fromId".
   async mergeTag(catId, fromId, toId) {
     const tasks = await this.loadTasks();
+    const system = SYSTEM_CATEGORIES.includes(catId);
+    const cats = system ? await this.loadCategories() : null;
     for (const t of tasks) {
+      if (system) {
+        // Stato e priorità sono campi del task, non tag: saveTask aggiorna anche storico e completato.
+        if (t[catId] === fromId) await this.saveTask({ ...t, [catId]: toId }, cats);
+        continue;
+      }
       const v = t.tags[catId];
       if (Array.isArray(v) && v.includes(fromId)) t.tags[catId] = Array.from(new Set(v.map((x) => (x === fromId ? toId : x))));
       else if (v === fromId) t.tags[catId] = toId;
       else continue;
       await this.write(this.p('tasks', t.id + '.md'), this.serializeTask(t));
     }
-    await this.remove(this.p('tags', catId, fromId + '.md'));
+    await this.trash('tag', await this.displayName(this.p('tags', catId, fromId + '.md'), fromId), 'tags', catId, fromId + '.md');
   }
 
   async stripFromTasks(catId, tagId) {
@@ -342,6 +380,80 @@ class Store {
       else continue;
       await this.write(this.p('tasks', t.id + '.md'), this.serializeTask(t));
     }
+  }
+
+  // ---------- Cestino ----------
+  trashPath(entry, ...parts) {
+    for (const part of [entry, ...parts]) if (!isSafeName(part)) throw new Error('Nome file non valido: ' + part);
+    return path.join(this.dir, TRASH, entry, ...parts);
+  }
+
+  // Nome leggibile di un file che sta per finire nel cestino.
+  async displayName(file, fallback) {
+    try { const { data } = fm.parse(await fsp.readFile(file, 'utf8')); return String(data.titolo || data.nome || fallback); } catch { return fallback; }
+  }
+
+  // Sposta un file o una cartella in .cestino/<data_ora>/, mantenendo il percorso relativo.
+  async trash(tipo, nome, ...parts) {
+    const src = this.p(...parts);
+    if (!fs.existsSync(src)) return;
+    const base = stamp();
+    let entry = base;
+    let n = 2;
+    while (fs.existsSync(path.join(this.dir, TRASH, entry))) entry = base + '-' + n++;
+    const dest = this.trashPath(entry, ...parts);
+    this.lastWrite = Date.now();
+    await fsp.mkdir(path.dirname(dest), { recursive: true });
+    await renameRetry(src, dest);
+    await this.write(this.trashPath(entry, 'voce.json'), JSON.stringify({ tipo, nome, percorso: parts.join('/'), eliminato: new Date().toISOString() }, null, 2) + '\n');
+  }
+
+  async listTrash() {
+    const out = [];
+    for (const e of await readDirSafe(path.join(this.dir, TRASH))) {
+      if (!e.isDirectory() || !isSafeName(e.name)) continue;
+      try {
+        const v = JSON.parse(await fsp.readFile(path.join(this.dir, TRASH, e.name, 'voce.json'), 'utf8'));
+        out.push({ id: e.name, tipo: String(v.tipo || ''), nome: String(v.nome || ''), percorso: String(v.percorso || ''), eliminato: String(v.eliminato || '') });
+      } catch (err) { console.error('Voce del cestino illeggibile', e.name, err); }
+    }
+    return out.sort((a, b) => b.eliminato.localeCompare(a.eliminato));
+  }
+
+  async trashEntry(id) {
+    const v = (await this.listTrash()).find((x) => x.id === id);
+    if (!v) throw new Error('Elemento non trovato nel Cestino.');
+    return v;
+  }
+
+  async restoreTrash(id) {
+    const v = await this.trashEntry(id);
+    const parts = v.percorso.split('/');
+    const dest = this.p(...parts);
+    if (fs.existsSync(dest)) throw new Error(`Esiste già «${v.percorso}»: eliminalo o rinominalo prima di ripristinare.`);
+    if (v.tipo === 'tag' && !fs.existsSync(this.p('tags', parts[1]))) throw new Error(`La categoria «${parts[1]}» non esiste più: ripristina prima la categoria dal Cestino.`);
+    this.lastWrite = Date.now();
+    await fsp.mkdir(path.dirname(dest), { recursive: true });
+    await renameRetry(this.trashPath(id, ...parts), dest);
+    await this.remove(this.trashPath(id));
+  }
+
+  async deleteTrash(id) { await this.purge([await this.trashEntry(id)]); }
+  async emptyTrash() { await this.purge(await this.listTrash()); }
+  async purgeTrash(days = 30) {
+    const limit = Date.now() - days * 86400000;
+    await this.purge((await this.listTrash()).filter((v) => Date.parse(v.eliminato) < limit));
+  }
+
+  // Cancella per sempre. L'ID più alto dei task cancellati resta in taccuino.json, così non viene riassegnato.
+  async purge(entries) {
+    const ids = entries.filter((v) => v.tipo === 'task').map((v) => idNum(path.basename(v.percorso)));
+    if (ids.length) {
+      const cfg = await this.readConfig();
+      const max = Math.max(...ids);
+      if ((Number(cfg.ultimoId) || 0) < max) await this.write(path.join(this.dir, 'taccuino.json'), JSON.stringify({ ...cfg, ultimoId: max }, null, 2) + '\n');
+    }
+    for (const v of entries) await this.remove(this.trashPath(v.id));
   }
 }
 

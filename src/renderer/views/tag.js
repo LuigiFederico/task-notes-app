@@ -2,7 +2,7 @@ import { S, cat, project, isClosed, sortTasks } from '../state.js';
 import { esc, safeColor, md, fmtFull } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { tagUsage, swatches } from './tags.js';
-import { taskRow, taskHeader, emptyState } from './components.js';
+import { taskRow, taskHeader, emptyState, confirmBox } from './components.js';
 
 export function tagView(catId, tagId) {
   const c = cat(catId);
@@ -18,6 +18,12 @@ export function tagView(catId, tagId) {
   const label = catId === 'etichette' ? '#' + t.nome : t.nome;
   const others = c.tags.filter((x) => x.id !== tagId);
   const confirmDel = S.ui.confirm === 'tag:' + tagId;
+  const mergeTo = S.ui.confirm === 'merge:' + tagId ? others.find((x) => x.id === S.ui.mergeTo) : null;
+  const attrs = `data-cat="${esc(catId)}" data-tag="${esc(tagId)}"`;
+  let del;
+  if (c.sistema && u.total) del = `<p class="muted small">Usato da ${u.total} task: per eliminarlo usa «Unisci con…» e scegli dove spostarli.</p>`;
+  else if (confirmDel) del = confirmBox(`Eliminare «${t.nome}»? ${u.total ? `Viene tolto da ${u.total} task. ` : ''}Potrai ripristinarlo dal Cestino.`, `data-action="tag-delete" ${attrs}`);
+  else del = `<button class="btn-link danger-text small self-start" data-action="ask-confirm" data-key="tag:${esc(tagId)}">Elimina tag</button>`;
   return `
   <div class="page">
     <nav class="crumbs"><button data-action="go" data-view="tags" data-cat="progetto">Tag</button><span>/</span><button data-action="go" data-view="tags" data-cat="${esc(catId)}">${esc(c.nome)}</button><span>/</span><span>${esc(t.nome)}</span></nav>
@@ -27,8 +33,9 @@ export function tagView(catId, tagId) {
         <div class="stack-6"><h1 class="display">${esc(label)}</h1>
           <div class="row-10 muted small"><span>Categoria <span class="strong">${esc(c.nome)}</span></span><span>·</span><span>${u.open} aperti · ${u.total - u.open} chiusi</span><span>·</span><span>Usato in ${Object.keys(byProject).length} progetti</span></div></div>
       </div>
-      ${others.length ? `<label class="filter"><span class="sr">Unisci con</span><select data-change="tag-merge" data-cat="${esc(catId)}" data-tag="${esc(tagId)}"><option value="">Unisci con…</option>${others.map((x) => `<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join('')}</select>${icon.chevron(12)}</label>` : ''}
+      ${others.length ? `<label class="filter"><span class="sr">Unisci con</span><select id="tag-merge" data-change="tag-merge" data-cat="${esc(catId)}" data-tag="${esc(tagId)}"><option value="">Unisci con…</option>${others.map((x) => `<option value="${esc(x.id)}"${mergeTo && mergeTo.id === x.id ? ' selected' : ''}>${esc(x.nome)}</option>`).join('')}</select>${icon.chevron(12)}</label>` : ''}
     </div>
+    ${mergeTo ? confirmBox(`Spostare ${u.total} task da «${t.nome}» a «${mergeTo.nome}» ed eliminare «${t.nome}»?`, `data-action="tag-merge-confirm" ${attrs} data-to="${esc(mergeTo.id)}"`, 'Unisci') : ''}
     <div class="scroll">
       <div class="tag-grid">
         <div class="stack-20 minw0">
@@ -50,8 +57,7 @@ export function tagView(catId, tagId) {
           <div class="field"><span>Colore</span>${swatches(t.colore, 'tag-page-color', `data-cat="${esc(catId)}" data-tag="${esc(tagId)}"`)}</div>
           <div class="kv small"><span class="muted">Categoria</span><span>${esc(c.nome)}</span><span class="muted">Creato</span><span>${esc(fmtFull(t.creato))}</span><span class="muted">File</span><span class="mono">tags/${esc(catId)}/${esc(tagId)}.md</span></div>
           ${Object.keys(byProject).length ? `<div class="hr"></div><div class="stack-10"><span class="muted small">Per progetto</span>${Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([code, n]) => { const p = project(code); return `<button class="row-8 link" data-action="go" data-view="project" data-code="${esc(code)}"><span class="dot sq" style="background:${safeColor(p ? p.colore : '')}"></span><span class="grow">${esc(p ? p.nome : code)}</span><span class="muted">${n}</span></button>`; }).join('')}</div>` : ''}
-          ${confirmDel ? `<div class="row-8"><button class="btn danger small" data-action="tag-delete" data-cat="${esc(catId)}" data-tag="${esc(tagId)}">Elimina: ${u.total ? 'lo tolgo da ' + u.total + ' task' : 'confermo'}</button><button class="btn small" data-action="cancel-confirm">Annulla</button></div>`
-            : `<button class="btn-link danger-text small self-start" data-action="ask-confirm" data-key="tag:${esc(tagId)}">Elimina tag</button>`}
+          ${del}
         </aside>
       </div>
     </div>

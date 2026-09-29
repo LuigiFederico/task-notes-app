@@ -39,9 +39,18 @@ function groupDefs(by) {
   return defs;
 }
 
+// Perché la lista è vuota: nessun task, filtri che escludono tutto, oppure tutti completati e nascosti.
+function emptyReason() {
+  const u = S.ui;
+  if (!S.data.tasks.length) return 'Ancora nessun task: scrivine uno qui sopra.';
+  if (u.fProject || u.fPrio || u.fTag || u.search.trim()) return 'Nessun task corrisponde ai filtri attivi.';
+  if (!u.showDone && S.data.tasks.every(isClosed)) return 'Tutti i task sono completati.';
+  return 'Nessun task da mostrare.';
+}
+
 export function taskList(list, by, { showProject = true } = {}) {
   const groups = groupDefs(by).map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) })).filter((g) => g.items.length);
-  if (!groups.length) return emptyState('Nessun task da mostrare.');
+  if (!groups.length) return emptyState(emptyReason());
   return `${taskHeader(showProject)}<div class="groups">${groups.map((g) => `
     <section class="group">
       <div class="group-head">

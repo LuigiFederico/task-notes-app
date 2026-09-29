@@ -1,8 +1,8 @@
-import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values } from './state.js';
+import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values, saveView } from './state.js';
 import { esc, todayISO } from './lib/util.js';
 import { sidebar } from './views/sidebar.js';
 import { tasksView, taskList, visibleTasks } from './views/tasks.js';
-import { taskPanel, currentTask } from './views/taskPanel.js';
+import { taskPanel, currentTask, newTagHint } from './views/taskPanel.js';
 import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView, TAG_COLORS } from './views/tags.js';
@@ -39,7 +39,9 @@ function render() {
   } else {
     root.innerHTML = `<div class="app${S.ui.openTask ? ' with-panel' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${taskPanel()}</div>`;
   }
-  root.insertAdjacentHTML('beforeend', S.toast ? `<div class="toast ${S.toast.kind}" role="status">${esc(S.toast.text)}</div>` : '');
+  root.insertAdjacentHTML('beforeend', !S.toast ? '' : S.toast.kind === 'error'
+    ? `<div class="toast error" role="alert"><span>${esc(S.toast.text)}</span><button class="toast-close" data-action="toast-close" aria-label="Chiudi">×</button></div>`
+    : `<div class="toast ${S.toast.kind}" role="status">${esc(S.toast.text)}</div>`);
 
   [...document.querySelectorAll('.scroll, .panel-body')].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
   if (focusId) {
@@ -87,11 +89,19 @@ function toast(text, kind = 'info') {
   S.toast = { text, kind };
   render();
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { S.toast = null; const el = root.querySelector('.toast'); if (el) el.remove(); }, kind === 'error' ? 6000 : 2500);
+  // Gli errori restano finché non si chiudono, così si fa in tempo a leggerli.
+  if (kind !== 'error') toastTimer = setTimeout(() => { S.toast = null; const el = root.querySelector('.toast'); if (el) el.remove(); }, 2500);
+}
+
+// Il raggruppamento ricordato può riferirsi a una categoria che nel frattempo è stata eliminata.
+function checkGroupBy() {
+  const ids = ['progetto', 'priorita', 'stato', 'scadenza', ...S.data.categories.map((c) => c.id)];
+  if (!ids.includes(S.ui.groupBy)) S.ui.groupBy = 'progetto';
 }
 
 async function reload() {
   S.data = await api.load();
+  checkGroupBy();
   if (S.ui.openTask && S.ui.openTask !== 'new' && !task(S.ui.openTask)) S.ui.openTask = null;
   render();
 }
@@ -152,6 +162,59 @@ function reactToChange(now, wasClosed, prevState, prevDue) {
   else if (now.scadenza && now.scadenza !== prevDue && now.scadenza < todayISO() && !isClosed(now)) mascot.react('overdue', { count: overdueCount() });
 }
 
+// ---------------------------------------------------------------- salvataggio di titolo e descrizione
+// Il testo scritto e non ancora salvato vive in S.ui.unsaved, così nessun render lo cancella.
+let saving = null;   // salvataggio di un campo in corso
+
+function fieldValue(el) {
+  const f = el.dataset.field;
+  if (el.value.trim() === '' && f !== 'descrizione') return null;
+  return f === 'titolo' ? el.value.replace(/\s*\n\s*/g, ' ').trim() : el.value;
+}
+
+function setSaveState(field, text) {
+  const el = document.getElementById('save-' + field);
+  if (el) { el.textContent = text; el.classList.toggle('dirty', text === 'Non salvato'); }
+}
+
+function clearUnsaved(field) {
+  if (!S.ui.unsaved) return;
+  delete S.ui.unsaved[field];
+  if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
+}
+
+function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; }
+
+// Salva un campo del pannello. Se fallisce il testo resta nel campo, "Non salvato", e l'errore risale.
+async function saveField(el) {
+  const f = el.dataset.field;
+  const t = currentTask();
+  if (!t) return;
+  const value = fieldValue(el);
+  const typed = S.ui.unsaved ? S.ui.unsaved[f] : undefined;
+  if (S.ui.openTask !== 'new' && (t[f] ?? null) === value) { clearUnsaved(f); setSaveState(f, S.ui.saved[f] ? 'Salvato' : ''); return; }
+  saving = updateTask({ [f]: value });
+  try { await saving; } finally { saving = null; }
+  // Se nel frattempo si è ripreso a scrivere, il testo nuovo resta "Non salvato".
+  if (S.ui.unsaved && S.ui.unsaved[f] !== typed) return;
+  clearUnsaved(f);
+  if (f === 'titolo' || f === 'descrizione') { S.ui.saved[f] = true; setSaveState(f, 'Salvato'); }
+}
+
+// Prima di cambiare ciò che si vede (o di chiudere la finestra): salva quello che si sta scrivendo.
+async function flush() {
+  if (saving) await saving;
+  const un = S.ui.unsaved;
+  if (!un || un.id !== S.ui.openTask) return;
+  for (const f of ['titolo', 'descrizione']) {
+    const el = root.querySelector(`[data-change="task-field"][data-field="${f}"]`);
+    if (el && f in un) await saveField(el);
+  }
+}
+
+// Un'azione che cambia contesto parte solo se il salvataggio riesce.
+const afterFlush = (fn) => (el, e) => run(async () => { await flush(); fn(el, e); });
+
 async function toggleDone(id) {
   const t = task(id);
   if (!t) return;
@@ -163,13 +226,36 @@ async function toggleDone(id) {
   }
 }
 
+function findTag(c, name) {
+  const n = name.trim();
+  return c.tags.find((t) => t.nome.toLowerCase() === n.toLowerCase().replace(/^#/, '') || t.id === n.toLowerCase());
+}
+
 async function findOrCreateTag(catId, name) {
   const c = cat(catId);
   const n = name.trim();
   if (!n) return null;
-  const hit = c.tags.find((t) => t.nome.toLowerCase() === n.toLowerCase().replace(/^#/, '') || t.id === n.toLowerCase());
+  const hit = findTag(c, n);
   if (hit) return hit.id;
   return api.saveTag(catId, { nome: n.replace(/^#/, ''), colore: TAG_COLORS[c.tags.length % TAG_COLORS.length], ordine: c.tags.length + 1 });
+}
+
+function setTagHint(catId, text) {
+  const el = document.getElementById('tag-hint-' + catId);
+  if (el) { el.textContent = text; el.hidden = !text; }
+}
+
+// Aggiunge al task aperto il tag scritto nel campo, creandolo se non esiste.
+async function addTag(el) {
+  const catId = el.dataset.cat;
+  S.ui.pendingTag = null;
+  const id = await findOrCreateTag(catId, el.value);
+  if (!id) return;
+  if (S.ui.openTask !== 'new') S.data = await api.load();
+  const t = currentTask();
+  const vals = values(t, catId);
+  await updateTask({ tags: { ...t.tags, [catId]: vals.includes(id) ? vals : [...vals, id] } });
+  if (S.ui.openTask === 'new') S.data = await api.load(), render();
 }
 
 // ---------------------------------------------------------------- actions
@@ -190,15 +276,16 @@ function pickSwatch(el) {
 }
 
 const actions = {
-  go,
-  'new-task': (el) => { S.ui.draft = newDraft(el.dataset.code); S.ui.openTask = 'new'; render(); document.getElementById('task-title')?.focus(); },
-  'open-task': (el) => { if (!task(el.dataset.id)) return toast('Task ' + el.dataset.id + ' non trovato', 'error'); S.ui.openTask = el.dataset.id; S.ui.draft = null; S.ui.confirm = null; render(); },
-  'close-task': () => { S.ui.openTask = null; S.ui.draft = null; S.ui.confirm = null; render(); },
+  go: afterFlush(go),
+  'new-task': afterFlush((el) => { resetPanelState(); S.ui.draft = newDraft(el.dataset.code); S.ui.openTask = 'new'; render(); document.getElementById('task-title')?.focus(); }),
+  'open-task': afterFlush((el) => { if (!task(el.dataset.id)) return toast('Task ' + el.dataset.id + ' non trovato', 'error'); if (S.ui.openTask !== el.dataset.id) resetPanelState(); S.ui.openTask = el.dataset.id; S.ui.draft = null; S.ui.confirm = null; render(); }),
+  'close-task': afterFlush(() => { resetPanelState(); S.ui.openTask = null; S.ui.draft = null; S.ui.confirm = null; render(); }),
+  'toast-close': () => { clearTimeout(toastTimer); S.toast = null; root.querySelector('.toast')?.remove(); },
   'toggle-done': (el) => run(() => toggleDone(el.dataset.id)),
   'task-set': (el) => run(() => updateTask({ [el.dataset.field]: el.dataset.value || null })),
   'task-tag-remove': (el) => run(() => { const t = currentTask(); return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.tag) } }); }),
   'task-delete': (el) => run(async () => { await api.deleteTask(el.dataset.id); S.ui.openTask = null; S.ui.confirm = null; await reload(); toast('Task eliminato'); }),
-  'group-by': (el) => { S.ui.groupBy = el.dataset.value; render(); },
+  'group-by': (el) => { S.ui.groupBy = el.dataset.value; saveView(); render(); },
   'proj-filter': (el) => { S.ui.projFilter = el.dataset.value; render(); },
   'project-tab': (el) => { S.ui.projectTab = el.dataset.value; render(); },
   'clear-filters': () => { Object.assign(S.ui, { fProject: '', fPrio: '', fTag: '', search: '' }); render(); },
@@ -227,6 +314,13 @@ const actions = {
     for (let k = 0; k < list.length; k++) if (list[k].ordine !== k + 1) await api.saveTag(c.id, { ...list[k], ordine: k + 1 });
     await reload();
   }),
+  'tag-merge-confirm': (el) => run(async () => {
+    const d = el.dataset;
+    await api.mergeTag(d.cat, d.tag, d.to);
+    S.view = { name: 'tag', cat: d.cat, tag: d.to };
+    S.ui.confirm = null; S.ui.mergeTo = null;
+    await reload(); toast('Tag uniti');
+  }),
   'tag-delete': (el) => run(async () => { await api.deleteTag(el.dataset.cat, el.dataset.tag); S.view = { name: 'tags', cat: el.dataset.cat }; S.ui.confirm = null; await reload(); toast('Tag eliminato'); }),
   'category-delete': (el) => run(async () => { await api.deleteCategory(el.dataset.cat); S.view = { name: 'tags', cat: 'progetto' }; S.ui.confirm = null; S.ui.editing = null; await reload(); toast('Categoria eliminata'); }),
 
@@ -242,22 +336,20 @@ const actions = {
     mascot.react('welcome');
   }),
   'change-folder': () => { S.ui.setupDir = S.data.dir; S.ui.setupMode = 'open'; S.view = { name: 'setup' }; render(); },
-  'open-data-folder': () => run(() => api.openDataFolder())
+  'open-data-folder': () => run(() => api.openDataFolder()),
+  'trash-restore': (el) => run(async () => { await api.restoreTrash(el.dataset.id); await reload(); toast('Ripristinato dal Cestino'); }),
+  'trash-delete': (el) => run(async () => { await api.deleteTrash(el.dataset.id); S.ui.confirm = null; await reload(); toast('Eliminato per sempre'); }),
+  'trash-empty': () => run(async () => { await api.emptyTrash(); S.ui.confirm = null; await reload(); toast('Cestino svuotato'); })
 };
 
 const changes = {
-  'task-field': (el) => run(() => updateTask({ [el.dataset.field]: el.value.trim() === '' && el.dataset.field !== 'descrizione' ? null : el.dataset.field === 'titolo' ? el.value.replace(/\s*\n\s*/g, ' ').trim() : el.value })),
+  'task-field': (el) => run(() => saveField(el)),
   'task-cat-single': (el) => run(() => { const t = currentTask(); return updateTask({ tags: { ...t.tags, [el.dataset.cat]: el.value || undefined } }); }),
   filter: (el) => { S.ui[el.dataset.name] = el.value; render(); },
-  'show-done': (el) => { S.ui.showDone = el.checked; S.ui.recentDone = {}; render(); },
+  'show-done': (el) => { S.ui.showDone = el.checked; S.ui.recentDone = {}; saveView(); render(); },
   'tag-rename': (el) => run(async () => { const t = cat(el.dataset.cat).tags.find((x) => x.id === el.dataset.tag); if (!el.value.trim()) return render(); await api.saveTag(el.dataset.cat, { ...t, nome: el.value.trim() }); await reload(); }),
-  'tag-merge': (el) => run(async () => {
-    if (!el.value) return;
-    const to = el.value;
-    await api.mergeTag(el.dataset.cat, el.dataset.tag, to);
-    S.view = { name: 'tag', cat: el.dataset.cat, tag: to };
-    await reload(); toast('Tag uniti');
-  }),
+  // Scegliere la destinazione propone l'unione: parte solo con il pulsante Unisci.
+  'tag-merge': (el) => { S.ui.confirm = el.value ? 'merge:' + el.dataset.tag : null; S.ui.mergeTo = el.value || null; render(); },
   'mascot-visible': (el) => { mascot.setPrefs({ visible: el.checked }); render(); },
   'mascot-reduced': (el) => { mascot.setPrefs({ reduced: el.checked }); render(); },
   'open-at-login': (el) => run(async () => { await api.setOpenAtLogin(el.checked); S.config.openAtLogin = el.checked; })
@@ -266,7 +358,22 @@ const changes = {
 const inputs = {
   search: (el) => { S.ui.search = el.value; renderList(); },
   'project-draft': (el) => { S.ui.projectDraft[el.dataset.field] = el.dataset.field === 'codice' ? el.value.toUpperCase().replace(/[^A-Z0-9]/g, '') : el.value; if (el.dataset.field === 'codice') el.value = S.ui.projectDraft.codice; },
-  'setup-dir': (el) => { S.ui.setupDir = el.value; }
+  'setup-dir': (el) => { S.ui.setupDir = el.value; },
+  'task-dirty': (el) => {
+    const f = el.dataset.field;
+    if (!S.ui.unsaved || S.ui.unsaved.id !== S.ui.openTask) S.ui.unsaved = { id: S.ui.openTask };
+    S.ui.unsaved[f] = el.value;
+    delete S.ui.saved[f];
+    setSaveState(f, 'Non salvato');
+  },
+  'task-tag-input': (el) => {
+    const catId = el.dataset.cat;
+    if (S.ui.pendingTag) { S.ui.pendingTag = null; setTagHint(catId, ''); }
+    if (!el.value.trim()) return;
+    // Clic su un suggerimento (o nome esistente scritto per intero): il tag si aggiunge subito.
+    const hit = findTag(cat(catId), el.value);
+    if (hit && !values(currentTask(), catId).includes(hit.id)) run(() => addTag(el));
+  }
 };
 
 const keydowns = {
@@ -280,7 +387,9 @@ const keydowns = {
       el.value = '';
       await reload();
       mascot.react('created');
-      toast(`Creato ${saved.id}`);
+      const p = project(saved.progetto);
+      const hidden = !visibleTasks().some((t) => t.id === saved.id);
+      toast(`Creato ${saved.id}${p ? ' in ' + p.nome : ''}${hidden ? ' (nascosto dai filtri attivi)' : ''}`);
       document.getElementById('quick-add')?.focus();
     });
   },
@@ -289,15 +398,13 @@ const keydowns = {
     if (e.key !== 'Enter' || !el.value.trim()) return;
     e.preventDefault();
     const catId = el.dataset.cat;
-    run(async () => {
-      const id = await findOrCreateTag(catId, el.value);
-      if (!id) return;
-      if (S.ui.openTask !== 'new') S.data = await api.load();
-      const t = currentTask();
-      const vals = values(t, catId);
-      await updateTask({ tags: { ...t.tags, [catId]: vals.includes(id) ? vals : [...vals, id] } });
-      if (S.ui.openTask === 'new') S.data = await api.load(), render();
-    });
+    // Un tag che non esiste si crea solo al secondo Invio, così un refuso non diventa un tag nuovo.
+    if (!findTag(cat(catId), el.value)) {
+      const nome = el.value.trim().replace(/^#/, '');
+      const p = S.ui.pendingTag;
+      if (!p || p.cat !== catId || p.nome !== nome) { S.ui.pendingTag = { cat: catId, nome }; setTagHint(catId, newTagHint(nome)); return; }
+    }
+    run(() => addTag(el));
   }
 };
 
@@ -373,6 +480,10 @@ root.addEventListener('mouseover', (e) => {
   const i = Number(el.dataset.index);
   if (S.ui.hoverWeek !== i) { S.ui.hoverWeek = i; render(); }
 });
+root.addEventListener('focusout', (e) => {
+  // La richiesta di creare un tag nuovo decade quando si esce dal campo.
+  if (S.ui.pendingTag && e.target.dataset && e.target.dataset.keydown === 'task-tag-add') { setTagHint(S.ui.pendingTag.cat, ''); S.ui.pendingTag = null; }
+});
 root.addEventListener('focusout', () => { if (pendingReload) setTimeout(() => { if (pendingReload && !isTyping()) { pendingReload = false; run(reload); } }, 50); });
 
 function isTyping() {
@@ -385,13 +496,19 @@ document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.key.toLowerCase() === 'n') { e.preventDefault(); actions['new-task'](document.body); }
   else if (e.ctrlKey && e.key.toLowerCase() === 'k') {
     e.preventDefault();
-    if (S.view.name !== 'tasks') { S.view = { name: 'tasks' }; render(); }
-    document.getElementById('search')?.focus();
+    run(async () => {
+      await flush();
+      if (S.view.name !== 'tasks') { S.view = { name: 'tasks' }; render(); }
+      document.getElementById('search')?.focus();
+    });
   } else if (e.key === 'Escape') {
     if (S.ui.confirm || S.ui.editing) { S.ui.confirm = null; S.ui.editing = null; render(); }
-    else if (S.ui.openTask) { document.activeElement?.blur(); S.ui.openTask = null; S.ui.draft = null; render(); }
+    else if (S.ui.openTask) run(async () => { await flush(); document.activeElement?.blur(); resetPanelState(); S.ui.openTask = null; S.ui.draft = null; render(); });
   }
 });
+
+// Chiusura della finestra: prima si salva il campo in modifica. Se non riesce, la finestra resta aperta.
+api.onBeforeClose(() => flush().then(() => api.closeOk(), (err) => { mascot.react('error'); toast(err.message || String(err), 'error'); api.closeFail(); }));
 
 // Cambiamenti arrivati da fuori (OneDrive, un altro PC, modifiche a mano ai file).
 api.onDataChanged(() => { if (isTyping()) pendingReload = true; else run(reload); });
@@ -401,7 +518,7 @@ api.onDataChanged(() => { if (isTyping()) pendingReload = true; else run(reload)
   try {
     mascot.mount();
     S.config = await api.getConfig();
-    if (S.config.ready) S.data = await api.load();
+    if (S.config.ready) { S.data = await api.load(); checkGroupBy(); }
     render();
     if (S.data && overdueCount()) setTimeout(() => mascot.react('overdue', { count: overdueCount() }), 900);
   } catch (err) {

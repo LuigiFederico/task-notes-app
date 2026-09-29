@@ -1,6 +1,7 @@
 import { S, cat, task, project, extraCats, isClosed, values } from '../state.js';
 import { esc, safeColor, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
+import { confirmBox } from './components.js';
 
 export function currentTask() {
   if (S.ui.openTask === 'new') return S.ui.draft;
@@ -32,9 +33,19 @@ function categoryField(t, c) {
   }).join('');
   const listId = 'dl-' + c.id;
   const unused = c.tags.filter((x) => !vals.includes(x.id));
+  const pending = S.ui.pendingTag && S.ui.pendingTag.cat === c.id ? S.ui.pendingTag : null;
   return `<div class="row-6 wrap">${chips}
-    <input class="tag-add" list="${listId}" placeholder="+ Aggiungi" data-keydown="task-tag-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}">
-    <datalist id="${listId}">${unused.map((x) => `<option value="${esc(x.nome)}"></option>`).join('')}</datalist></div>`;
+    <input id="tag-add-${esc(c.id)}" class="tag-add" list="${listId}" placeholder="+ Aggiungi" value="${pending ? esc(pending.nome) : ''}" data-input="task-tag-input" data-keydown="task-tag-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}" aria-describedby="tag-hint-${esc(c.id)}">
+    <datalist id="${listId}">${unused.map((x) => `<option value="${esc(x.nome)}"></option>`).join('')}</datalist>
+    <span id="tag-hint-${esc(c.id)}" class="tag-hint small" aria-live="polite"${pending ? '' : ' hidden'}>${pending ? esc(newTagHint(pending.nome)) : ''}</span></div>`;
+}
+
+export function newTagHint(nome) { return `Nuovo tag «${nome}»: premi di nuovo Invio per crearlo`; }
+
+// "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
+function saveState(field, un) {
+  const dirty = field in un;
+  return `<span id="save-${field}" class="save-state small${dirty ? ' dirty' : ''}" aria-live="polite">${dirty ? 'Non salvato' : S.ui.saved[field] ? 'Salvato' : ''}</span>`;
 }
 
 export function taskPanel() {
@@ -45,23 +56,24 @@ export function taskPanel() {
   const done = isClosed(t);
   const due = dueLabel(t.scadenza, done);
   const confirmDel = S.ui.confirm === 'task:' + t.id;
+  const un = S.ui.unsaved && S.ui.unsaved.id === S.ui.openTask ? S.ui.unsaved : {};
   return `
   <section class="panel" aria-label="Dettaglio task">
     <div class="panel-head">
       <span class="mono muted">${isNew ? 'Nuovo task' : esc(t.id)}</span>
       ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}"><span class="dot sq" style="background:${safeColor(p.colore)}"></span>${esc(p.nome)}</button>` : ''}
       <span class="grow"></span>
-      ${isNew ? '' : confirmDel
-        ? `<button class="btn danger small" data-action="task-delete" data-id="${esc(t.id)}">Conferma eliminazione</button><button class="btn small" data-action="cancel-confirm">Annulla</button>`
-        : `<button class="icon-btn" data-action="ask-confirm" data-key="task:${esc(t.id)}" aria-label="Elimina task" title="Elimina">${icon.trash(17)}</button>`}
+      ${isNew || confirmDel ? '' : `<button class="icon-btn" data-action="ask-confirm" data-key="task:${esc(t.id)}" aria-label="Elimina task" title="Elimina">${icon.trash(17)}</button>`}
       <button class="icon-btn" data-action="close-task" aria-label="Chiudi dettaglio" title="Chiudi (Esc)">${icon.close(18)}</button>
     </div>
+    ${confirmDel ? `<div class="panel-confirm">${confirmBox(`Eliminare ${t.id}? Potrai ripristinarlo dal Cestino.`, `data-action="task-delete" data-id="${esc(t.id)}"`)}</div>` : ''}
     <div class="panel-body">
       <div class="row-14 start">
         ${isNew ? '<span class="check big ghost"></span>' : `<button class="check big${done ? ' done' : ''}" data-action="toggle-done" data-id="${esc(t.id)}" aria-label="${done ? 'Riapri' : 'Completa'}">${done ? icon.check(14) : ''}</button>`}
         <label class="grow"><span class="sr">Titolo</span>
-          <textarea id="task-title" class="title-input" rows="1" data-change="task-field" data-field="titolo" data-keydown="title-enter" placeholder="Cosa devi fare?">${esc(isNew ? '' : t.titolo)}</textarea>
+          <textarea id="task-title" class="title-input" rows="1" data-change="task-field" data-input="task-dirty" data-field="titolo" data-keydown="title-enter" placeholder="Cosa devi fare?">${esc(un.titolo ?? (isNew ? '' : t.titolo))}</textarea>
         </label>
+        ${saveState('titolo', un)}
       </div>
       ${isNew ? '<div class="hint">Scrivi il titolo e premi Invio per creare il task.</div>' : ''}
       <div class="props">
@@ -81,8 +93,8 @@ export function taskPanel() {
       <div class="hr"></div>
       <label class="stack-10">
         <span class="section-label">DESCRIZIONE</span>
-        <textarea class="desc-input" rows="8" data-change="task-field" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(t.descrizione || '')}</textarea>
-        <span class="muted small">Supporta Markdown · si salva quando esci dal campo</span>
+        <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>
+        <span class="row-between small"><span class="muted">Supporta Markdown</span>${saveState('descrizione', un)}</span>
       </label>
       ${!isNew && t.storico.length ? `<div class="stack-10"><span class="section-label">STORICO</span><div class="history">${t.storico.slice().reverse().map((l) => {
         const m = l.match(/^(\d{4}-\d{2}-\d{2})\s+(.*)$/);

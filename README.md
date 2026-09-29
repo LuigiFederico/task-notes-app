@@ -28,7 +28,7 @@ Al primo avvio l'app chiede quale cartella usare per i dati. Se la cartella è n
 npm test
 ```
 
-I test coprono lettura e scrittura dei file: front matter, task, progetti, decisioni, unione ed eliminazione dei tag.
+I test coprono lettura e scrittura dei file: front matter, task, progetti, decisioni, unione ed eliminazione dei tag, cestino e riprova della scrittura.
 
 ## Creare l'eseguibile
 
@@ -82,11 +82,12 @@ Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella
+  taccuino.json                  marcatore della cartella (e ultimo ID di task cancellato)
   tasks/T-042.md                 un file per task
   projects/VEND.md               un file per progetto
   tags/<categoria>/_categoria.md impostazioni della categoria
   tags/<categoria>/<tag>.md      un file per tag, con la descrizione nel corpo
+  .cestino/<data_ora>/…          elementi eliminati, con voce.json
 ```
 
 ### Task
@@ -144,10 +145,18 @@ Task: T-029
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.
 - L'ID di un tag è il nome del file e non cambia se lo rinomini, quindi i task non vanno aggiornati.
 
+### Cestino
+
+Task, progetti, tag e categorie eliminati non vengono cancellati: finiscono in `.cestino/<data_ora>/`, con lo stesso percorso che avevano (es. `.cestino/2026-09-29_143205/tasks/T-042.md`) e un `voce.json` che dice cos'erano. Dalla sezione Cestino di Impostazioni si ripristinano o si eliminano per sempre. All'avvio, gli elementi eliminati da più di 30 giorni vengono cancellati.
+
+- Il ripristino si ferma se nel frattempo esiste già un file con lo stesso nome, o se il tag appartiene a una categoria che non c'è più.
+- Eliminando un tag o una categoria, il valore viene tolto dai task, e ripristinandoli non torna.
+- Gli ID dei task non vengono mai riusati: il prossimo ID tiene conto anche dei task nel cestino e, dopo lo svuotamento, di `ultimoId` in `taccuino.json`.
+
 I file si possono modificare anche a mano. L'app si accorge dei cambiamenti (anche quelli sincronizzati da OneDrive da un altro PC) e ricarica i dati.
 
 ## Note su OneDrive
 
 - Salvare ogni elemento in un file separato riduce i conflitti tra PC.
 - Se OneDrive crea una copia di conflitto (es. `T-042-PC-NAME.md`), l'app la mostra come un task a parte: tieni la versione giusta ed elimina l'altra.
-- La scrittura è atomica: prima un file temporaneo, poi la rinomina. Così OneDrive non sincronizza mai un file scritto a metà.
+- La scrittura è atomica: prima un file temporaneo, poi la rinomina. Così OneDrive non sincronizza mai un file scritto a metà. Se OneDrive tiene bloccato il file, la rinomina viene riprovata per circa un secondo prima di mostrare l'errore.

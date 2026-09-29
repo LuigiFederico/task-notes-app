@@ -199,6 +199,10 @@ pre { margin: 0; }
 .title-input { width: 100%; border: 0; outline: none; padding: 0; resize: none; overflow: hidden; background: transparent; font-family: var(--serif); font-size: 32px; line-height: 1.15; color: var(--ink); }
 .title-input::placeholder { color: var(--faint); }
 .hint { font-size: 13px; color: var(--muted); margin-top: -14px; padding-left: 38px; }
+.panel-confirm { padding: 12px 16px 0 28px; flex-shrink: 0; }
+.save-state { color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+.save-state.dirty { color: #8A4B06; }
+.tag-hint { flex-basis: 100%; color: var(--muted); }
 .props { display: grid; grid-template-columns: 110px minmax(0, 1fr); row-gap: 10px; column-gap: 12px; align-items: center; }
 .prop-label { color: var(--muted); font-size: 14px; }
 .props .select-wrap { justify-self: start; max-width: 100%; }
@@ -315,10 +319,16 @@ pre { margin: 0; }
 .tree, .sample pre { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; color: var(--ink); }
 .sample { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
 .error { padding: 10px 14px; border-radius: 8px; background: #FDECEA; color: var(--late); font-size: 13px; }
+.confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 12px; border-radius: 8px; background: #FDECEA; color: var(--ink); font-size: 13px; }
+.full-row { flex-basis: 100%; }
+.trash-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.trash-row .confirm { flex-basis: 100%; }
 .path { padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 13px; word-break: break-all; }
 
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 18px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.18); z-index: 10; }
-.toast.error { background: var(--late); }
+.toast.error { background: var(--late); display: flex; align-items: center; gap: 14px; max-width: min(640px, calc(100vw - 48px)); }
+.toast-close { color: #fff; font-size: 18px; line-height: 1; padding: 2px 4px; border-radius: 4px; opacity: .85; }
+.toast-close:hover { opacity: 1; }
 .fatal { padding: 48px; }
 
 /* finestre strette */

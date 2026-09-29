@@ -23,5 +23,11 @@ contextBridge.exposeInMainWorld('api', {
   saveTag: (catId, t) => call('tag:save', catId, t),
   deleteTag: (catId, id) => call('tag:delete', catId, id),
   mergeTag: (catId, from, to) => call('tag:merge', catId, from, to),
-  onDataChanged: (fn) => ipcRenderer.on('data:changed', () => fn())
+  restoreTrash: (id) => call('trash:restore', id),
+  deleteTrash: (id) => call('trash:delete', id),
+  emptyTrash: () => call('trash:empty'),
+  onDataChanged: (fn) => ipcRenderer.on('data:changed', () => fn()),
+  onBeforeClose: (fn) => ipcRenderer.on('app:before-close', () => fn()),
+  closeOk: () => ipcRenderer.send('app:close-ok'),
+  closeFail: () => ipcRenderer.send('app:close-fail')
 });

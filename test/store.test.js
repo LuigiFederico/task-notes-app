@@ -96,3 +96,123 @@ test('nomi file pericolosi vengono rifiutati', async () => {
   await s.init();
   await assert.rejects(() => s.deleteTask('../fuori'));
 });
+
+test('cestino: eliminare un task lo sposta in .cestino e si può ripristinare', async () => {
+  const dir = tmpDir();
+  const s = new Store(dir);
+  await s.init();
+  const t = await s.saveTask({ titolo: 'Da buttare', progetto: 'A' });
+  await s.deleteTask(t.id);
+  assert.strictEqual((await s.loadTasks()).length, 0);
+  const [v] = await s.listTrash();
+  assert.strictEqual(v.tipo, 'task');
+  assert.strictEqual(v.nome, 'T-001 · Da buttare');
+  assert.strictEqual(v.percorso, 'tasks/T-001.md');
+  assert.ok(fs.existsSync(path.join(dir, '.cestino', v.id, 'tasks', 'T-001.md')));
+  await s.restoreTrash(v.id);
+  assert.strictEqual((await s.loadTasks())[0].titolo, 'Da buttare');
+  assert.deepStrictEqual(await s.listTrash(), []);
+});
+
+test('cestino: gli ID dei task eliminati non vengono riusati, nemmeno dopo lo svuotamento', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  const a = await s.saveTask({ titolo: 'Uno', progetto: 'A' });
+  await s.deleteTask(a.id);
+  assert.strictEqual((await s.saveTask({ titolo: 'Due', progetto: 'A' })).id, 'T-002');
+  await s.deleteTask('T-002');
+  await s.emptyTrash();
+  assert.deepStrictEqual(await s.listTrash(), []);
+  assert.strictEqual((await s.saveTask({ titolo: 'Tre', progetto: 'A' })).id, 'T-003');
+});
+
+test('cestino: il ripristino si ferma se il file esiste già o se manca la categoria', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveProject({ codice: 'VEND', nome: 'Vendite' });
+  await s.deleteProject('VEND');
+  await s.saveProject({ codice: 'VEND', nome: 'Vendite bis' });
+  const [p] = await s.listTrash();
+  await assert.rejects(() => s.restoreTrash(p.id), /Esiste già «projects\/VEND.md»/);
+
+  await s.saveCategory({ nome: 'Contesto' });
+  await s.saveTag('contesto', { nome: 'Ufficio' });
+  await s.deleteTag('contesto', 'ufficio');
+  await s.deleteCategory('contesto');
+  const tag = (await s.listTrash()).find((v) => v.tipo === 'tag');
+  await assert.rejects(() => s.restoreTrash(tag.id), /La categoria «contesto» non esiste più/);
+});
+
+test('cestino: una categoria eliminata si ripristina con i suoi tag', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveCategory({ nome: 'Contesto', tipo: 'singola' });
+  await s.saveTag('contesto', { nome: 'Ufficio' });
+  await s.saveTask({ titolo: 'X', progetto: 'A', tags: { contesto: 'ufficio' } });
+  await s.deleteCategory('contesto');
+  assert.ok(!(await s.loadCategories()).some((c) => c.id === 'contesto'));
+  assert.strictEqual((await s.loadTasks())[0].tags.contesto, undefined);
+  const [v] = await s.listTrash();
+  assert.deepStrictEqual([v.tipo, v.nome, v.percorso], ['categoria', 'Contesto', 'tags/contesto']);
+  await s.restoreTrash(v.id);
+  const c = (await s.loadCategories()).find((x) => x.id === 'contesto');
+  assert.deepStrictEqual(c.tags.map((t) => t.id), ['ufficio']);
+});
+
+test('cestino: la pulizia toglie solo gli elementi più vecchi di 30 giorni', async () => {
+  const dir = tmpDir();
+  const s = new Store(dir);
+  await s.init();
+  await s.saveTask({ titolo: 'Vecchio', progetto: 'A' });
+  await s.saveTask({ titolo: 'Recente', progetto: 'A' });
+  await s.deleteTask('T-001');
+  await s.deleteTask('T-002');
+  const old = (await s.listTrash()).find((v) => v.percorso === 'tasks/T-001.md');
+  const file = path.join(dir, '.cestino', old.id, 'voce.json');
+  const v = JSON.parse(fs.readFileSync(file, 'utf8'));
+  fs.writeFileSync(file, JSON.stringify({ ...v, eliminato: new Date(Date.now() - 31 * 86400000).toISOString() }));
+  await s.purgeTrash(30);
+  assert.deepStrictEqual((await s.listTrash()).map((x) => x.percorso), ['tasks/T-002.md']);
+});
+
+test('unione di valori di stato e priorità sposta i task', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  const a = await s.saveTask({ titolo: 'Attesa', progetto: 'A', stato: 'in-attesa', priorita: 'bassa' });
+  const b = await s.saveTask({ titolo: 'Fatto', progetto: 'A', stato: 'fatto' });
+  await s.mergeTag('stato', 'in-attesa', 'in-corso');
+  await s.mergeTag('priorita', 'bassa', 'media');
+  await s.mergeTag('stato', 'fatto', 'da-fare');
+  const tasks = await s.loadTasks();
+  const ta = tasks.find((t) => t.id === a.id);
+  const tb = tasks.find((t) => t.id === b.id);
+  assert.strictEqual(ta.stato, 'in-corso');
+  assert.strictEqual(ta.priorita, 'media');
+  assert.ok(ta.storico.some((l) => l.includes('Stato: In attesa → In corso')));
+  assert.strictEqual(tb.stato, 'da-fare');
+  assert.strictEqual(tb.completato, null);
+  const stati = (await s.loadCategories()).find((c) => c.id === 'stato').tags.map((t) => t.id);
+  assert.deepStrictEqual(stati, ['da-fare', 'in-corso']);
+  assert.deepStrictEqual((await s.listTrash()).map((v) => v.percorso).sort(), ['tags/priorita/bassa.md', 'tags/stato/fatto.md', 'tags/stato/in-attesa.md']);
+});
+
+test('scrittura: riprova il rename se il file è bloccato', async () => {
+  const dir = tmpDir();
+  const s = new Store(dir);
+  await s.init();
+  const rename = fs.promises.rename;
+  let calls = 0;
+  const busy = () => Object.assign(new Error('EPERM: operation not permitted'), { code: 'EPERM' });
+  try {
+    fs.promises.rename = async (...args) => { if (++calls <= 2) throw busy(); return rename(...args); };
+    const t = await s.saveTask({ titolo: 'Bloccato', progetto: 'A' });
+    assert.strictEqual(calls, 3);
+    assert.strictEqual((await s.loadTasks())[0].id, t.id);
+
+    fs.promises.rename = async () => { throw busy(); };
+    await assert.rejects(() => s.saveTask({ ...t, titolo: 'Mai' }), (err) => err.code === 'EPERM');
+    assert.deepStrictEqual(fs.readdirSync(path.join(dir, 'tasks')), ['T-001.md']);
+  } finally {
+    fs.promises.rename = rename;
+  }
+});
