@@ -34,6 +34,6 @@
       "target": [{ "target": "nsis", "arch": ["x64"] }, { "target": "portable", "arch": ["x64"] }]
     },
     "nsis": { "oneClick": false, "perMachine": false, "allowToChangeInstallationDirectory": true },
-    "publish": { "provider": "github", "owner": "LuigiFederico", "repo": "task-notes-app", "releaseType": "release" }
+    "publish": { "provider": "github", "owner": "LuigiFederico", "repo": "task-notes-app", "releaseType": "draft" }
   }
 }
