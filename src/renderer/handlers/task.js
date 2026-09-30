@@ -17,7 +17,7 @@ function newDraft(code) {
   return {
     id: null, titolo: '', progetto: code || defaultProject(), stato: (openStates()[0] || {}).id || 'da-fare',
     priorita: (prio.find((t) => t.id === 'media') || prio[Math.floor(prio.length / 2)] || {}).id || null,
-    scadenza: null, tags: {}, descrizione: '', storico: []
+    scadenza: null, tags: {}, sottotask: [], descrizione: '', storico: []
   };
 }
 
@@ -89,7 +89,7 @@ function clearUnsaved(field) {
   if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
 }
 
-function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; }
+function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; }
 
 export function closePanel() {
   resetPanelState();
@@ -169,6 +169,15 @@ async function addTag(el) {
   }
 }
 
+// ---------------------------------------------------------------- sotto-task
+// Ogni modifica salva il task intero con la lista nuova; la checklist non scrive righe di storico.
+function saveSubtasks(fn) {
+  const t = currentTask();
+  const list = (t.sottotask || []).map((x) => ({ ...x }));
+  fn(list);
+  return updateTask({ sottotask: list });
+}
+
 // ---------------------------------------------------------------- handler
 export const actions = {
   'new-task': afterFlush((el) => {
@@ -197,6 +206,19 @@ export const actions = {
     const t = currentTask();
     return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.value) } });
   }),
+  'sub-toggle': (el) => run(() => saveSubtasks((l) => { const x = l[Number(el.dataset.index)]; x.fatto = !x.fatto; })),
+  'sub-delete': (el) => run(() => saveSubtasks((l) => l.splice(Number(el.dataset.index), 1))),
+  'sub-move': (el) => run(() => saveSubtasks((l) => {
+    const i = Number(el.dataset.index);
+    const j = i + Number(el.dataset.dir);
+    if (j >= 0 && j < l.length) [l[i], l[j]] = [l[j], l[i]];
+  })),
+  'sub-edit-start': (el) => {
+    S.ui.subEdit = Number(el.dataset.index);
+    render();
+    const input = document.getElementById('sub-edit');
+    if (input) { input.focus(); input.select(); }
+  },
   'task-delete': (el) => run(async () => {
     await api.deleteTask(el.dataset.id);
     S.ui.openTask = null;
@@ -208,6 +230,13 @@ export const actions = {
 
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
+  // Un testo vuoto elimina la voce.
+  'sub-edit': (el) => run(() => {
+    S.ui.subEdit = null;
+    const i = Number(el.dataset.index);
+    const v = el.value.trim();
+    return saveSubtasks((l) => { if (!l[i]) return; if (v) l[i].testo = v; else l.splice(i, 1); });
+  }),
   'task-cat-single': (el) => run(() => {
     const t = currentTask();
     return updateTask({ tags: { ...t.tags, [el.dataset.cat]: el.value || undefined } });
@@ -261,6 +290,25 @@ export const keydowns = {
       if (!vals.includes(v)) await updateTask({ tags: { ...t.tags, [catId]: [...vals, v] } });
       document.querySelector(`[data-keydown="task-text-add"][data-cat="${catId}"]`)?.focus();
     });
+  },
+  'sub-add': (el, e) => {
+    if (e.key !== 'Enter' || !el.value.trim()) return;
+    e.preventDefault();
+    const testo = el.value.trim();
+    run(async () => {
+      await saveSubtasks((l) => l.push({ fatto: false, testo }));
+      document.getElementById('sub-add')?.focus();
+    });
+  },
+  'sub-edit-key': (el, e) => {
+    if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      el.value = el.defaultValue;   // nessun salvataggio
+      S.ui.subEdit = null;
+      render();
+    }
   },
   'title-enter': (el, e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } },
   'task-tag-add': (el, e) => {

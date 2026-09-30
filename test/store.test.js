@@ -33,7 +33,7 @@ test('formato: un task fa andata e ritorno, con le categorie utente come chiavi 
   const t = {
     id: 'T-007', titolo: 'Preparare: slide', progetto: 'VEND', stato: 'in-corso', priorita: 'alta', scadenza: '2026-10-01',
     creato: '2026-09-01', aggiornato: '2026-09-02', completato: null,
-    tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio', vuota: null }, storico: ['2026-09-01 Creato'], descrizione: 'Note\n\n- punto'
+    tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio', vuota: null }, sottotask: [], storico: ['2026-09-01 Creato'], descrizione: 'Note\n\n- punto'
   };
   const text = formats.serializeTask(t);
   assert.match(text, /^contesto: ufficio$/m);
@@ -307,4 +307,18 @@ test('scrittura: riprova il rename se il file è bloccato', async () => {
   } finally {
     fs.promises.rename = rename;
   }
+});
+
+test('formato: sotto-task come checklist nel file del task', () => {
+  const t = { id: 'T-001', titolo: 'a', tags: {}, storico: [], sottotask: [
+    { fatto: true, testo: 'Raccogliere i dati' }, { fatto: false, testo: 'Bozza: "slide" #1' }] };
+  const text = formats.serializeTask(t);
+  assert.match(text, /^sottotask:\n {2}- "\[x\] Raccogliere i dati"/m);
+  const back = formats.parseTask(text, 'T-001');
+  assert.deepStrictEqual(back.sottotask, t.sottotask);
+  assert.strictEqual('sottotask' in back.tags, false);
+  // senza voci la chiave non si scrive; a mano valgono anche le righe senza casella
+  assert.doesNotMatch(formats.serializeTask({ ...t, sottotask: [] }), /sottotask/);
+  assert.deepStrictEqual(formats.parseTask('---\nsottotask:\n  - "[X] fatto"\n  - libera\n---\n', 'T-2').sottotask,
+    [{ fatto: true, testo: 'fatto' }, { fatto: false, testo: 'libera' }]);
 });

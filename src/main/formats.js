@@ -6,6 +6,9 @@ const fm = require('./frontmatter');
 
 const SYSTEM_CATEGORIES = ['stato', 'priorita'];
 const TASK_KEYS = ['id', 'titolo', 'progetto', 'stato', 'priorita', 'scadenza', 'creato', 'aggiornato', 'completato'];
+// Chiavi del task con un formato proprio, scritte solo se servono: non sono categorie utente.
+const RESERVED_KEYS = ['sottotask', 'storico'];
+const isTaskKey = (k) => TASK_KEYS.includes(k) || RESERVED_KEYS.includes(k);
 
 const pad = (n) => String(n).padStart(2, '0');
 
@@ -40,7 +43,7 @@ function parseTask(text, fallbackId) {
   const { data, body } = fm.parse(text);
   const tags = {};
   for (const [k, v] of Object.entries(data)) {
-    if (TASK_KEYS.includes(k) || k === 'storico') continue;
+    if (isTaskKey(k)) continue;
     tags[k] = Array.isArray(v) ? v.map(String) : str(v);
   }
   return {
@@ -55,6 +58,7 @@ function parseTask(text, fallbackId) {
     aggiornato: str(data.aggiornato),
     completato: str(data.completato),
     tags,
+    sottotask: parseSubtasks(data.sottotask),
     storico: Array.isArray(data.storico) ? data.storico.map(String) : [],
     descrizione: body
   };
@@ -64,11 +68,22 @@ function serializeTask(t) {
   const data = {};
   for (const k of TASK_KEYS) data[k] = t[k] == null || t[k] === '' ? null : t[k];
   for (const [k, v] of Object.entries(t.tags || {})) {
-    if (TASK_KEYS.includes(k) || k === 'storico' || !isSafeName(k)) continue;
+    if (isTaskKey(k) || !isSafeName(k)) continue;
     if (Array.isArray(v)) data[k] = v; else if (v) data[k] = v;
   }
+  if (t.sottotask && t.sottotask.length) data.sottotask = t.sottotask.map((x) => `[${x.fatto ? 'x' : ' '}] ${x.testo}`);
   data.storico = t.storico || [];
   return fm.stringify(data, t.descrizione || '');
+}
+
+// Sotto-task: una checklist nel file del task, una riga "[x] testo" o "[ ] testo" per voce.
+// Una riga scritta a mano senza casella conta come da fare.
+function parseSubtasks(v) {
+  if (!Array.isArray(v)) return [];
+  return v.map((line) => {
+    const m = String(line).match(/^\[([ xX]?)\]\s*(.*)$/);
+    return m ? { fatto: m[1].toLowerCase() === 'x', testo: m[2] } : { fatto: false, testo: String(line) };
+  }).filter((x) => x.testo.trim());
 }
 
 // Righe di storico di un salvataggio: "Creato" per un task nuovo, altrimenti i cambi di stato,
@@ -188,7 +203,7 @@ function serializeTag(t, id, catId) {
 }
 
 module.exports = {
-  SYSTEM_CATEGORIES, TASK_KEYS,
+  SYSTEM_CATEGORIES, TASK_KEYS, RESERVED_KEYS,
   slugify, today, stamp, isSafeName, idNum,
   parseTask, serializeTask, taskHistory,
   parseProject, serializeProject,

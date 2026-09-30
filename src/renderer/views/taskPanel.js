@@ -49,6 +49,30 @@ function categoryField(t, c) {
 
 export function newTagHint(nome) { return `Nuovo tag «${nome}»: premi di nuovo Invio per crearlo`; }
 
+// Checklist del task: spunta, testo modificabile con un clic, frecce per l'ordine, x per togliere.
+function subtasks(t) {
+  const list = t.sottotask || [];
+  const done = list.filter((x) => x.fatto).length;
+  const items = list.map((x, i) => {
+    const text = S.ui.subEdit === i
+      ? `<input id="sub-edit" class="sub-input grow" value="${esc(x.testo)}" data-change="sub-edit" data-keydown="sub-edit-key" data-index="${i}" aria-label="Testo del sotto-task">`
+      : `<button class="sub-text grow${x.fatto ? ' done' : ''}" data-action="sub-edit-start" data-index="${i}" title="Modifica">${esc(x.testo)}</button>`;
+    return `<div class="sub-item">
+      <button class="check sm${x.fatto ? ' done' : ''}" data-action="sub-toggle" data-index="${i}" aria-label="${x.fatto ? 'Riapri' : 'Completa'} ${esc(x.testo)}">${x.fatto ? icon.check(10) : ''}</button>
+      ${text}
+      <span class="row-2 sub-tools">
+        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="icon-btn sm" data-action="sub-delete" data-index="${i}" aria-label="Elimina ${esc(x.testo)}">${icon.close(12)}</button>
+      </span></div>`;
+  }).join('');
+  return `<div class="stack-10">
+    <span class="section-label">SOTTO-TASK${list.length ? ` <span class="muted">${done}/${list.length}</span>` : ''}</span>
+    ${list.length ? `<div class="sub-list">${items}</div>` : ''}
+    <input id="sub-add" class="tag-add sub-add" placeholder="+ Aggiungi un sotto-task" data-keydown="sub-add" aria-label="Aggiungi un sotto-task">
+  </div>`;
+}
+
 // "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
 function saveState(field, un) {
   const dirty = field in un;
@@ -98,6 +122,7 @@ export function taskPanel() {
         ${extraCats().map((c) => `<span class="prop-label">${esc(c.nome)}</span>${categoryField(t, c)}`).join('')}
       </div>
       <div class="hr"></div>
+      ${subtasks(t)}
       <label class="stack-10">
         <span class="section-label">DESCRIZIONE</span>
         <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>

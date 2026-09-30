@@ -36,6 +36,14 @@ export function checkbox(t) {
   return `<button class="check${done ? ' done' : ''}" data-action="toggle-done" data-id="${esc(t.id)}" aria-label="${done ? 'Riapri' : 'Completa'} ${esc(t.id)}">${done ? icon.check(12) : ''}</button>`;
 }
 
+// Avanzamento della checklist, es. 2/5, accanto al titolo.
+export function subProgress(t) {
+  const list = t.sottotask || [];
+  if (!list.length) return '';
+  const done = list.filter((x) => x.fatto).length;
+  return `<span class="sub-progress${done === list.length ? ' all' : ''}" title="Sotto-task completati">${icon.check(10)}${done}/${list.length}</span>`;
+}
+
 // Riga task completa (lista principale).
 export function taskRow(t, { showProject = true } = {}) {
   const done = isClosed(t);
@@ -46,6 +54,7 @@ export function taskRow(t, { showProject = true } = {}) {
     <span class="mono muted small">${esc(t.id)}</span>
     <span class="title-cell">
       <button class="task-title" data-action="open-task" data-id="${esc(t.id)}">${esc(t.titolo)}</button>
+      ${subProgress(t)}
       ${taskChips(t).map(chip).join('')}
     </span>
     ${showProject ? projectLabel(t.progetto) : ''}

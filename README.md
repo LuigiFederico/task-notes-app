@@ -125,6 +125,9 @@ aggiornato: 2026-09-28
 completato:
 etichette:
   - riunione
+sottotask:           # checklist, scritta solo se ha voci
+  - "[x] Raccogliere i dati"
+  - "[ ] Bozza slide"
 storico:
   - 2026-09-24 Creato
   - 2026-09-28 Stato: Da fare → In corso
@@ -132,6 +135,8 @@ storico:
 
 Descrizione libera in Markdown.
 ```
+
+I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
 
 Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".
 
