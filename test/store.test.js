@@ -114,6 +114,15 @@ test('progetto: descrizione e decisioni', async () => {
   await assert.rejects(() => s.saveProject({ codice: '' }));
 });
 
+test('progetto: l\'ordine scelto viene prima del nome, i progetti senza ordine vanno in fondo', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveProject({ codice: 'AAA', nome: 'Alfa' });
+  await s.saveProject({ codice: 'ZZZ', nome: 'Zeta', ordine: 1 });
+  await s.saveProject({ codice: 'MMM', nome: 'Emme', ordine: 2 });
+  assert.deepStrictEqual((await s.loadProjects()).map((p) => p.codice), ['ZZZ', 'MMM', 'AAA']);
+});
+
 test('tag: creazione, unione ed eliminazione aggiornano i task', async () => {
   const s = new Store(tmpDir());
   await s.init();

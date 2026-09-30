@@ -12,6 +12,16 @@ export const actions = {
   },
   'draft-color': (el) => { S.ui.projectDraft.colore = pickSwatch(el); },
   'project-color': (el) => { S.ui.projectColor = pickSwatch(el); },
+  // Come tag-move: scambia due progetti e riscrive "ordine" solo dove cambia.
+  'project-move': (el) => run(async () => {
+    const i = Number(el.dataset.index);
+    const j = i + Number(el.dataset.dir);
+    const list = S.data.projects.slice();
+    if (j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    for (let k = 0; k < list.length; k++) if (list[k].ordine !== k + 1) await api.saveProject({ ...list[k], ordine: k + 1 });
+    await reload();
+  }),
   'proj-filter': (el) => { S.ui.projFilter = el.dataset.value; render(); },
   'project-tab': (el) => { S.ui.projectTab = el.dataset.value; render(); },
   'project-delete': () => run(async () => {

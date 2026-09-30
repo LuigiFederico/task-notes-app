@@ -25,14 +25,18 @@ export function tagsView() {
   let detail;
   if (sel === 'progetto') {
     detail = `
-      <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">Progetto</h2><span class="muted small">Ogni task appartiene a un progetto. Si creano e modificano dalla sezione Progetti.</span></div>
+      <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">Progetto</h2><span class="muted small">Ogni task appartiene a un progetto. Si creano e modificano dalla sezione Progetti; l'ordine scelto qui vale in tutta l'app.</span></div>
         <span class="pill">Scelta singola</span><span class="pill">Obbligatoria</span></div>
       <div class="tag-row head"><span></span><span>NOME</span><span>DESCRIZIONE</span><span>APERTI</span><span>TOTALE</span><span></span></div>
-      ${S.data.projects.map((p) => { const pt = projectTasks(p.codice); return `
+      ${S.data.projects.map((p, i) => { const pt = projectTasks(p.codice); return `
         <div class="tag-row"><span class="swatch-static" style="background:${safeColor(p.colore)}"></span>
           <button class="link strong" data-action="go" data-view="project" data-code="${esc(p.codice)}">${esc(p.nome)}</button>
           <span class="ellipsis small">${esc((p.descrizione || '').split('\n')[0])}</span>
-          <span>${openTasks(pt).length}</span><span class="muted">${pt.length}</span><span></span></div>`; }).join('')}
+          <span>${openTasks(pt).length}</span><span class="muted">${pt.length}</span>
+          <span class="row-2">
+            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="-1" aria-label="Sposta su ${esc(p.nome)}" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="1" aria-label="Sposta giù ${esc(p.nome)}" ${i === S.data.projects.length - 1 ? 'disabled' : ''}>↓</button>
+          </span></div>`; }).join('')}
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">projects/*.md</span></div>`;
   } else {
     const c = cat(sel);

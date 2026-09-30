@@ -144,6 +144,7 @@ nome: Dashboard vendite
 colore: "#2F5BD3"
 stato: attivo        # oppure archiviato
 creato: 2026-09-02
+ordine: 1            # posizione scelta nella sezione Tag (vuoto: in fondo, per nome)
 ---
 
 ## Descrizione
