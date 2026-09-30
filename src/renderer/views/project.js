@@ -13,7 +13,7 @@ export function newProjectView() {
     <form class="card pad stack-16 form" data-submit="create-project">
       <label class="field"><span>Nome</span><input name="nome" required value="${esc(d.nome)}" data-input="project-draft" data-field="nome" placeholder="Es. Dashboard vendite" autofocus></label>
       <label class="field"><span>Codice (tag del progetto)</span><input name="codice" required maxlength="8" value="${esc(d.codice)}" data-input="project-draft" data-field="codice" class="mono" placeholder="VEND"><small class="muted">Da 2 a 8 lettere o numeri. Dà il nome al file e non si può cambiare in seguito.</small></label>
-      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, d.colore, 'draft-color')}</div>
+      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, d.colore, 'draft-color', { custom: 'draft-color-custom' })}</div>
       <label class="field"><span>Descrizione</span><textarea name="descrizione" rows="5" data-input="project-draft" data-field="descrizione" placeholder="A cosa serve il progetto (Markdown)">${esc(d.descrizione)}</textarea></label>
       <div class="row-10 end"><button type="button" class="btn" data-action="go" data-view="projects">Annulla</button><button type="submit" class="btn primary">Crea progetto</button></div>
     </form>
@@ -41,7 +41,7 @@ export function projectView(code) {
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(p.nome)}"></label>
         <label class="field"><span>Stato</span>${select('name="stato"', options([['attivo', 'Attivo'], ['archiviato', 'Archiviato']], p.stato === 'archiviato' ? 'archiviato' : 'attivo'))}</label>
       </div>
-      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, p.colore, 'project-color')}</div>
+      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, p.colore, 'project-color', { custom: 'project-color-custom' })}</div>
       ${confirmDel ? confirmBox(`Eliminare «${p.nome}»? Potrai ripristinarlo dal Cestino.`, 'data-action="project-delete"') : ''}
       <div class="row-10">
         ${all.length === 0 ? (confirmDel ? '' : `<button type="button" class="btn-link danger-text" data-action="ask-confirm" data-key="project:${esc(code)}">Elimina progetto</button>`) : '<span class="muted small">Un progetto con task si può archiviare, non eliminare.</span>'}

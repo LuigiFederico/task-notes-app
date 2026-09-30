@@ -1,7 +1,7 @@
 // Progetti: creazione, modifica, eliminazione e decisioni.
 import { S, project } from '../state.js';
 import { api, render, reload, run, toast, stopEditing } from '../core.js';
-import { pickSwatch } from './common.js';
+import { pickSwatch, pickCustomColor } from './common.js';
 
 export const actions = {
   'new-project': () => {
@@ -28,6 +28,11 @@ export const actions = {
     S.ui.confirm = null;
     await reload();
   })
+};
+
+export const changes = {
+  'draft-color-custom': (el) => { S.ui.projectDraft.colore = pickCustomColor(el); },
+  'project-color-custom': (el) => { S.ui.projectColor = pickCustomColor(el); }
 };
 
 export const inputs = {

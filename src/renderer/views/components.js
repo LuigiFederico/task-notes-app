@@ -75,10 +75,18 @@ export function kpiTile(label, value, sub, subCls = '') {
   return `<div class="kpi card"><span class="muted small">${esc(label)}</span><span class="kpi-value">${esc(value)}</span><span class="small ${subCls}">${sub}</span></div>`;
 }
 
-// Scelta di un colore della palette. small: pallini piccoli che vanno a capo; attrs: attributi in più per ogni pallino.
-export function colorPicker(colors, current, action, { small = false, attrs = '' } = {}) {
+// Scelta di un colore della palette. small: pallini piccoli che vanno a capo; attrs: attributi in più per ogni pallino;
+// custom: nome del data-change di un ultimo pallino che apre il selettore di sistema, per un colore fuori palette.
+export function colorPicker(colors, current, action, { small = false, attrs = '', custom = '' } = {}) {
   const swatch = (c) => `<button type="button" role="radio" aria-checked="${c === current}" class="swatch${small ? ' sm' : ''}${c === current ? ' on' : ''}" style="background:${c}" data-action="${action}" data-value="${c}" ${attrs ? attrs + ' ' : ''}aria-label="Colore ${c}"></button>`;
-  return `<div class="${small ? 'row-6 wrap' : 'row-8'}" role="radiogroup" aria-label="Colore">${colors.map(swatch).join('')}</div>`;
+  let other = '';
+  if (custom) {
+    const hex = /^#[0-9a-fA-F]{6}$/.test(String(current || '')) ? current.toLowerCase() : '';
+    const own = hex && !colors.includes(current);
+    other = `<label class="swatch custom${small ? ' sm' : ''}${own ? ' on' : ''}" style="${own ? `background:${hex}` : ''}" title="Altro colore">
+      <input type="color" value="${hex || '#2f5bd3'}" data-change="${custom}" aria-label="Altro colore"></label>`;
+  }
+  return `<div class="${small ? 'row-6 wrap' : 'row-8'}" role="radiogroup" aria-label="Colore">${colors.map(swatch).join('')}${other}</div>`;
 }
 
 // Opzioni di una <select> da coppie [valore, etichetta]. current può essere un valore o una lista di valori.

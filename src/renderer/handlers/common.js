@@ -24,6 +24,15 @@ export function pickSwatch(el) {
   return el.dataset.value;
 }
 
+// Come pickSwatch, per il pallino con il selettore di sistema: il pallino prende il colore scelto.
+export function pickCustomColor(input) {
+  const label = input.parentElement;
+  label.parentElement.querySelectorAll('.swatch').forEach((s) => { s.classList.remove('on'); s.setAttribute('aria-checked', 'false'); });
+  label.classList.add('on');
+  label.style.background = input.value;
+  return input.value;
+}
+
 export const actions = {
   go: afterFlush(go),
   'toast-close': closeToast,
