@@ -9,6 +9,11 @@ export function safeColor(c, fallback = '#6B675E') {
   return /^#[0-9a-fA-F]{3,8}$/.test(String(c || '')) ? c : fallback;
 }
 
+// Sfondo tenue di un colore già passato da safeColor: aggiunge l'alfa (es. '1A') solo ai #RRGGBB.
+export function tint(c, alpha) {
+  return c.length === 7 ? c + alpha : 'var(--chip)';
+}
+
 const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
 const MESI_LUNGHI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
 const GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
@@ -48,8 +53,17 @@ export function dueLabel(due, closed) {
   return { text: fmtShort(due), cls: '' };
 }
 
-// Markdown minimale e sicuro: paragrafi, elenchi, titoli, grassetto, corsivo, codice, link.
-export function md(src) {
+// Menzioni nel testo: @T-042 (task) e @A-007 (appunto), non attaccate a una parola o a un indirizzo (mail@T-1, …/@T-1).
+const MENTION = /(^|[^\w@/.-])@([TA]-\d+)\b/g;
+
+// ID menzionati in un testo, senza doppioni, nell'ordine in cui compaiono.
+export function mentionsOf(src) {
+  return Array.from(new Set(Array.from(String(src || '').matchAll(MENTION), (m) => m[2])));
+}
+
+// Markdown minimale e sicuro: paragrafi, elenchi, titoli, grassetto, corsivo, codice, link e menzioni @.
+// refTitle(id) dà il titolo dell'elemento menzionato, oppure null se non esiste.
+export function md(src, { refTitle = null } = {}) {
   const lines = String(src || '').replace(/\r\n/g, '\n').split('\n');
   const out = [];
   let list = null;
@@ -58,7 +72,12 @@ export function md(src) {
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    .replace(MENTION, (_, pre, id) => {
+      const title = refTitle ? refTitle(id) : '';
+      const miss = refTitle && title == null;
+      return `${pre}<button type="button" class="mention${miss ? ' missing' : ''}" data-action="open-ref" data-id="${id}" title="${miss ? 'Non trovato' : esc(title || '')}">@${id}</button>`;
+    });
   const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inline).join('<br>') + '</p>'); para = []; } };
   const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map((i) => '<li>' + inline(i) + '</li>').join('') + `</${list.tag}>`); list = null; } };
   for (const line of lines) {
@@ -82,6 +101,16 @@ export function md(src) {
   }
   flushPara(); flushList();
   return out.join('');
+}
+
+// Link di un valore di una categoria a testo: il modello con {valore} sostituito, oppure il valore stesso se è già un link.
+// Solo http e https: qualsiasi altra cosa non diventa un link.
+export function textLink(template, value) {
+  const v = String(value || '').trim();
+  let url = '';
+  if (/^https?:\/\//i.test(v)) url = v;
+  else if (template && v) url = template.includes('{valore}') ? template.split('{valore}').join(encodeURIComponent(v)) : template + encodeURIComponent(v);
+  return /^https?:\/\/[^\s]+$/i.test(url) ? url : '';
 }
 
 export function plural(n, one, many) { return `${n} ${n === 1 ? one : many}`; }

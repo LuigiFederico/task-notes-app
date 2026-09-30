@@ -1,4 +1,4 @@
-import { S, activeProjects, openCount, isClosed } from '../state.js';
+import { S, activeProjects, openCount, openTasks } from '../state.js';
 import { esc, safeColor } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 
@@ -12,7 +12,7 @@ function shortPath(p) {
 
 export function sidebar() {
   const v = S.view.name;
-  const openTotal = S.data.tasks.filter((t) => !isClosed(t)).length;
+  const openTotal = openTasks().length;
   const nav = (name, label, ic, count, active) => `
     <button class="nav-item${active ? ' active' : ''}" data-action="go" data-view="${name}" ${active ? 'aria-current="page"' : ''}>
       ${ic}<span class="grow">${label}</span>${count != null ? `<span class="count">${count}</span>` : ''}
@@ -31,6 +31,8 @@ export function sidebar() {
     </button>
     <nav aria-label="Sezioni" class="nav">
       ${nav('tasks', 'Task', icon.tasks(18), openTotal, v === 'tasks')}
+      ${nav('notes', 'Appunti', icon.note(18), S.data.notes.length, v === 'notes')}
+      ${nav('graph', 'Grafo', icon.graph(18), null, v === 'graph')}
       ${nav('projects', 'Progetti', icon.folder(18), activeProjects().length, v === 'projects' || v === 'project')}
       ${nav('tags', 'Tag', icon.tag(18), null, v === 'tags' || v === 'tag')}
     </nav>

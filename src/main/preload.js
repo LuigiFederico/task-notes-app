@@ -20,6 +20,8 @@ contextBridge.exposeInMainWorld('api', {
   load: () => call('data:load'),
   saveTask: (t) => call('task:save', t),
   deleteTask: (id) => call('task:delete', id),
+  saveNote: (n) => call('note:save', n),
+  deleteNote: (id) => call('note:delete', id),
   saveProject: (p) => call('project:save', p),
   deleteProject: (codice) => call('project:delete', codice),
   saveCategory: (c) => call('category:save', c),

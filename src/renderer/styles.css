@@ -169,6 +169,17 @@ pre { margin: 0; }
 .task-row.head { min-height: 0; padding-bottom: 8px; border: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: none; }
 .title-cell { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
 /* varianti di colonne: pagina progetto (senza progetto), pagina tag (senza priorità), pannello aperto (compatta) */
+/* Righe degli appunti: stessa resa delle righe dei task, meno colonne. */
+.note-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 190px 90px; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
+.note-row.no-project { grid-template-columns: 64px minmax(0, 1fr) 90px; }
+.card.list .note-row:last-child { border-bottom: 0; }
+.note-row:hover { background: var(--surface-2); }
+.note-row.selected { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.note-row.head { min-height: 0; padding-bottom: 8px; border: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: none; }
+.with-panel .main .note-row { grid-template-columns: 64px minmax(0, 1fr) 90px; }
+.note-proj { min-width: 0; }
+.with-panel .main .note-row > .note-proj { display: none; }
+.note-mark { display: flex; width: 24px; height: 24px; margin-top: 6px; color: var(--muted); }
 .task-row.no-project { grid-template-columns: 36px 64px minmax(0, 1fr) 90px 110px 100px; }
 .tag-grid .task-row { grid-template-columns: 36px 64px minmax(0, 1fr) 170px 110px 100px; }
 .tag-grid .task-row > .prio, .tag-grid .task-row > .h-prio { display: none; }
@@ -180,7 +191,7 @@ pre { margin: 0; }
 .is-done .task-title { color: #8C887E; text-decoration: line-through; }
 .proj-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
 .prio { display: flex; align-items: center; gap: 7px; font-size: 13px; }
-.bars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
 .bars span { width: 3px; border-radius: 1px; }
 .due { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .due.today { color: var(--accent-ink); font-weight: 600; }
@@ -189,6 +200,19 @@ pre { margin: 0; }
 .check.done { background: #1F8A4C; border-color: #1F8A4C; }
 .check.big { width: 24px; height: 24px; border-radius: 7px; margin-top: 6px; }
 .check.ghost { border-style: dashed; }
+.check.sm { width: 16px; height: 16px; border-radius: 5px; }
+/* Sotto-task */
+.sub-list { display: flex; flex-direction: column; gap: 2px; }
+.sub-item { display: flex; align-items: center; gap: 10px; min-height: 32px; padding: 0 4px; border-radius: 6px; }
+.sub-item:hover { background: var(--surface-2); }
+.sub-text { text-align: left; font-size: 14px; padding: 4px 0; min-width: 0; overflow-wrap: anywhere; }
+.sub-text.done { color: var(--muted); text-decoration: line-through; }
+.sub-input { height: 28px; padding: 0 8px; border: 1px solid var(--accent); border-radius: 6px; font-size: 14px; outline: none; }
+.sub-tools { opacity: 0; }
+.sub-item:hover .sub-tools, .sub-item:focus-within .sub-tools { opacity: 1; }
+.sub-add { width: 100%; }
+.sub-progress { display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sub-progress.all { color: #1F8A4C; }
 .list-sub { padding: 10px 16px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 
 /* pannello dettaglio */
@@ -214,6 +238,13 @@ pre { margin: 0; }
 .date-wrap input { border: 0; background: transparent; outline: none; font-size: 14px; }
 .desc-input { resize: vertical; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; line-height: 1.6; background: var(--surface-2); outline: none; min-height: 140px; }
 .desc-input:focus { border-color: var(--accent); background: var(--surface); }
+.desc-view { border: 1px solid var(--line-soft); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; overflow-wrap: anywhere; }
+.desc-view a { color: var(--accent); }
+.desc-empty { width: 100%; text-align: left; border: 1px dashed var(--input-line); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; color: var(--muted); }
+.desc-empty:hover { border-color: var(--accent); color: var(--ink-2); }
+.mention { display: inline; padding: 0 3px; border-radius: 4px; font: inherit; font-family: var(--mono); font-size: .9em; color: var(--accent); background: var(--chip); }
+.mention:hover { text-decoration: underline; }
+.mention.missing { color: var(--muted); text-decoration: line-through; }
 .history { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--ink-2); }
 
 /* progetti */
@@ -288,6 +319,10 @@ pre { margin: 0; }
 .swatch { width: 28px; height: 28px; border-radius: 8px; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--input-line); }
 .swatch.sm { width: 24px; height: 24px; border-radius: 7px; }
 .swatch.on { box-shadow: 0 0 0 2px var(--ink); }
+/* Pallino "Altro colore": arcobaleno finché non si sceglie un colore, poi quel colore. L'input è invisibile sopra il pallino. */
+.swatch.custom { position: relative; cursor: pointer; background: conic-gradient(#B42318, #B54708, #0B8A6F, #0E7490, #2F5BD3, #7C3AED, #B42318); }
+.swatch.custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0; }
+.swatch.custom:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .swatch-static { width: 14px; height: 14px; border-radius: 4px; }
 
 /* tag */
@@ -304,6 +339,50 @@ pre { margin: 0; }
 .tag-edit { display: flex; flex-direction: column; gap: 12px; padding: 16px 22px; background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 .add-row { display: flex; align-items: center; gap: 8px; padding: 14px 22px; color: var(--accent); font-size: 14px; }
 .add-row:hover { background: var(--surface-2); }
+/* Collegamenti e suggerimenti di @ */
+.link-list { display: flex; flex-direction: column; gap: 2px; }
+.link-row { display: grid; grid-template-columns: minmax(90px, auto) 1fr auto; align-items: center; gap: 10px; min-height: 32px; }
+.link-row.closed .link-ref { color: var(--muted); text-decoration: line-through; }
+.link-type { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.link-ref { display: flex; align-items: center; gap: 8px; min-width: 0; text-align: left; font-size: 14px; }
+.link-ref:hover .ellipsis { text-decoration: underline; }
+.link-ref.missing { color: var(--muted); text-decoration: line-through; }
+.link-add { display: flex; align-items: center; gap: 8px; }
+.mention-wrap { position: relative; }
+.mention-wrap .tag-add, .mention-wrap .desc-input { width: 100%; }
+.mention-wrap .desc-input { display: block; }
+/* Sopra il campo: sotto una descrizione lunga finirebbe fuori dal pannello. */
+.mention-list.up { top: auto; bottom: calc(100% + 4px); }
+.mention-list { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; right: 0; max-height: 280px; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); padding: 4px; }
+.mention-list[hidden] { display: none; }
+.mention-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: 6px; text-align: left; font-size: 13px; min-width: 0; }
+.mention-item.on, .mention-item:hover { background: var(--chip); }
+.mention-item.closed .ellipsis { color: var(--muted); text-decoration: line-through; }
+.mention-empty { padding: 8px; }
+/* Grafo */
+.graph-filters { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.graph-filter { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; }
+.graph-chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 13px; border: 1px solid var(--line); font-size: 12px; color: var(--muted); background: transparent; }
+.graph-chip .chip-dot { opacity: .35; }
+.graph-chip.on { color: var(--ink-2); background: var(--surface); border-color: var(--input-line); }
+.graph-chip.on .chip-dot { opacity: 1; }
+.graph-wrap { display: block; }
+/* Il cerchio sta nell'altezza della finestra, ma non scende sotto i 640px: più piccolo le etichette non si leggerebbero. */
+svg.graph { display: block; margin: 0 auto; width: min(100%, max(640px, calc(100vh - 250px))); height: auto; aspect-ratio: 1; }
+.graph-edges path { fill: none; stroke-width: 1.3; opacity: .45; transition: opacity .15s; }
+.gnode { cursor: pointer; outline: none; }
+.gnode text { font-family: var(--sans, inherit); transition: opacity .15s; }
+.gnode circle { transition: opacity .15s; stroke: var(--bg, #F6F5F1); stroke-width: 1.5; }
+.gnode.note circle { fill: var(--bg); stroke-width: 2.5; }
+.gnode.closed text { opacity: .55; text-decoration: line-through; }
+.gnode:focus-visible circle { stroke: var(--accent); stroke-width: 3; }
+svg.graph.dim .graph-edges path { opacity: .06; }
+svg.graph.dim .graph-edges path.hl { opacity: .9; stroke-width: 2; }
+svg.graph.dim .gnode:not(.hl) { opacity: .25; }
+svg.graph.dim .gnode.hl text { font-weight: 600; }
+.cat-note { padding: 18px 22px; max-width: 72ch; }
+.chip.text-value a { color: var(--accent); text-decoration: none; max-width: 32ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip.text-value a:hover { text-decoration: underline; }
 .file-foot { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line-soft); background: var(--surface-2); font-size: 12px; color: var(--muted); }
 .kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; }
 

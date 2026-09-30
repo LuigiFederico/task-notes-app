@@ -1,51 +1,43 @@
-import { S, cat, task, project, extraCats, isClosed, values } from '../state.js';
-import { esc, safeColor, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
+import { S, cat, project, extraCats, isClosed } from '../state.js';
+import { currentTask } from '../selectors.js';
+import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox } from './components.js';
-
-export function currentTask() {
-  if (S.ui.openTask === 'new') return S.ui.draft;
-  return S.ui.openTask ? task(S.ui.openTask) : null;
-}
+import { confirmBox, options, select, categoryField, links, description, saveState } from './components.js';
 
 function radioGroup(label, catId, current, allowNone) {
   const c = cat(catId);
   const opts = (c ? c.tags : []).map((t) => {
     const on = t.id === current;
     const col = safeColor(t.colore);
-    const style = on ? `border-color:${col};color:${col};background:${col.length === 7 ? col + '14' : 'var(--chip)'};font-weight:600` : '';
+    const style = on ? `border-color:${col};color:${col};background:${tint(col, '14')};font-weight:600` : '';
     return `<button role="radio" aria-checked="${on}" class="radio-pill" style="${style}" data-action="task-set" data-field="${catId}" data-value="${esc(t.id)}">${esc(t.nome)}</button>`;
   });
   if (allowNone) opts.push(`<button role="radio" aria-checked="${!current}" class="radio-pill${!current ? ' on-neutral' : ''}" data-action="task-set" data-field="${catId}" data-value="">Nessuna</button>`);
   return `<div role="radiogroup" aria-label="${esc(label)}" class="row-6 wrap">${opts.join('')}</div>`;
 }
 
-function categoryField(t, c) {
-  const vals = values(t, c.id);
-  if (c.tipo === 'singola') {
-    return `<label class="select-wrap"><span class="sr">${esc(c.nome)}</span><select data-change="task-cat-single" data-cat="${esc(c.id)}">
-      <option value="">—</option>${c.tags.map((x) => `<option value="${esc(x.id)}"${vals.includes(x.id) ? ' selected' : ''}>${esc(x.nome)}</option>`).join('')}
-    </select>${icon.chevron(12)}</label>`;
-  }
-  const chips = vals.map((id) => {
-    const tg = c.tags.find((x) => x.id === id);
-    return `<span class="chip removable"><span class="chip-dot" style="background:${safeColor(tg ? tg.colore : '')}"></span>${esc(tg ? tg.nome : id)}<button data-action="task-tag-remove" data-cat="${esc(c.id)}" data-tag="${esc(id)}" aria-label="Rimuovi ${esc(tg ? tg.nome : id)}">${icon.close(12)}</button></span>`;
+// Checklist del task: spunta, testo modificabile con un clic, frecce per l'ordine, x per togliere.
+function subtasks(t) {
+  const list = t.sottotask || [];
+  const done = list.filter((x) => x.fatto).length;
+  const items = list.map((x, i) => {
+    const text = S.ui.subEdit === i
+      ? `<input id="sub-edit" class="sub-input grow" value="${esc(x.testo)}" data-change="sub-edit" data-keydown="sub-edit-key" data-index="${i}" aria-label="Testo del sotto-task">`
+      : `<button class="sub-text grow${x.fatto ? ' done' : ''}" data-action="sub-edit-start" data-index="${i}" title="Modifica">${esc(x.testo)}</button>`;
+    return `<div class="sub-item">
+      <button class="check sm${x.fatto ? ' done' : ''}" data-action="sub-toggle" data-index="${i}" aria-label="${x.fatto ? 'Riapri' : 'Completa'} ${esc(x.testo)}">${x.fatto ? icon.check(10) : ''}</button>
+      ${text}
+      <span class="row-2 sub-tools">
+        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === list.length - 1 ? 'disabled' : ''}>↓</button>
+        <button class="icon-btn sm" data-action="sub-delete" data-index="${i}" aria-label="Elimina ${esc(x.testo)}">${icon.close(12)}</button>
+      </span></div>`;
   }).join('');
-  const listId = 'dl-' + c.id;
-  const unused = c.tags.filter((x) => !vals.includes(x.id));
-  const pending = S.ui.pendingTag && S.ui.pendingTag.cat === c.id ? S.ui.pendingTag : null;
-  return `<div class="row-6 wrap">${chips}
-    <input id="tag-add-${esc(c.id)}" class="tag-add" list="${listId}" placeholder="+ Aggiungi" value="${pending ? esc(pending.nome) : ''}" data-input="task-tag-input" data-keydown="task-tag-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}" aria-describedby="tag-hint-${esc(c.id)}">
-    <datalist id="${listId}">${unused.map((x) => `<option value="${esc(x.nome)}"></option>`).join('')}</datalist>
-    <span id="tag-hint-${esc(c.id)}" class="tag-hint small" aria-live="polite"${pending ? '' : ' hidden'}>${pending ? esc(newTagHint(pending.nome)) : ''}</span></div>`;
-}
-
-export function newTagHint(nome) { return `Nuovo tag «${nome}»: premi di nuovo Invio per crearlo`; }
-
-// "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
-function saveState(field, un) {
-  const dirty = field in un;
-  return `<span id="save-${field}" class="save-state small${dirty ? ' dirty' : ''}" aria-live="polite">${dirty ? 'Non salvato' : S.ui.saved[field] ? 'Salvato' : ''}</span>`;
+  return `<div class="stack-10">
+    <span class="section-label">SOTTO-TASK${list.length ? ` <span class="muted">${done}/${list.length}</span>` : ''}</span>
+    ${list.length ? `<div class="sub-list">${items}</div>` : ''}
+    <input id="sub-add" class="tag-add sub-add" placeholder="+ Aggiungi un sotto-task" data-keydown="sub-add" aria-label="Aggiungi un sotto-task">
+  </div>`;
 }
 
 export function taskPanel() {
@@ -57,6 +49,8 @@ export function taskPanel() {
   const due = dueLabel(t.scadenza, done);
   const confirmDel = S.ui.confirm === 'task:' + t.id;
   const un = S.ui.unsaved && S.ui.unsaved.id === S.ui.openTask ? S.ui.unsaved : {};
+  // I progetti archiviati non si propongono, tranne quello a cui il task appartiene già.
+  const projects = S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto);
   return `
   <section class="panel" aria-label="Dettaglio task">
     <div class="panel-head">
@@ -78,9 +72,7 @@ export function taskPanel() {
       ${isNew ? '<div class="hint">Scrivi il titolo e premi Invio per creare il task.</div>' : ''}
       <div class="props">
         <span class="prop-label">Progetto</span>
-        <label class="select-wrap"><span class="sr">Progetto</span><select data-change="task-field" data-field="progetto">
-          ${S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto).map((x) => `<option value="${esc(x.codice)}"${x.codice === t.progetto ? ' selected' : ''}>${esc(x.nome)} · ${esc(x.codice)}</option>`).join('')}
-        </select>${icon.chevron(12)}</label>
+        ${select('data-change="task-field" data-field="progetto"', options(projects.map((x) => [x.codice, `${x.nome} · ${x.codice}`]), t.progetto), 'Progetto')}
         <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato, false)}
         <span class="prop-label">Priorità</span>${radioGroup('Priorità', 'priorita', t.priorita, true)}
         <span class="prop-label">Scadenza</span>
@@ -91,11 +83,9 @@ export function taskPanel() {
         ${extraCats().map((c) => `<span class="prop-label">${esc(c.nome)}</span>${categoryField(t, c)}`).join('')}
       </div>
       <div class="hr"></div>
-      <label class="stack-10">
-        <span class="section-label">DESCRIZIONE</span>
-        <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>
-        <span class="row-between small"><span class="muted">Supporta Markdown</span>${saveState('descrizione', un)}</span>
-      </label>
+      ${subtasks(t)}
+      ${isNew ? '' : links(t)}
+      ${description(t, isNew, un)}
       ${!isNew && t.storico.length ? `<div class="stack-10"><span class="section-label">STORICO</span><div class="history">${t.storico.slice().reverse().map((l) => {
         const m = l.match(/^(\d{4}-\d{2}-\d{2})\s+(.*)$/);
         return `<div class="row-10"><span class="mono muted small w64">${esc(m ? fmtShort(m[1]) : '')}</span><span>${esc(m ? m[2] : l)}</span></div>`;

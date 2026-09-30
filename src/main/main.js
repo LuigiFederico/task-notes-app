@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron')
 const path = require('path');
 const fs = require('fs');
 const { Store } = require('./store');
+const { updateBlock, registerUpdates } = require('./updater');
 
 // Per sviluppo e test: TACCUINO_USERDATA sposta le impostazioni locali in un'altra cartella.
 if (process.env.TACCUINO_USERDATA) app.setPath('userData', process.env.TACCUINO_USERDATA);
@@ -46,6 +47,7 @@ function watch(dir) {
 async function openStore(dir, opts) {
   const s = new Store(dir);
   await s.init(opts);
+  try { await s.syncInstructions(app.getVersion()); } catch (err) { console.error('Istruzioni per Claude non scritte', err); }
   try { await s.purgeTrash(30); } catch (err) { console.error('Pulizia del cestino non riuscita', err); }
   store = s;
   watch(dir);
@@ -133,30 +135,6 @@ function handle(channel, fn) {
 
 function requireStore() { if (!store) throw new Error('Nessuna cartella dati aperta.'); return store; }
 
-// Aggiornamenti da GitHub Releases, solo quando li si chiede dalle Impostazioni.
-// Si aggiorna solo la copia installata con il Setup: lo zip e il portabile non hanno il programma di disinstallazione accanto.
-function updateBlock() {
-  if (!app.isPackaged) return 'Gli aggiornamenti funzionano solo nella versione installata, non in sviluppo.';
-  if (!fs.existsSync(path.join(path.dirname(process.execPath), 'Uninstall Taccuino.exe'))) return 'Questa copia di Taccuino non è installata (zip o versione portabile), quindi non si aggiorna da sola. Scarica e installa «Taccuino Setup» dalla pagina delle release.';
-  return null;
-}
-
-let updater = null;
-function getUpdater() {
-  if (!updater) {
-    updater = require('electron-updater').autoUpdater;
-    updater.autoDownload = false;
-    updater.on('error', (err) => console.error('Aggiornamento non riuscito', err));
-    updater.on('download-progress', (p) => { if (win && !win.isDestroyed()) win.webContents.send('update:progress', Math.floor(p.percent)); });
-  }
-  return updater;
-}
-
-// Gli errori di electron-updater possono contenere la risposta HTTP intera: basta la prima riga.
-async function updateStep(what, fn) {
-  try { return await fn(); } catch (err) { throw new Error(`${what} non riuscito: ${String(err.message || err).split('\n')[0]}`); }
-}
-
 handle('config:get', async () => {
   const cfg = readConfig();
   let ready = false;
@@ -187,17 +165,13 @@ handle('config:setDataDir', async (dir, mode) => {
 handle('config:openAtLogin', async (on) => { app.setLoginItemSettings({ openAtLogin: !!on }); return !!on; });
 handle('shell:openDataFolder', async () => { await shell.openPath(requireStore().dir); return true; });
 
-handle('update:check', () => updateStep('Controllo degli aggiornamenti', async () => {
-  const r = await getUpdater().checkForUpdates();
-  return r && r.isUpdateAvailable ? r.updateInfo.version : null;
-}));
-handle('update:download', () => updateStep('Scaricamento', async () => { await getUpdater().downloadUpdate(); return true; }));
-// Il renderer ha già salvato il campo in modifica: la finestra può chiudersi subito. Il Setup gira in silenzio e riapre l'app.
-handle('update:install', async () => { closeOk = true; getUpdater().quitAndInstall(true, true); return true; });
+registerUpdates(handle, () => win, () => { closeOk = true; });
 
 handle('data:load', async () => requireStore().loadAll());
 handle('task:save', async (t) => requireStore().saveTask(t));
 handle('task:delete', async (id) => requireStore().deleteTask(id));
+handle('note:save', async (n) => requireStore().saveNote(n));
+handle('note:delete', async (id) => requireStore().deleteNote(id));
 handle('project:save', async (p) => requireStore().saveProject(p));
 handle('project:delete', async (codice) => requireStore().deleteProject(codice));
 handle('category:save', async (c) => requireStore().saveCategory(c));

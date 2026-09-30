@@ -28,7 +28,7 @@ Al primo avvio l'app chiede quale cartella usare per i dati. Se la cartella è n
 npm test
 ```
 
-I test coprono lettura e scrittura dei file: front matter, task, progetti, decisioni, unione ed eliminazione dei tag, cestino e riprova della scrittura.
+I test coprono lettura e scrittura dei file (front matter, task, progetti, decisioni, storico, unione ed eliminazione dei tag, cestino, riprova della scrittura) e le funzioni di lettura dell'interfaccia (ordinamento, filtri, raggruppamenti, scadenze, markdown).
 
 ## Creare l'eseguibile
 
@@ -63,14 +63,20 @@ Si aggiorna da sola solo la copia installata con `Taccuino Setup x.y.z.exe`. La 
 src/
   main/            processo principale di Electron (Node)
     main.js        finestra, impostazioni locali, canali IPC, osservazione della cartella
+    updater.js     aggiornamenti da GitHub Releases
     preload.js     API esposta all'interfaccia (window.api), niente accesso diretto a Node
-    store.js       lettura/scrittura di task, progetti, categorie e tag
+    store.js       lettura/scrittura di task, appunti, progetti, categorie e tag, regole sui dati, cestino
+    formats.js     formato dei file di task, appunti, progetti, categorie e tag (funzioni pure)
+    fsutil.js      scrittura atomica e riprova quando OneDrive blocca un file
     frontmatter.js parser/serializer del front matter YAML (sottoinsieme)
   renderer/        interfaccia (HTML + CSS + moduli JS, nessun passaggio di build)
-    app.js         stato, azioni, gestione eventi
+    app.js         avvio, collegamento degli eventi agli handler, scorciatoie
+    core.js        render, ricarica dai file, avvisi ed errori
+    handlers/      azioni dell'utente, un file per argomento (task, appunti, grafo, progetti, tag, impostazioni…)
     state.js       stato dell'interfaccia e funzioni di lettura sui dati
-    views/         una vista per schermata (task, dettaglio, progetti, progetto, tag…)
-    lib/           utilità (date, markdown, icone)
+    selectors.js   letture che dipendono da filtri, pannello aperto o data di oggi
+    views/         una vista per schermata (task, appunti, grafo, dettaglio, progetti, progetto, tag…) e components.js
+    lib/           utilità (date, markdown, icone, disposizione del grafo)
 test/              test con node:test
 ```
 
@@ -92,12 +98,19 @@ La mascotte vive in basso a destra e reagisce alle azioni:
 
 Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/mascot.js` (tabella `REACTIONS`) e le animazioni in fondo a `styles.css`. Nelle Impostazioni si può nascondere il corvo o attivare il movimento ridotto, che si attiva da solo anche quando Windows ha le animazioni disattivate.
 
+## Grafo
+
+La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell'ordine dei progetti) con il suo colore, e i collegamenti come curve che passano per il centro; le menzioni `@` sono tratteggiate e gli appunti sono cerchi vuoti. Il pallino è più grande quanto più l'elemento è collegato. I filtri scelgono task e/o appunti, progetti, stati e tipi di collegamento, e se colorare gli archi per progetto o per tipo. Passando sopra un nodo si evidenziano i suoi collegamenti; un clic lo apre.
+
 ## Formato dei dati
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella (e ultimo ID di task cancellato)
+  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte
+  CLAUDE.md                      istruzioni per Claude sul formato dei dati (scritto dall'app)
+  note-personali.md              note tue per Claude, importate da CLAUDE.md (l'app non lo tocca)
   tasks/T-042.md                 un file per task
+  appunti/A-007.md               un file per appunto
   projects/VEND.md               un file per progetto
   tags/<categoria>/_categoria.md impostazioni della categoria
   tags/<categoria>/<tag>.md      un file per tag, con la descrizione nel corpo
@@ -119,6 +132,11 @@ aggiornato: 2026-09-28
 completato:
 etichette:
   - riunione
+collegamenti:
+  - bloccato-da T-012
+sottotask:
+  - "[x] Raccogliere i dati"
+  - "[ ] Bozza slide"
 storico:
   - 2026-09-24 Creato
   - 2026-09-28 Stato: Da fare → In corso
@@ -127,7 +145,35 @@ storico:
 Descrizione libera in Markdown.
 ```
 
-Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla".
+I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <ID>"` ciascuno (una riga con il solo ID è un collegamento senza tipo). Il task collegato li mostra con il nome inverso del tipo (T-042 «Bloccato da» T-012 → T-012 «Blocca» T-042) senza che il suo file cambi. Se il task collegato finisce nel Cestino, il collegamento resta e compare come «non trovato».
+
+Nel testo (descrizione del task, ma anche descrizioni di progetti e tag) `@T-012` è una menzione: nel pannello diventa un link al task. Scrivendo `@` nella descrizione compaiono i task da citare. Le menzioni non si salvano nel front matter: si leggono dal testo.
+
+`stato` di un progetto è `attivo` oppure `archiviato`; `ordine` è la posizione scelta nella sezione Tag (vuoto: in fondo, per nome). Il `progetto` di un appunto è facoltativo. `collegamenti` e `sottotask` si scrivono solo se hanno voci. Il front matter non ammette commenti in linea (`chiave: valore # commento`): il commento diventerebbe parte del valore.
+
+I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
+
+Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".
+
+### Appunto
+
+```markdown
+---
+id: A-007
+titolo: Riunione KPI con Marco
+progetto: ECOM
+creato: 2026-09-30
+aggiornato: 2026-09-30
+etichette:
+  - riunione
+collegamenti:
+  - correlato-a T-042
+---
+
+Testo libero in Markdown, anche con menzioni come @T-042.
+```
+
+Gli appunti si scrivono dalla sezione Appunti (o dalla pagina del progetto) in un pannello come quello dei task. Un appunto ha un ID sequenziale come i task (`A-001`, …) che non cambia mai, così i collegamenti e le menzioni restano validi anche se il titolo cambia. Ha le stesse categorie utente e gli stessi collegamenti dei task, ma non stato, priorità o scadenza.
 
 ### Progetto
 
@@ -136,8 +182,9 @@ Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del
 codice: VEND
 nome: Dashboard vendite
 colore: "#2F5BD3"
-stato: attivo        # oppure archiviato
+stato: attivo
 creato: 2026-09-02
+ordine: 1
 ---
 
 ## Descrizione
@@ -155,19 +202,29 @@ Task: T-029
 
 ### Categorie e tag
 
+- **Collegamento** è la terza categoria di sistema: i suoi tag sono i tipi di collegamento (di serie Bloccato da / Blocca, Dipende da / Necessario per, Correlato a), ognuno con `inverso:` nel file, il nome letto dal task collegato. Si rinominano, riordinano, uniscono e se ne aggiungono altri dalla sezione Tag; un tipo usato da qualche collegamento non si elimina.
 - **Stato** e **Priorità** sono categorie di sistema: si possono rinominare, ricolorare e riordinare, ma non eliminare. Gli stati con `chiuso: true` (di serie solo "Fatto") nascondono il task dalla lista principale, che resta comunque visibile nello storico e nelle pagine di progetto e tag.
+- Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista, e i task senza priorità vanno dopo l'ultimo livello. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.
 - L'ID di un tag è il nome del file e non cambia se lo rinomini, quindi i task non vanno aggiornati.
+- Una categoria **a testo libero** (`tipo: testo`, es. "Ticket Jira") non ha file per i valori: ogni task scrive i suoi valori a mano, come lista (`ticket-jira: [PROJ-123]`). Con un modello `url: https://jira.example.com/browse/{valore}` in `_categoria.md` ogni valore diventa un link; un valore che è già un indirizzo web lo è comunque. Queste categorie compaiono solo nel pannello del task, non nei filtri, nei raggruppamenti o nella ricerca.
 
 ### Cestino
 
-Task, progetti, tag e categorie eliminati non vengono cancellati: finiscono in `.cestino/<data_ora>/`, con lo stesso percorso che avevano (es. `.cestino/2026-09-29_143205/tasks/T-042.md`) e un `voce.json` che dice cos'erano. Dalla sezione Cestino di Impostazioni si ripristinano o si eliminano per sempre. All'avvio, gli elementi eliminati da più di 30 giorni vengono cancellati.
+Task, appunti, progetti, tag e categorie eliminati non vengono cancellati: finiscono in `.cestino/<data_ora>/`, con lo stesso percorso che avevano (es. `.cestino/2026-09-29_143205/tasks/T-042.md`) e un `voce.json` che dice cos'erano. Dalla sezione Cestino di Impostazioni si ripristinano o si eliminano per sempre. All'avvio, gli elementi eliminati da più di 30 giorni vengono cancellati.
 
 - Il ripristino si ferma se nel frattempo esiste già un file con lo stesso nome, o se il tag appartiene a una categoria che non c'è più.
 - Eliminando un tag o una categoria, il valore viene tolto dai task, e ripristinandoli non torna.
-- Gli ID dei task non vengono mai riusati: il prossimo ID tiene conto anche dei task nel cestino e, dopo lo svuotamento, di `ultimoId` in `taccuino.json`.
+- Gli ID dei task e degli appunti non vengono mai riusati: il prossimo ID tiene conto anche di quelli nel cestino e, dopo lo svuotamento, di `ultimoId` e `ultimoAppunto` in `taccuino.json`.
+- Un progetto con task o appunti non si elimina: si archivia.
 
 I file si possono modificare anche a mano. L'app si accorge dei cambiamenti (anche quelli sincronizzati da OneDrive da un altro PC) e ricarica i dati.
+
+## Lavorare sui dati con Claude
+
+All'avvio l'app scrive nella cartella dati un `CLAUDE.md` che spiega a Claude il formato dei file e le regole da rispettare: come calcolare il prossimo ID, cosa aggiungere allo storico, quando impostare `completato`, come scrivere collegamenti, sotto-task e appunti, come spostare un elemento nel Cestino. Aprendo Claude Code sulla cartella dati, Claude può quindi creare e modificare task e appunti direttamente, e l'app ricarica i file da sola.
+
+Il file viene riscritto a ogni nuova versione dell'app (e ricreato se lo cancelli), così segue sempre il formato attuale: non modificarlo. Le tue indicazioni per Claude vanno in `note-personali.md`, che l'app crea vuoto una volta sola e poi non tocca più. Il testo delle istruzioni sta in `src/main/istruzioni-claude.md`.
 
 ## Note su OneDrive
 

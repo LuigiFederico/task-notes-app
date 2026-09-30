@@ -18,5 +18,7 @@ export const icon = {
   trash: (s) => svg('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', s),
   clock: (s) => svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', s, 2),
   external: (s) => svg('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>', s),
+  note: (s) => svg('<path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h5"/>', s),
+  graph: (s) => svg('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.5"/><circle cx="19" cy="15" r="1.5"/><circle cx="6" cy="17" r="1.5"/><path d="M12 5.5C12 11 17 14 17.6 14.5M12 5.5C11 12 8 15 7 16"/>', s),
   arrow: (s) => svg('<path d="M5 12h14M13 6l6 6-6 6"/>', s, 2)
 };

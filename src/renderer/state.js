@@ -23,6 +23,11 @@ export const S = {
     fTag: '',
     openTask: null,     // id del task aperto nel pannello, oppure 'new'
     draft: null,        // task nuovo non ancora salvato
+    openNote: null,     // id dell'appunto aperto nel pannello, oppure 'new' (mai insieme a openTask)
+    noteDraft: null,    // appunto nuovo non ancora salvato
+    noteSearch: '',
+    // Filtri del grafo: gli elenchi dicono cosa nascondere (vuoti = tutto visibile).
+    graph: { kind: 'tutti', edgeColor: 'progetto', hideProjects: [], hideStates: [], hideTypes: [] },
     recentDone: {},     // task completati in questa sessione: restano visibili barrati
     projectTab: 'open',
     projFilter: 'attivo',
@@ -40,21 +45,30 @@ export const S = {
 };
 
 export const PROJECT_COLORS = ['#2F5BD3', '#0B8A6F', '#C2410C', '#7C3AED', '#B42318', '#B54708', '#0E7490', '#6B675E'];
+export const TAG_COLORS = [...PROJECT_COLORS, '#4A473F', '#146C43', '#2346A8', '#8A4B06'];
 
 export function cat(id) { return S.data.categories.find((c) => c.id === id); }
 export function tagOf(catId, id) { const c = cat(catId); return c ? c.tags.find((t) => t.id === id) : null; }
 export function project(code) { return S.data.projects.find((p) => p.codice === code); }
 export function extraCats() { return S.data.categories.filter((c) => !c.sistema); }
+// Categorie utente fatte di tag: le categorie a testo libero non hanno chip, filtri né raggruppamenti.
+export function tagCats() { return extraCats().filter((c) => c.tipo !== 'testo'); }
 export function task(id) { return S.data.tasks.find((t) => t.id === id); }
+export function note(id) { return S.data.notes.find((n) => n.id === id); }
+export const isNoteId = (id) => /^A-/.test(String(id));
+// Elemento a cui punta un collegamento o una menzione: un task (T-…) o un appunto (A-…).
+export function ref(id) { return (isNoteId(id) ? note(id) : task(id)) || null; }
 
 export function isClosed(t) { const s = tagOf('stato', t.stato); return !!(s && s.chiuso); }
 export function openStates() { return (cat('stato')?.tags || []).filter((t) => !t.chiuso); }
 export function closedState() { return (cat('stato')?.tags || []).find((t) => t.chiuso); }
+export function openTasks(list = S.data.tasks) { return list.filter((t) => !isClosed(t)); }
 
 export function values(t, catId) {
   if (catId === 'stato') return t.stato ? [t.stato] : [];
   if (catId === 'priorita') return t.priorita ? [t.priorita] : [];
   if (catId === 'progetto') return t.progetto ? [t.progetto] : [];
+  if (catId === 'collegamento') return Array.from(new Set((t.collegamenti || []).map((l) => l.tipo).filter(Boolean)));
   const v = t.tags[catId];
   if (Array.isArray(v)) return v;
   return v ? [v] : [];
@@ -63,7 +77,7 @@ export function values(t, catId) {
 // Tag "liberi" (tutte le categorie non di sistema) di un task, per i chip.
 export function taskChips(t) {
   const out = [];
-  for (const c of extraCats()) {
+  for (const c of tagCats()) {
     for (const id of values(t, c.id)) {
       const tg = c.tags.find((x) => x.id === id);
       out.push({ catId: c.id, id, nome: tg ? tg.nome : id, colore: tg ? tg.colore : '#6B675E' });
@@ -89,5 +103,6 @@ export function sortTasks(list) {
 }
 
 export function projectTasks(code) { return S.data.tasks.filter((t) => t.progetto === code); }
-export function openCount(code) { return projectTasks(code).filter((t) => !isClosed(t)).length; }
+export function projectNotes(code) { return S.data.notes.filter((n) => n.progetto === code); }
+export function openCount(code) { return openTasks(projectTasks(code)).length; }
 export function activeProjects() { return S.data.projects.filter((p) => p.stato !== 'archiviato'); }
