@@ -13,7 +13,8 @@ async function setup(tasks) {
         { id: 'da-fare', nome: 'Da fare' }, { id: 'in-corso', nome: 'In corso' },
         { id: 'in-attesa', nome: 'In attesa' }, { id: 'fatto', nome: 'Fatto', chiuso: true }] },
       { id: 'priorita', nome: 'Priorità', tipo: 'singola', sistema: true, tags: [
-        { id: 'alta', nome: 'Alta' }, { id: 'media', nome: 'Media' }, { id: 'bassa', nome: 'Bassa' }] },
+        { id: 'urgente', nome: 'Urgente' }, { id: 'alta', nome: 'Alta' }, { id: 'media', nome: 'Media' },
+        { id: 'bassa', nome: 'Bassa' }, { id: 'backlog', nome: 'Backlog' }] },
       { id: 'etichette', nome: 'Etichette', tipo: 'multipla', sistema: false, tags: [{ id: 'riunione', nome: 'Riunione' }] }
     ],
     projects: [
@@ -34,6 +35,18 @@ test('renderer: sortTasks mette prima gli aperti, poi priorità, scadenza e ID p
     { id: 'T-003', titolo: 'alto senza scadenza', priorita: 'alta' },
     { id: 'T-004', titolo: 'alto con scadenza', priorita: 'alta', scadenza: '2026-10-01' },
     { id: 'T-005', titolo: 'alto senza scadenza, più recente', priorita: 'alta' }
+  ]);
+  assert.deepStrictEqual(sortTasks(S.data.tasks).map((t) => t.id), ['T-004', 'T-005', 'T-003', 'T-002', 'T-001']);
+});
+
+test('renderer: sortTasks mette Urgente in cima, Backlog dopo Bassa e i task senza priorità in fondo', async () => {
+  const { sortTasks } = await load('state.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'senza priorità' },
+    { id: 'T-002', titolo: 'backlog', priorita: 'backlog' },
+    { id: 'T-003', titolo: 'bassa', priorita: 'bassa' },
+    { id: 'T-004', titolo: 'urgente', priorita: 'urgente' },
+    { id: 'T-005', titolo: 'alta', priorita: 'alta' }
   ]);
   assert.deepStrictEqual(sortTasks(S.data.tasks).map((t) => t.id), ['T-004', 'T-005', 'T-003', 'T-002', 'T-001']);
 });

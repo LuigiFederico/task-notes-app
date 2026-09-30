@@ -14,8 +14,10 @@ export function prioIndicator(prioId) {
   if (i === -1) return '<span class="prio muted small">—</span>';
   const t = tags[i];
   const c = safeColor(t.colore);
-  const lvl = Math.max(1, 3 - Math.round((i / Math.max(1, tags.length - 1)) * 2));
-  const bars = [1, 2, 3].map((b) => `<span style="height:${3 + b * 3}px;background:${b <= lvl ? c : 'var(--line-strong)'}"></span>`).join('');
+  // Da 3 a 5 barre secondo quanti livelli ci sono; il primo livello le accende tutte, l'ultimo una sola.
+  const n = Math.min(5, Math.max(3, tags.length));
+  const lvl = n - Math.round((i / Math.max(1, tags.length - 1)) * (n - 1));
+  const bars = Array.from({ length: n }, (_, k) => k + 1).map((b) => `<span style="height:${3 + b * 3}px;background:${b <= lvl ? c : 'var(--line-strong)'}"></span>`).join('');
   return `<span class="prio"><span class="bars" aria-hidden="true">${bars}</span><span style="color:${c}">${esc(t.nome)}</span></span>`;
 }
 

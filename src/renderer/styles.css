@@ -180,7 +180,7 @@ pre { margin: 0; }
 .is-done .task-title { color: #8C887E; text-decoration: line-through; }
 .proj-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
 .prio { display: flex; align-items: center; gap: 7px; font-size: 13px; }
-.bars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+.bars { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
 .bars span { width: 3px; border-radius: 1px; }
 .due { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .due.today { color: var(--accent-ink); font-weight: 600; }

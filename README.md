@@ -102,7 +102,7 @@ Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella (e ultimo ID di task cancellato)
+  taccuino.json                  marcatore della cartella, ultimo ID di task cancellato, migrazioni già fatte
   tasks/T-042.md                 un file per task
   projects/VEND.md               un file per progetto
   tags/<categoria>/_categoria.md impostazioni della categoria
@@ -163,6 +163,7 @@ Task: T-029
 ### Categorie e tag
 
 - **Stato** e **Priorità** sono categorie di sistema: si possono rinominare, ricolorare e riordinare, ma non eliminare. Gli stati con `chiuso: true` (di serie solo "Fatto") nascondono il task dalla lista principale, che resta comunque visibile nello storico e nelle pagine di progetto e tag.
+- Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista, e i task senza priorità vanno dopo l'ultimo livello. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.
 - L'ID di un tag è il nome del file e non cambia se lo rinomini, quindi i task non vanno aggiornati.
 

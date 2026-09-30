@@ -77,10 +77,37 @@ test('init crea struttura e categorie di base', async () => {
   const all = await s.loadAll();
   assert.deepStrictEqual(all.categories.map((c) => c.id), ['stato', 'priorita', 'etichette']);
   assert.strictEqual(all.categories[0].tags.find((t) => t.id === 'fatto').chiuso, true);
+  assert.deepStrictEqual(all.categories[1].tags.map((t) => t.id), ['urgente', 'alta', 'media', 'bassa', 'backlog']);
   assert.strictEqual(all.projects[0].codice, 'GEN');
   // una seconda init non duplica e non sovrascrive
   await s.init({ withDefaultProject: true });
   assert.strictEqual((await s.loadProjects()).length, 1);
+});
+
+test('migrazione: una cartella con 3 priorità riceve Urgente e Backlog una volta sola', async () => {
+  const dir = tmpDir();
+  const s = new Store(dir);
+  await s.init();
+  // Cartella "vecchia": 3 livelli e nessuna migrazione registrata.
+  await s.remove(s.p('tags', 'priorita', 'urgente.md'));
+  await s.remove(s.p('tags', 'priorita', 'backlog.md'));
+  for (const [id, ordine] of [['alta', 1], ['media', 2], ['bassa', 3]]) {
+    const t = (await s.loadCategories()).find((c) => c.id === 'priorita').tags.find((x) => x.id === id);
+    await s.saveTag('priorita', { ...t, ordine });
+  }
+  const { migrazioni, ...cfg } = await s.readConfig();
+  assert.deepStrictEqual(migrazioni, ['priorita-5-livelli']);
+  await s.writeConfig(cfg);
+
+  await s.init();
+  const prio = () => s.loadCategories().then((cs) => cs.find((c) => c.id === 'priorita').tags.map((t) => t.id));
+  assert.deepStrictEqual(await prio(), ['urgente', 'alta', 'media', 'bassa', 'backlog']);
+  assert.deepStrictEqual((await s.readConfig()).migrazioni, ['priorita-5-livelli']);
+
+  // Se l'utente elimina un livello, non torna.
+  await s.deleteTag('priorita', 'backlog');
+  await s.init();
+  assert.deepStrictEqual(await prio(), ['urgente', 'alta', 'media', 'bassa']);
 });
 
 test('task: creazione, ID progressivo, storico e completamento', async () => {

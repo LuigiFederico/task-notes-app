@@ -25,6 +25,11 @@ const {
 const TRASH = '.cestino';
 const CONFIG = 'taccuino.json';
 
+// Urgente e Backlog sono arrivati dopo: le cartelle esistenti li ricevono una volta sola (vedi migrate).
+const URGENTE = { id: 'urgente', nome: 'Urgente', colore: '#7A1A12', ordine: 1, descrizione: 'Da fare subito, prima di tutto il resto.' };
+const BACKLOG = { id: 'backlog', nome: 'Backlog', colore: '#A8A396', ordine: 5, descrizione: 'Prima o poi: non ancora pianificato.' };
+const MIGRATIONS = ['priorita-5-livelli'];
+
 const DEFAULT_CATEGORIES = [
   { id: 'stato', nome: 'Stato', tipo: 'singola', obbligatoria: true, ordine: 1,
     descrizione: 'Gli stati segnati come "chiuso" nascondono il task dalla lista principale.',
@@ -37,9 +42,11 @@ const DEFAULT_CATEGORIES = [
   { id: 'priorita', nome: 'Priorità', tipo: 'singola', obbligatoria: false, ordine: 2,
     descrizione: "L'ordine dei valori decide l'ordinamento nella lista.",
     tags: [
-      { id: 'alta', nome: 'Alta', colore: '#B42318', ordine: 1, descrizione: 'Da fare oggi o domani.' },
-      { id: 'media', nome: 'Media', colore: '#B54708', ordine: 2, descrizione: 'Entro la settimana.' },
-      { id: 'bassa', nome: 'Bassa', colore: '#6B675E', ordine: 3, descrizione: "Quando c'è tempo." }
+      URGENTE,
+      { id: 'alta', nome: 'Alta', colore: '#B42318', ordine: 2, descrizione: 'Da fare oggi o domani.' },
+      { id: 'media', nome: 'Media', colore: '#B54708', ordine: 3, descrizione: 'Entro la settimana.' },
+      { id: 'bassa', nome: 'Bassa', colore: '#6B675E', ordine: 4, descrizione: "Quando c'è tempo." },
+      BACKLOG
     ] },
   { id: 'etichette', nome: 'Etichette', tipo: 'multipla', obbligatoria: false, ordine: 3,
     descrizione: 'Etichette libere, trasversali ai progetti.', tags: [] }
@@ -91,7 +98,7 @@ class Store {
     await fsp.mkdir(this.dir, { recursive: true });
     for (const d of ['tasks', 'projects', 'tags']) await fsp.mkdir(path.join(this.dir, d), { recursive: true });
     const isNew = !(await Store.isDataFolder(this.dir));
-    if (isNew) await this.writeConfig({ app: 'Taccuino', version: 1, creato: today() });
+    if (isNew) await this.writeConfig({ app: 'Taccuino', version: 1, creato: today(), migrazioni: MIGRATIONS });
     for (const cat of DEFAULT_CATEGORIES) {
       const catFile = path.join(this.dir, 'tags', cat.id, '_categoria.md');
       if (fs.existsSync(catFile)) continue;
@@ -101,10 +108,28 @@ class Store {
       await this.saveCategory(cat);
       for (const t of cat.tags) await this.saveTag(cat.id, t);
     }
+    if (!isNew) await this.migrate();
     if (isNew && withDefaultProject) {
       const projects = await this.loadProjects();
       if (projects.length === 0) await this.saveProject({ codice: 'GEN', nome: 'Generale', colore: '#2F5BD3', descrizione: 'Task che non appartengono a un progetto specifico.' });
     }
+  }
+
+  // Aggiornamenti una tantum dei dati di una cartella esistente. Quelli già fatti sono elencati in taccuino.json,
+  // così una modifica successiva dell'utente (es. eliminare un livello) non viene annullata.
+  async migrate() {
+    const cfg = await this.readConfig();
+    const done = Array.isArray(cfg.migrazioni) ? cfg.migrazioni : [];
+    if (MIGRATIONS.every((m) => done.includes(m))) return;
+    if (!done.includes('priorita-5-livelli')) {
+      // Urgente in cima e Backlog in fondo ai livelli che ci sono, senza riscrivere gli altri file.
+      const prio = (await this.loadCategories()).find((c) => c.id === 'priorita');
+      const tags = prio ? prio.tags : [];
+      const orders = tags.map((t) => t.ordine);
+      if (!tags.some((t) => t.id === URGENTE.id)) await this.saveTag('priorita', { ...URGENTE, ordine: Math.min(1, ...orders) - 1 });
+      if (!tags.some((t) => t.id === BACKLOG.id)) await this.saveTag('priorita', { ...BACKLOG, ordine: Math.max(0, ...orders) + 1 });
+    }
+    await this.writeConfig({ ...cfg, migrazioni: [...new Set([...done, ...MIGRATIONS])] });
   }
 
   async loadAll() {
