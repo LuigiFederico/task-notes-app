@@ -394,3 +394,28 @@ test('appunti: eliminare o unire un tag tocca anche gli appunti; un progetto con
   await s.deleteNote(n.id);
   await s.deleteProject('ECOM');
 });
+
+test('istruzioni per Claude: scritte al cambio di versione, note personali mai sovrascritte', async () => {
+  const dir = tmpDir();
+  const s = new Store(dir);
+  await s.init();
+  assert.strictEqual(await s.syncInstructions('0.3.0'), true);
+  const text = fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8');
+  assert.match(text, /^# Cartella dati di Taccuino/);
+  assert.match(text, /^@note-personali\.md$/m);
+  assert.strictEqual((await s.readConfig()).istruzioni, '0.3.0');
+  // stessa versione: niente da fare; l'utente scrive le sue note
+  assert.strictEqual(await s.syncInstructions('0.3.0'), false);
+  fs.writeFileSync(path.join(dir, 'note-personali.md'), 'Mie note');
+  fs.writeFileSync(path.join(dir, 'CLAUDE.md'), 'modificato a mano');
+  // versione nuova: CLAUDE.md torna quello dell'app, le note restano
+  assert.strictEqual(await s.syncInstructions('0.4.0'), true);
+  assert.strictEqual(fs.readFileSync(path.join(dir, 'CLAUDE.md'), 'utf8'), text);
+  assert.strictEqual(fs.readFileSync(path.join(dir, 'note-personali.md'), 'utf8'), 'Mie note');
+  // se CLAUDE.md sparisce si ricrea anche a versione uguale
+  fs.rmSync(path.join(dir, 'CLAUDE.md'));
+  assert.strictEqual(await s.syncInstructions('0.4.0'), true);
+  // i file nella radice non diventano dati
+  const all = await s.loadAll();
+  assert.deepStrictEqual([all.tasks.length, all.notes.length], [0, 0]);
+});

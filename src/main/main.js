@@ -47,6 +47,7 @@ function watch(dir) {
 async function openStore(dir, opts) {
   const s = new Store(dir);
   await s.init(opts);
+  try { await s.syncInstructions(app.getVersion()); } catch (err) { console.error('Istruzioni per Claude non scritte', err); }
   try { await s.purgeTrash(30); } catch (err) { console.error('Pulizia del cestino non riuscita', err); }
   store = s;
   watch(dir);

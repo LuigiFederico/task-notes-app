@@ -3,6 +3,8 @@
 //
 //   <cartella>/
 //     taccuino.json                 impostazioni della cartella (versione, ultimi ID cancellati, migrazioni)
+//     CLAUDE.md                     istruzioni per Claude sul formato dei dati, riscritte a ogni versione dell'app
+//     note-personali.md             note dell'utente per Claude, importate da CLAUDE.md (l'app non le tocca)
 //     tasks/T-042.md                un file per task
 //     appunti/A-007.md              un file per appunto
 //     projects/VEND.md              un file per progetto (descrizione + decisioni)
@@ -27,6 +29,9 @@ const TRASH = '.cestino';
 // Chiave di taccuino.json con l'ID più alto cancellato per sempre, per tipo di elemento.
 const LAST_ID = { task: 'ultimoId', appunto: 'ultimoAppunto' };
 const CONFIG = 'taccuino.json';
+const INSTRUCTIONS = 'CLAUDE.md';
+const PERSONAL_NOTES = 'note-personali.md';
+const PERSONAL_NOTES_TEXT = '# Note personali per Claude\n\nScrivi qui indicazioni tue per Claude (convenzioni, progetti, persone). Taccuino non modifica mai questo file.\n';
 
 // Urgente e Backlog sono arrivati dopo: le cartelle esistenti li ricevono una volta sola (vedi migrate).
 const URGENTE = { id: 'urgente', nome: 'Urgente', colore: '#7A1A12', ordine: 1, descrizione: 'Da fare subito, prima di tutto il resto.' };
@@ -54,7 +59,7 @@ const DEFAULT_CATEGORIES = [
   { id: 'etichette', nome: 'Etichette', tipo: 'multipla', obbligatoria: false, ordine: 3,
     descrizione: 'Etichette libere, trasversali ai progetti.', tags: [] },
   { id: 'collegamento', nome: 'Collegamento', tipo: 'singola', obbligatoria: false, ordine: 4,
-    descrizione: "Tipi di collegamento fra task. Il nome inverso è quello che si legge sul task collegato.",
+    descrizione: "Tipi di collegamento fra task e appunti. Il nome inverso è quello che si legge sull'elemento collegato.",
     tags: [
       { id: 'bloccato-da', nome: 'Bloccato da', inverso: 'Blocca', colore: '#B42318', ordine: 1, descrizione: 'Non può andare avanti finché l\'altro task non è chiuso.' },
       { id: 'dipende-da', nome: 'Dipende da', inverso: 'Necessario per', colore: '#B54708', ordine: 2, descrizione: "Ha bisogno del risultato dell'altro task." },
@@ -140,6 +145,19 @@ class Store {
       if (!tags.some((t) => t.id === BACKLOG.id)) await this.saveTag('priorita', { ...BACKLOG, ordine: Math.max(0, ...orders) + 1 });
     }
     await this.writeConfig({ ...cfg, migrazioni: [...new Set([...done, ...MIGRATIONS])] });
+  }
+
+  // Scrive CLAUDE.md (le istruzioni sul formato dei dati) quando la versione dell'app cambia o il file manca,
+  // e crea note-personali.md solo se non c'è. Restituisce true se ha scritto CLAUDE.md.
+  async syncInstructions(version) {
+    const cfg = await this.readConfig();
+    const file = path.join(this.dir, INSTRUCTIONS);
+    if (cfg.istruzioni === version && fs.existsSync(file)) return false;
+    await this.write(file, await fsp.readFile(path.join(__dirname, 'istruzioni-claude.md'), 'utf8'));
+    const notes = path.join(this.dir, PERSONAL_NOTES);
+    if (!fs.existsSync(notes)) await this.write(notes, PERSONAL_NOTES_TEXT);
+    await this.writeConfig({ ...cfg, istruzioni: version });
+    return true;
   }
 
   async loadAll() {

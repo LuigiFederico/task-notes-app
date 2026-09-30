@@ -106,7 +106,9 @@ La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella, ultimo ID di task cancellato, migrazioni già fatte
+  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte
+  CLAUDE.md                      istruzioni per Claude sul formato dei dati (scritto dall'app)
+  note-personali.md              note tue per Claude, importate da CLAUDE.md (l'app non lo tocca)
   tasks/T-042.md                 un file per task
   appunti/A-007.md               un file per appunto
   projects/VEND.md               un file per progetto
@@ -130,9 +132,9 @@ aggiornato: 2026-09-28
 completato:
 etichette:
   - riunione
-collegamenti:        # "<tipo> <ID>", solo sul task di partenza
+collegamenti:
   - bloccato-da T-012
-sottotask:           # checklist, scritta solo se ha voci
+sottotask:
   - "[x] Raccogliere i dati"
   - "[ ] Bozza slide"
 storico:
@@ -147,6 +149,8 @@ I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <
 
 Nel testo (descrizione del task, ma anche descrizioni di progetti e tag) `@T-012` è una menzione: nel pannello diventa un link al task. Scrivendo `@` nella descrizione compaiono i task da citare. Le menzioni non si salvano nel front matter: si leggono dal testo.
 
+`stato` di un progetto è `attivo` oppure `archiviato`; `ordine` è la posizione scelta nella sezione Tag (vuoto: in fondo, per nome). Il `progetto` di un appunto è facoltativo. `collegamenti` e `sottotask` si scrivono solo se hanno voci. Il front matter non ammette commenti in linea (`chiave: valore # commento`): il commento diventerebbe parte del valore.
+
 I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
 
 Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".
@@ -157,7 +161,7 @@ Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del
 ---
 id: A-007
 titolo: Riunione KPI con Marco
-progetto: ECOM       # facoltativo
+progetto: ECOM
 creato: 2026-09-30
 aggiornato: 2026-09-30
 etichette:
@@ -178,9 +182,9 @@ Gli appunti si scrivono dalla sezione Appunti (o dalla pagina del progetto) in u
 codice: VEND
 nome: Dashboard vendite
 colore: "#2F5BD3"
-stato: attivo        # oppure archiviato
+stato: attivo
 creato: 2026-09-02
-ordine: 1            # posizione scelta nella sezione Tag (vuoto: in fondo, per nome)
+ordine: 1
 ---
 
 ## Descrizione
@@ -215,6 +219,12 @@ Task, appunti, progetti, tag e categorie eliminati non vengono cancellati: finis
 - Un progetto con task o appunti non si elimina: si archivia.
 
 I file si possono modificare anche a mano. L'app si accorge dei cambiamenti (anche quelli sincronizzati da OneDrive da un altro PC) e ricarica i dati.
+
+## Lavorare sui dati con Claude
+
+All'avvio l'app scrive nella cartella dati un `CLAUDE.md` che spiega a Claude il formato dei file e le regole da rispettare: come calcolare il prossimo ID, cosa aggiungere allo storico, quando impostare `completato`, come scrivere collegamenti, sotto-task e appunti, come spostare un elemento nel Cestino. Aprendo Claude Code sulla cartella dati, Claude può quindi creare e modificare task e appunti direttamente, e l'app ricarica i file da sola.
+
+Il file viene riscritto a ogni nuova versione dell'app (e ricreato se lo cancelli), così segue sempre il formato attuale: non modificarlo. Le tue indicazioni per Claude vanno in `note-personali.md`, che l'app crea vuoto una volta sola e poi non tocca più. Il testo delle istruzioni sta in `src/main/istruzioni-claude.md`.
 
 ## Note su OneDrive
 
