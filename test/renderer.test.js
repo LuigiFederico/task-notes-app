@@ -174,3 +174,12 @@ test('renderer: suggerimenti di @ per ID o titolo, senza il task stesso', async 
   assert.deepStrictEqual(refCandidates('t-01', ['T-012']).map((x) => x.id), ['T-010']);
   assert.strictEqual(refCandidates('').length, 3);
 });
+
+test('renderer: menzioni @ nel Markdown e nel testo', async () => {
+  const { md, mentionsOf } = await load('lib/util.js');
+  const html = md('Vedi @T-012 e **@T-9**, non mail@T-1 né https://x.example/@T-5', { refTitle: (id) => (id === 'T-012' ? 'Contratto <b>' : null) });
+  assert.match(html, /<button type="button" class="mention" data-action="open-ref" data-id="T-012" title="Contratto &lt;b&gt;">@T-012<\/button>/);
+  assert.match(html, /class="mention missing" data-action="open-ref" data-id="T-9"/);
+  assert.doesNotMatch(html, /data-id="T-1"|data-id="T-5"/);
+  assert.deepStrictEqual(mentionsOf('@T-1 poi (@A-7) e ancora @T-1, ma non a@T-2'), ['T-1', 'A-7']);
+});

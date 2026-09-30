@@ -84,13 +84,21 @@ function setSaveState(field, text) {
   if (el) { el.textContent = text; el.classList.toggle('dirty', text === 'Non salvato'); }
 }
 
+function markDirty(el) {
+  const f = el.dataset.field;
+  if (!S.ui.unsaved || S.ui.unsaved.id !== S.ui.openTask) S.ui.unsaved = { id: S.ui.openTask };
+  S.ui.unsaved[f] = el.value;
+  delete S.ui.saved[f];
+  setSaveState(f, 'Non salvato');
+}
+
 function clearUnsaved(field) {
   if (!S.ui.unsaved) return;
   delete S.ui.unsaved[field];
   if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
 }
 
-function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; }
+function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; S.ui.descEdit = false; }
 
 export function closePanel() {
   resetPanelState();
@@ -187,6 +195,7 @@ function drawMentions() {
   if (!box) return;
   box.innerHTML = mentionItems(m.items, m.active);
   box.hidden = false;
+  box.querySelector('.on')?.scrollIntoView({ block: 'nearest' });
   document.querySelector(`[aria-controls="mention-${m.field}"]`)?.setAttribute('aria-expanded', 'true');
 }
 
@@ -237,8 +246,45 @@ async function addLink(id) {
   document.getElementById('link-input')?.focus();
 }
 
-// Chi sceglie un suggerimento: per ora solo il campo dei collegamenti.
-const PICKERS = { link: addLink };
+// Menzione nella descrizione: sostituisce la @ che si sta scrivendo con @ID. Il testo si salva come il resto, all'uscita dal campo.
+function insertMention(id) {
+  const el = document.getElementById('task-desc');
+  hideMentions();
+  if (!el) return;
+  const pos = el.selectionStart;
+  const before = el.value.slice(0, pos).replace(/@[\w-]*$/, '@' + id + ' ');
+  el.value = before + el.value.slice(pos);
+  el.setSelectionRange(before.length, before.length);
+  markDirty(el);
+  el.focus();
+}
+
+// Apre i suggerimenti se subito prima del cursore c'è una @ con l'inizio di un ID o di un titolo.
+function detectMention(el) {
+  const m = el.value.slice(0, el.selectionStart).match(/(?:^|[^\w@/.-])@([\w-]*)$/);
+  if (m) showMentions('desc', m[1]);
+  else if (S.ui.mention && S.ui.mention.field === 'desc') hideMentions();
+}
+
+// Chi sceglie un suggerimento, secondo il campo in cui si sta scrivendo.
+const PICKERS = { link: addLink, desc: insertMention };
+
+const openTask = afterFlush((el) => {
+  if (!task(el.dataset.id)) return toast('Task ' + el.dataset.id + ' non trovato', 'error');
+  if (S.ui.openTask !== el.dataset.id) resetPanelState();
+  S.ui.openTask = el.dataset.id;
+  S.ui.draft = null;
+  S.ui.confirm = null;
+  render();
+});
+
+// Salva la descrizione e torna alla lettura.
+async function closeDescription() {
+  hideMentions();
+  await flush();
+  S.ui.descEdit = false;
+  render();
+}
 
 // ---------------------------------------------------------------- handler
 export const actions = {
@@ -249,14 +295,16 @@ export const actions = {
     render();
     document.getElementById('task-title')?.focus();
   }),
-  'open-task': afterFlush((el) => {
-    if (!task(el.dataset.id)) return toast('Task ' + el.dataset.id + ' non trovato', 'error');
-    if (S.ui.openTask !== el.dataset.id) resetPanelState();
-    S.ui.openTask = el.dataset.id;
-    S.ui.draft = null;
-    S.ui.confirm = null;
+  'open-task': openTask,
+  // Menzione cliccata in un testo in Markdown.
+  'open-ref': openTask,
+  'desc-edit': () => {
+    S.ui.descEdit = true;
     render();
-  }),
+    const el = document.getElementById('task-desc');
+    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  },
+  'desc-done': () => run(closeDescription),
   'close-task': afterFlush(closePanel),
   'toggle-done': (el) => run(() => toggleDone(el.dataset.id)),
   'task-set': (el) => run(() => updateTask({ [el.dataset.field]: el.dataset.value || null })),
@@ -319,11 +367,8 @@ export const changes = {
 export const inputs = {
   'link-search': (el) => showMentions('link', el.value),
   'task-dirty': (el) => {
-    const f = el.dataset.field;
-    if (!S.ui.unsaved || S.ui.unsaved.id !== S.ui.openTask) S.ui.unsaved = { id: S.ui.openTask };
-    S.ui.unsaved[f] = el.value;
-    delete S.ui.saved[f];
-    setSaveState(f, 'Non salvato');
+    markDirty(el);
+    if (el.id === 'task-desc') detectMention(el);
   },
   'task-tag-input': (el) => {
     const catId = el.dataset.cat;
@@ -364,6 +409,15 @@ export const keydowns = {
       if (!vals.includes(v)) await updateTask({ tags: { ...t.tags, [catId]: [...vals, v] } });
       document.querySelector(`[data-keydown="task-text-add"][data-cat="${catId}"]`)?.focus();
     });
+  },
+  'desc-key': (el, e) => {
+    if (mentionKey(e, insertMention)) return;
+    // Esc torna alla lettura; in un task nuovo chiude il pannello come sempre.
+    if (e.key === 'Escape' && S.ui.openTask !== 'new') {
+      e.preventDefault();
+      e.stopPropagation();
+      run(closeDescription);
+    }
   },
   'link-key': (el, e) => {
     if (mentionKey(e, addLink)) return;

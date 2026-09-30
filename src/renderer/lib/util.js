@@ -53,8 +53,17 @@ export function dueLabel(due, closed) {
   return { text: fmtShort(due), cls: '' };
 }
 
-// Markdown minimale e sicuro: paragrafi, elenchi, titoli, grassetto, corsivo, codice, link.
-export function md(src) {
+// Menzioni nel testo: @T-042 (task) e @A-007 (appunto), non attaccate a una parola o a un indirizzo (mail@T-1, …/@T-1).
+const MENTION = /(^|[^\w@/.-])@([TA]-\d+)\b/g;
+
+// ID menzionati in un testo, senza doppioni, nell'ordine in cui compaiono.
+export function mentionsOf(src) {
+  return Array.from(new Set(Array.from(String(src || '').matchAll(MENTION), (m) => m[2])));
+}
+
+// Markdown minimale e sicuro: paragrafi, elenchi, titoli, grassetto, corsivo, codice, link e menzioni @.
+// refTitle(id) dà il titolo dell'elemento menzionato, oppure null se non esiste.
+export function md(src, { refTitle = null } = {}) {
   const lines = String(src || '').replace(/\r\n/g, '\n').split('\n');
   const out = [];
   let list = null;
@@ -63,7 +72,12 @@ export function md(src) {
     .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
+    .replace(MENTION, (_, pre, id) => {
+      const title = refTitle ? refTitle(id) : '';
+      const miss = refTitle && title == null;
+      return `${pre}<button type="button" class="mention${miss ? ' missing' : ''}" data-action="open-ref" data-id="${id}" title="${miss ? 'Non trovato' : esc(title || '')}">@${id}</button>`;
+    });
   const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inline).join('<br>') + '</p>'); para = []; } };
   const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map((i) => '<li>' + inline(i) + '</li>').join('') + `</${list.tag}>`); list = null; } };
   for (const line of lines) {

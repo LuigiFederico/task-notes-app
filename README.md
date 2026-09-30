@@ -140,6 +140,8 @@ Descrizione libera in Markdown.
 
 I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <ID>"` ciascuno (una riga con il solo ID è un collegamento senza tipo). Il task collegato li mostra con il nome inverso del tipo (T-042 «Bloccato da» T-012 → T-012 «Blocca» T-042) senza che il suo file cambi. Se il task collegato finisce nel Cestino, il collegamento resta e compare come «non trovato».
 
+Nel testo (descrizione del task, ma anche descrizioni di progetti e tag) `@T-012` è una menzione: nel pannello diventa un link al task. Scrivendo `@` nella descrizione compaiono i task da citare. Le menzioni non si salvano nel front matter: si leggono dal testo.
+
 I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
 
 Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".

@@ -1,6 +1,6 @@
-import { S, cat, project, extraCats, isClosed, values } from '../state.js';
+import { S, cat, project, extraCats, isClosed, values, ref } from '../state.js';
 import { currentTask, linksOf } from '../selectors.js';
-import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort, textLink } from '../lib/util.js';
+import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort, textLink, md } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox, options, select, mentionItems } from './components.js';
 
@@ -102,6 +102,32 @@ function links(t) {
   </div>`;
 }
 
+// Descrizione: in lettura il Markdown con link e menzioni cliccabili; «Modifica» apre il campo, dove @ suggerisce i task.
+// Resta in modifica per un task nuovo e finché c'è testo non salvato.
+function description(t, isNew, un) {
+  const editing = isNew || S.ui.descEdit || 'descrizione' in un;
+  const head = (btn) => `<div class="row-between"><span class="section-label">DESCRIZIONE</span>${btn}</div>`;
+  if (!editing) {
+    const refTitle = (id) => { const x = ref(id); return x ? x.titolo : null; };
+    return `<div class="stack-10">
+      ${head('<button class="btn-link small" data-action="desc-edit">Modifica</button>')}
+      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle })}</div>`
+        : '<button class="desc-empty" data-action="desc-edit">Aggiungi note, link, @menzioni… (Markdown)</button>'}
+      ${S.ui.saved.descrizione ? `<span class="small save-state">Salvato</span>` : ''}
+    </div>`;
+  }
+  const m = S.ui.mention && S.ui.mention.field === 'desc' ? S.ui.mention : null;
+  return `<div class="stack-10">
+    ${head(isNew ? '' : '<button class="btn-link small" data-action="desc-done">Fine</button>')}
+    <div class="mention-wrap">
+      <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-keydown="desc-key" data-field="descrizione"
+        aria-label="Descrizione" aria-controls="mention-desc" placeholder="Note, link, @ per citare un task… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>
+      <div id="mention-desc" class="mention-list up" role="listbox"${m ? '' : ' hidden'}>${m ? mentionItems(m.items, m.active) : ''}</div>
+    </div>
+    <span class="row-between small"><span class="muted">Markdown · @ per citare un task · Esc per chiudere</span>${saveState('descrizione', un)}</span>
+  </div>`;
+}
+
 // "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
 function saveState(field, un) {
   const dirty = field in un;
@@ -153,11 +179,7 @@ export function taskPanel() {
       <div class="hr"></div>
       ${subtasks(t)}
       ${isNew ? '' : links(t)}
-      <label class="stack-10">
-        <span class="section-label">DESCRIZIONE</span>
-        <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>
-        <span class="row-between small"><span class="muted">Supporta Markdown</span>${saveState('descrizione', un)}</span>
-      </label>
+      ${description(t, isNew, un)}
       ${!isNew && t.storico.length ? `<div class="stack-10"><span class="section-label">STORICO</span><div class="history">${t.storico.slice().reverse().map((l) => {
         const m = l.match(/^(\d{4}-\d{2}-\d{2})\s+(.*)$/);
         return `<div class="row-10"><span class="mono muted small w64">${esc(m ? fmtShort(m[1]) : '')}</span><span>${esc(m ? m[2] : l)}</span></div>`;
