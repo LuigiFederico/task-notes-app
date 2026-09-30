@@ -28,7 +28,7 @@ Al primo avvio l'app chiede quale cartella usare per i dati. Se la cartella è n
 npm test
 ```
 
-I test coprono lettura e scrittura dei file: front matter, task, progetti, decisioni, unione ed eliminazione dei tag, cestino e riprova della scrittura.
+I test coprono lettura e scrittura dei file (front matter, task, progetti, decisioni, storico, unione ed eliminazione dei tag, cestino, riprova della scrittura) e le funzioni di lettura dell'interfaccia (ordinamento, filtri, raggruppamenti, scadenze, markdown).
 
 ## Creare l'eseguibile
 
@@ -63,13 +63,19 @@ Si aggiorna da sola solo la copia installata con `Taccuino Setup x.y.z.exe`. La 
 src/
   main/            processo principale di Electron (Node)
     main.js        finestra, impostazioni locali, canali IPC, osservazione della cartella
+    updater.js     aggiornamenti da GitHub Releases
     preload.js     API esposta all'interfaccia (window.api), niente accesso diretto a Node
-    store.js       lettura/scrittura di task, progetti, categorie e tag
+    store.js       lettura/scrittura di task, progetti, categorie e tag, regole sui dati, cestino
+    formats.js     formato dei file di task, progetti, categorie e tag (funzioni pure)
+    fsutil.js      scrittura atomica e riprova quando OneDrive blocca un file
     frontmatter.js parser/serializer del front matter YAML (sottoinsieme)
   renderer/        interfaccia (HTML + CSS + moduli JS, nessun passaggio di build)
-    app.js         stato, azioni, gestione eventi
+    app.js         avvio, collegamento degli eventi agli handler, scorciatoie
+    core.js        render, ricarica dai file, avvisi ed errori
+    handlers/      azioni dell'utente, un file per argomento (task, progetti, tag, impostazioni…)
     state.js       stato dell'interfaccia e funzioni di lettura sui dati
-    views/         una vista per schermata (task, dettaglio, progetti, progetto, tag…)
+    selectors.js   letture che dipendono da filtri, pannello aperto o data di oggi
+    views/         una vista per schermata (task, dettaglio, progetti, progetto, tag…) e components.js
     lib/           utilità (date, markdown, icone)
 test/              test con node:test
 ```
