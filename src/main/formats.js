@@ -133,6 +133,11 @@ function serializeProject(p) {
 }
 
 // ---------- Categorie e tag
+// Tipi di categoria: "singola" e "multipla" scelgono fra i tag della cartella; "testo" ha valori scritti a mano
+// (una lista per task, nessun file per valore) e un modello di link facoltativo, es. https://…/browse/{valore}.
+const CATEGORY_TYPES = ['singola', 'multipla', 'testo'];
+const categoryType = (tipo, id) => (SYSTEM_CATEGORIES.includes(id) ? 'singola' : CATEGORY_TYPES.includes(tipo) ? tipo : 'multipla');
+
 // text è il contenuto di _categoria.md, oppure null se la cartella della categoria non ce l'ha.
 function parseCategory(text, id) {
   const cat = { id, nome: id, tipo: 'multipla', obbligatoria: false, ordine: 99, descrizione: '' };
@@ -140,21 +145,25 @@ function parseCategory(text, id) {
     const { data, body } = fm.parse(text);
     Object.assign(cat, {
       nome: data.nome ? String(data.nome) : id,
-      tipo: data.tipo === 'singola' ? 'singola' : 'multipla',
+      tipo: data.tipo,
       obbligatoria: data.obbligatoria === true,
       ordine: typeof data.ordine === 'number' ? data.ordine : 99,
       descrizione: body
     });
+    if (data.url) cat.url = String(data.url);
   }
-  if (SYSTEM_CATEGORIES.includes(id)) cat.tipo = 'singola';
+  cat.tipo = categoryType(cat.tipo, id);
+  if (cat.tipo !== 'testo') delete cat.url;
   cat.sistema = SYSTEM_CATEGORIES.includes(id);
   cat.tags = [];
   return cat;
 }
 
 function serializeCategory(c, id) {
-  const tipo = SYSTEM_CATEGORIES.includes(id) || c.tipo === 'singola' ? 'singola' : 'multipla';
-  return fm.stringify({ nome: c.nome || id, tipo, obbligatoria: !!c.obbligatoria, ordine: c.ordine ?? 99 }, c.descrizione || '');
+  const tipo = categoryType(c.tipo, id);
+  const data = { nome: c.nome || id, tipo, obbligatoria: !!c.obbligatoria, ordine: c.ordine ?? 99 };
+  if (tipo === 'testo' && c.url) data.url = String(c.url).trim();
+  return fm.stringify(data, c.descrizione || '');
 }
 
 function parseTag(text, id) {

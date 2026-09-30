@@ -71,6 +71,19 @@ test('formato: categorie senza file descrittivo e categorie di sistema', () => {
   assert.doesNotMatch(formats.serializeTag({ nome: 'Alta', chiuso: true }, 'alta', 'priorita'), /chiuso/);
 });
 
+test('formato: categoria a testo libero con modello di link, valori scritti nel task', () => {
+  const text = formats.serializeCategory({ nome: 'Ticket Jira', tipo: 'testo', url: 'https://jira.example.com/browse/{valore}' }, 'ticket-jira');
+  assert.match(text, /^url: /m);
+  const c = formats.parseCategory(text, 'ticket-jira');
+  assert.deepStrictEqual([c.tipo, c.url], ['testo', 'https://jira.example.com/browse/{valore}']);
+  // l'url vale solo per le categorie a testo
+  assert.strictEqual(formats.parseCategory(formats.serializeCategory({ nome: 'X', tipo: 'multipla', url: 'https://a' }, 'x'), 'x').url, undefined);
+  // più valori per task, anche scritti a mano come valore singolo
+  const t = formats.parseTask(formats.serializeTask({ id: 'T-001', titolo: 'a', tags: { 'ticket-jira': ['PROJ-123', 'https://x.example/y?z=1'] } }), 'T-001');
+  assert.deepStrictEqual(t.tags['ticket-jira'], ['PROJ-123', 'https://x.example/y?z=1']);
+  assert.strictEqual(formats.parseTask('---\nticket-jira: PROJ-9\n---\n', 'T-002').tags['ticket-jira'], 'PROJ-9');
+});
+
 test('init crea struttura e categorie di base', async () => {
   const s = new Store(tmpDir());
   await s.init({ withDefaultProject: true });

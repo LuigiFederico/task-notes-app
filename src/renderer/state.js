@@ -46,6 +46,8 @@ export function cat(id) { return S.data.categories.find((c) => c.id === id); }
 export function tagOf(catId, id) { const c = cat(catId); return c ? c.tags.find((t) => t.id === id) : null; }
 export function project(code) { return S.data.projects.find((p) => p.codice === code); }
 export function extraCats() { return S.data.categories.filter((c) => !c.sistema); }
+// Categorie utente fatte di tag: le categorie a testo libero non hanno chip, filtri né raggruppamenti.
+export function tagCats() { return extraCats().filter((c) => c.tipo !== 'testo'); }
 export function task(id) { return S.data.tasks.find((t) => t.id === id); }
 
 export function isClosed(t) { const s = tagOf('stato', t.stato); return !!(s && s.chiuso); }
@@ -65,7 +67,7 @@ export function values(t, catId) {
 // Tag "liberi" (tutte le categorie non di sistema) di un task, per i chip.
 export function taskChips(t) {
   const out = [];
-  for (const c of extraCats()) {
+  for (const c of tagCats()) {
     for (const id of values(t, c.id)) {
       const tg = c.tags.find((x) => x.id === id);
       out.push({ catId: c.id, id, nome: tg ? tg.nome : id, colore: tg ? tg.colore : '#6B675E' });

@@ -193,6 +193,10 @@ export const actions = {
     const t = currentTask();
     return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.tag) } });
   }),
+  'task-text-remove': (el) => run(() => {
+    const t = currentTask();
+    return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.value) } });
+  }),
   'task-delete': (el) => run(async () => {
     await api.deleteTask(el.dataset.id);
     S.ui.openTask = null;
@@ -243,6 +247,19 @@ export const keydowns = {
       const hidden = !visibleTasks().some((t) => t.id === saved.id);
       toast(`Creato ${saved.id}${p ? ' in ' + p.nome : ''}${hidden ? ' (nascosto dai filtri attivi)' : ''}`);
       document.getElementById('quick-add')?.focus();
+    });
+  },
+  // Valore di una categoria a testo libero: si aggiunge con Invio, senza creare file.
+  'task-text-add': (el, e) => {
+    if (e.key !== 'Enter' || !el.value.trim()) return;
+    e.preventDefault();
+    const catId = el.dataset.cat;
+    const v = el.value.trim();
+    run(async () => {
+      const t = currentTask();
+      const vals = values(t, catId);
+      if (!vals.includes(v)) await updateTask({ tags: { ...t.tags, [catId]: [...vals, v] } });
+      document.querySelector(`[data-keydown="task-text-add"][data-cat="${catId}"]`)?.focus();
     });
   },
   'title-enter': (el, e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } },

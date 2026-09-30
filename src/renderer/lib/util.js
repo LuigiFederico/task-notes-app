@@ -89,4 +89,14 @@ export function md(src) {
   return out.join('');
 }
 
+// Link di un valore di una categoria a testo: il modello con {valore} sostituito, oppure il valore stesso se è già un link.
+// Solo http e https: qualsiasi altra cosa non diventa un link.
+export function textLink(template, value) {
+  const v = String(value || '').trim();
+  let url = '';
+  if (/^https?:\/\//i.test(v)) url = v;
+  else if (template && v) url = template.includes('{valore}') ? template.split('{valore}').join(encodeURIComponent(v)) : template + encodeURIComponent(v);
+  return /^https?:\/\/[^\s]+$/i.test(url) ? url : '';
+}
+
 export function plural(n, one, many) { return `${n} ${n === 1 ? one : many}`; }

@@ -128,7 +128,7 @@ export async function run(fn) {
 // ---------------------------------------------------------------- dati
 // Il raggruppamento ricordato può riferirsi a una categoria che nel frattempo è stata eliminata.
 export function checkGroupBy() {
-  const ids = ['progetto', 'priorita', 'stato', 'scadenza', ...S.data.categories.map((c) => c.id)];
+  const ids = ['progetto', 'priorita', 'stato', 'scadenza', ...S.data.categories.filter((c) => c.tipo !== 'testo').map((c) => c.id)];
   if (!ids.includes(S.ui.groupBy)) S.ui.groupBy = 'progetto';
 }
 

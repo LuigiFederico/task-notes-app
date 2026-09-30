@@ -308,6 +308,9 @@ pre { margin: 0; }
 .tag-edit { display: flex; flex-direction: column; gap: 12px; padding: 16px 22px; background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 .add-row { display: flex; align-items: center; gap: 8px; padding: 14px 22px; color: var(--accent); font-size: 14px; }
 .add-row:hover { background: var(--surface-2); }
+.cat-note { padding: 18px 22px; max-width: 72ch; }
+.chip.text-value a { color: var(--accent); text-decoration: none; max-width: 32ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip.text-value a:hover { text-decoration: underline; }
 .file-foot { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--line-soft); background: var(--surface-2); font-size: 12px; color: var(--muted); }
 .kv { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; align-items: center; }
 

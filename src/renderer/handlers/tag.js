@@ -73,7 +73,8 @@ export const submits = {
   'save-category': (form) => run(async () => {
     const c = cat(form.dataset.cat);
     const f = new FormData(form);
-    await api.saveCategory({ ...c, nome: f.get('nome').trim(), tipo: f.get('tipo') || c.tipo, descrizione: f.get('descrizione') });
+    const url = c.tipo === 'testo' ? String(f.get('url') || '').trim() : c.url;
+    await api.saveCategory({ ...c, nome: f.get('nome').trim(), tipo: f.get('tipo') || c.tipo, descrizione: f.get('descrizione'), url });
     S.ui.editing = null;
     await reload();
   }),

@@ -1,12 +1,15 @@
 import { S, cat, values, TAG_COLORS, projectTasks, openTasks } from '../state.js';
 import { tagUsage } from '../selectors.js';
-import { esc, safeColor } from '../lib/util.js';
+import { esc, safeColor, plural } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox, colorPicker, options, select } from './components.js';
 
 const KINDS = [['multipla', 'Scelta multipla'], ['singola', 'Scelta singola']];
+// Il testo libero si sceglie solo alla creazione: i valori già scritti non si convertono in tag (né viceversa).
+const NEW_KINDS = [...KINDS, ['testo', 'Testo libero (es. ticket, link)']];
+const KIND_LABELS = { singola: 'Scelta singola', multipla: 'Scelta multipla', testo: 'Testo libero' };
 
-function kindLabel(c) { return (c.tipo === 'singola' ? 'Scelta singola' : 'Scelta multipla'); }
+function kindLabel(c) { return KIND_LABELS[c.tipo] || KIND_LABELS.multipla; }
 
 export function tagsView() {
   const sel = S.view.cat || 'progetto';
@@ -18,7 +21,7 @@ export function tagsView() {
   const newCat = S.ui.editing === 'cat-new' ? `
     <form class="card pad stack-10 form" data-submit="create-category">
       <label class="field"><span>Nome categoria</span><input name="nome" required placeholder="Es. Contesto" autofocus></label>
-      <label class="field"><span>Tipo</span>${select('name="tipo"', options(KINDS))}</label>
+      <label class="field"><span>Tipo</span>${select('name="tipo"', options(NEW_KINDS))}</label>
       <div class="row-8 end"><button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Crea</button></div>
     </form>` : `<button class="dashed-btn" data-action="edit" data-key="cat-new">${icon.plus(14)}Nuova categoria</button>`;
 
@@ -76,7 +79,8 @@ export function tagsView() {
     const head = editingCat ? `
       <form class="cat-head form" data-submit="save-category" data-cat="${esc(c.id)}">
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(c.nome)}"></label>
-        ${c.sistema ? '' : `<label class="field"><span>Tipo</span>${select('name="tipo"', options(KINDS, c.tipo === 'singola' ? 'singola' : 'multipla'))}</label>`}
+        ${c.sistema || c.tipo === 'testo' ? '' : `<label class="field"><span>Tipo</span>${select('name="tipo"', options(KINDS, c.tipo === 'singola' ? 'singola' : 'multipla'))}</label>`}
+        ${c.tipo === 'testo' ? `<label class="field grow2"><span>Modello del link</span><input name="url" value="${esc(c.url || '')}" placeholder="https://jira.example.com/browse/{valore}" class="mono"></label>` : ''}
         <label class="field grow2"><span>Descrizione</span><input name="descrizione" value="${esc(c.descrizione)}"></label>
         <div class="row-8 self-end">
           ${c.sistema || confirmCat ? '' : `<button type="button" class="btn-link small danger-text" data-action="ask-confirm" data-key="cat:${esc(c.id)}">Elimina</button>`}
@@ -86,7 +90,13 @@ export function tagsView() {
       <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">${esc(c.nome)}</h2><span class="muted small">${esc(c.descrizione || '')}</span></div>
         <span class="pill">${kindLabel(c)}</span>${c.sistema ? '<span class="pill">Di sistema</span>' : ''}
         <button class="btn small" data-action="edit" data-key="cat-edit">Impostazioni</button></div>`;
-    detail = `${head}
+    detail = c.tipo === 'testo' ? `${head}
+      <div class="cat-note stack-10 small">
+        <p>I valori si scrivono nel pannello del task, uno o più per task, e restano nel file del task: non si crea un file per valore.</p>
+        <p class="muted">${c.url ? `Ogni valore diventa un link: <span class="mono">${esc(c.url)}</span>, con <span class="mono">{valore}</span> sostituito dal valore.` : 'Imposta un modello del link (con <span class="mono">{valore}</span>) per trasformare i valori in link. Un valore che è già un indirizzo web è comunque un link.'}</p>
+        <p class="muted">${plural(catUsed, 'task usa', 'task usano')} questa categoria.</p>
+      </div>
+      <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">tags/${esc(c.id)}/_categoria.md</span></div>` : `${head}
       <div class="tag-row head"><span></span><span>NOME</span><span>DESCRIZIONE</span><span>APERTI</span><span>TOTALE</span><span></span></div>
       ${rows || '<div class="empty small">Nessun tag in questa categoria.</div>'}
       ${newTag}

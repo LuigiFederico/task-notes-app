@@ -133,7 +133,7 @@ storico:
 Descrizione libera in Markdown.
 ```
 
-Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla".
+Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".
 
 ### Progetto
 
@@ -166,6 +166,7 @@ Task: T-029
 - Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista, e i task senza priorità vanno dopo l'ultimo livello. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.
 - L'ID di un tag è il nome del file e non cambia se lo rinomini, quindi i task non vanno aggiornati.
+- Una categoria **a testo libero** (`tipo: testo`, es. "Ticket Jira") non ha file per i valori: ogni task scrive i suoi valori a mano, come lista (`ticket-jira: [PROJ-123]`). Con un modello `url: https://jira.example.com/browse/{valore}` in `_categoria.md` ogni valore diventa un link; un valore che è già un indirizzo web lo è comunque. Queste categorie compaiono solo nel pannello del task, non nei filtri, nei raggruppamenti o nella ricerca.
 
 ### Cestino
 

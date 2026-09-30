@@ -133,3 +133,19 @@ test('renderer: md fa l\'escaping e rende il markdown minimale', async () => {
   assert.strictEqual(md('[sito](https://example.com) [no](javascript:alert(1))'),
     '<p><a href="https://example.com" target="_blank" rel="noreferrer">sito</a> [no](javascript:alert(1))</p>');
 });
+
+test('renderer: link dei valori di una categoria a testo', async () => {
+  const { textLink } = await load('lib/util.js');
+  assert.strictEqual(textLink('https://jira.example.com/browse/{valore}', 'PROJ-123'), 'https://jira.example.com/browse/PROJ-123');
+  assert.strictEqual(textLink('https://x.example/?q={valore}', 'a b&c'), 'https://x.example/?q=a%20b%26c');
+  assert.strictEqual(textLink('', 'https://x.example/y'), 'https://x.example/y');
+  assert.strictEqual(textLink('', 'PROJ-1'), '');
+  assert.strictEqual(textLink('javascript:{valore}', 'x'), '');
+});
+
+test('renderer: le categorie a testo non danno chip', async () => {
+  const { taskChips } = await load('state.js');
+  const S = await setup([{ id: 'T-001', titolo: 'a', tags: { etichette: ['riunione'], jira: ['PROJ-1'] } }]);
+  S.data.categories.push({ id: 'jira', nome: 'Jira', tipo: 'testo', sistema: false, tags: [] });
+  assert.deepStrictEqual(taskChips(S.data.tasks[0]).map((c) => c.id), ['riunione']);
+});

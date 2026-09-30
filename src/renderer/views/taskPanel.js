@@ -1,6 +1,6 @@
 import { S, cat, project, extraCats, isClosed, values } from '../state.js';
 import { currentTask } from '../selectors.js';
-import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
+import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort, textLink } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox, options, select } from './components.js';
 
@@ -16,7 +16,19 @@ function radioGroup(label, catId, current, allowNone) {
   return `<div role="radiogroup" aria-label="${esc(label)}" class="row-6 wrap">${opts.join('')}</div>`;
 }
 
+// Categoria a testo libero: un chip per valore (un link se la categoria ha un modello o se il valore è un URL).
+function textField(t, c) {
+  const chips = values(t, c.id).map((v) => {
+    const url = textLink(c.url, v);
+    const label = url ? `<a href="${esc(url)}" target="_blank" rel="noreferrer" title="${esc(url)}">${esc(v)}</a>` : esc(v);
+    return `<span class="chip removable text-value">${label}<button data-action="task-text-remove" data-cat="${esc(c.id)}" data-value="${esc(v)}" aria-label="Rimuovi ${esc(v)}">${icon.close(12)}</button></span>`;
+  }).join('');
+  return `<div class="row-6 wrap">${chips}
+    <input class="tag-add" placeholder="+ Aggiungi" data-keydown="task-text-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}"></div>`;
+}
+
 function categoryField(t, c) {
+  if (c.tipo === 'testo') return textField(t, c);
   const vals = values(t, c.id);
   if (c.tipo === 'singola') {
     const opts = '<option value="">—</option>' + options(c.tags.map((x) => [x.id, x.nome]), vals);

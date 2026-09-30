@@ -1,4 +1,4 @@
-import { S, cat, project, activeProjects, extraCats, sortTasks, openTasks } from '../state.js';
+import { S, cat, project, activeProjects, tagCats, sortTasks, openTasks } from '../state.js';
 import { visibleTasks, groupDefs, emptyReason } from '../selectors.js';
 import { esc, safeColor, fmtToday } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
@@ -22,9 +22,9 @@ export function tasksView() {
   const u = S.ui;
   const open = openTasks().length;
   const done = S.data.tasks.length - open;
-  const groupOpts = [['progetto', 'Progetto'], ['priorita', 'Priorità'], ['stato', 'Stato'], ['scadenza', 'Scadenza'], ...extraCats().map((c) => [c.id, c.nome])];
+  const groupOpts = [['progetto', 'Progetto'], ['priorita', 'Priorità'], ['stato', 'Stato'], ['scadenza', 'Scadenza'], ...tagCats().map((c) => [c.id, c.nome])];
   const prioTags = cat('priorita')?.tags || [];
-  const tagOpts = extraCats().flatMap((c) => c.tags.map((t) => [`${c.id}:${t.id}`, `${c.nome}: ${t.nome}`]));
+  const tagOpts = tagCats().flatMap((c) => c.tags.map((t) => [`${c.id}:${t.id}`, `${c.nome}: ${t.nome}`]));
   const select = (name, label, opts, value) => `
     <label class="filter${value ? ' on' : ''}"><span class="sr">${label}</span>
       <select data-change="filter" data-name="${name}">
