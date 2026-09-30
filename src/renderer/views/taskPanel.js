@@ -1,8 +1,8 @@
-import { S, cat, project, extraCats, isClosed, values, ref } from '../state.js';
-import { currentTask, linksOf } from '../selectors.js';
-import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort, textLink, md } from '../lib/util.js';
+import { S, cat, project, extraCats, isClosed } from '../state.js';
+import { currentTask } from '../selectors.js';
+import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox, options, select, mentionItems } from './components.js';
+import { confirmBox, options, select, categoryField, links, description, saveState } from './components.js';
 
 function radioGroup(label, catId, current, allowNone) {
   const c = cat(catId);
@@ -15,39 +15,6 @@ function radioGroup(label, catId, current, allowNone) {
   if (allowNone) opts.push(`<button role="radio" aria-checked="${!current}" class="radio-pill${!current ? ' on-neutral' : ''}" data-action="task-set" data-field="${catId}" data-value="">Nessuna</button>`);
   return `<div role="radiogroup" aria-label="${esc(label)}" class="row-6 wrap">${opts.join('')}</div>`;
 }
-
-// Categoria a testo libero: un chip per valore (un link se la categoria ha un modello o se il valore è un URL).
-function textField(t, c) {
-  const chips = values(t, c.id).map((v) => {
-    const url = textLink(c.url, v);
-    const label = url ? `<a href="${esc(url)}" target="_blank" rel="noreferrer" title="${esc(url)}">${esc(v)}</a>` : esc(v);
-    return `<span class="chip removable text-value">${label}<button data-action="task-text-remove" data-cat="${esc(c.id)}" data-value="${esc(v)}" aria-label="Rimuovi ${esc(v)}">${icon.close(12)}</button></span>`;
-  }).join('');
-  return `<div class="row-6 wrap">${chips}
-    <input class="tag-add" placeholder="+ Aggiungi" data-keydown="task-text-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}"></div>`;
-}
-
-function categoryField(t, c) {
-  if (c.tipo === 'testo') return textField(t, c);
-  const vals = values(t, c.id);
-  if (c.tipo === 'singola') {
-    const opts = '<option value="">—</option>' + options(c.tags.map((x) => [x.id, x.nome]), vals);
-    return select(`data-change="task-cat-single" data-cat="${esc(c.id)}"`, opts, c.nome);
-  }
-  const chips = vals.map((id) => {
-    const tg = c.tags.find((x) => x.id === id);
-    return `<span class="chip removable"><span class="chip-dot" style="background:${safeColor(tg ? tg.colore : '')}"></span>${esc(tg ? tg.nome : id)}<button data-action="task-tag-remove" data-cat="${esc(c.id)}" data-tag="${esc(id)}" aria-label="Rimuovi ${esc(tg ? tg.nome : id)}">${icon.close(12)}</button></span>`;
-  }).join('');
-  const listId = 'dl-' + c.id;
-  const unused = c.tags.filter((x) => !vals.includes(x.id));
-  const pending = S.ui.pendingTag && S.ui.pendingTag.cat === c.id ? S.ui.pendingTag : null;
-  return `<div class="row-6 wrap">${chips}
-    <input id="tag-add-${esc(c.id)}" class="tag-add" list="${listId}" placeholder="+ Aggiungi" value="${pending ? esc(pending.nome) : ''}" data-input="task-tag-input" data-keydown="task-tag-add" data-cat="${esc(c.id)}" aria-label="Aggiungi ${esc(c.nome)}" aria-describedby="tag-hint-${esc(c.id)}">
-    <datalist id="${listId}">${unused.map((x) => `<option value="${esc(x.nome)}"></option>`).join('')}</datalist>
-    <span id="tag-hint-${esc(c.id)}" class="tag-hint small" aria-live="polite"${pending ? '' : ' hidden'}>${pending ? esc(newTagHint(pending.nome)) : ''}</span></div>`;
-}
-
-export function newTagHint(nome) { return `Nuovo tag «${nome}»: premi di nuovo Invio per crearlo`; }
 
 // Checklist del task: spunta, testo modificabile con un clic, frecce per l'ordine, x per togliere.
 function subtasks(t) {
@@ -71,67 +38,6 @@ function subtasks(t) {
     ${list.length ? `<div class="sub-list">${items}</div>` : ''}
     <input id="sub-add" class="tag-add sub-add" placeholder="+ Aggiungi un sotto-task" data-keydown="sub-add" aria-label="Aggiungi un sotto-task">
   </div>`;
-}
-
-// Collegamenti del task: quelli scritti nel suo file e, con il nome inverso, quelli degli altri task che puntano a lui.
-// Si aggiungono scegliendo il tipo e cercando il task con @ (ID o titolo).
-function links(t) {
-  const types = cat('collegamento')?.tags || [];
-  const rows = linksOf(t).map((l) => {
-    const target = l.target
-      ? `<button class="link-ref" data-action="open-task" data-id="${esc(l.id)}"><span class="mono muted">${esc(l.id)}</span><span class="ellipsis">${esc(l.target.titolo)}</span></button>`
-      : `<span class="link-ref missing" title="Non trovato: forse è nel Cestino"><span class="mono">${esc(l.id)}</span><span>non trovato</span></span>`;
-    return `<div class="link-row${l.target && isClosed(l.target) ? ' closed' : ''}">
-      <span class="link-type" style="color:${safeColor(l.colore)}">${esc(l.nome)}</span>${target}
-      <button class="icon-btn sm" data-action="link-remove" data-from="${esc(l.from)}" data-tipo="${esc(l.tipo)}" data-to="${esc(l.to)}" aria-label="Togli il collegamento con ${esc(l.id)}">${icon.close(12)}</button>
-    </div>`;
-  }).join('');
-  const m = S.ui.mention && S.ui.mention.field === 'link' ? S.ui.mention : null;
-  const typeId = S.ui.linkType && types.some((x) => x.id === S.ui.linkType) ? S.ui.linkType : (types[0] || {}).id || '';
-  return `<div class="stack-10">
-    <span class="section-label">COLLEGAMENTI</span>
-    ${rows ? `<div class="link-list">${rows}</div>` : ''}
-    <div class="link-add">
-      ${select('data-change="link-type"', options(types.map((x) => [x.id, x.nome]), typeId), 'Tipo di collegamento')}
-      <div class="mention-wrap grow">
-        <input id="link-input" class="tag-add" placeholder="@ cerca un task per ID o titolo" autocomplete="off" data-input="link-search" data-keydown="link-key"
-          role="combobox" aria-expanded="${!!m}" aria-controls="mention-link" aria-label="Task da collegare" value="${m ? esc(m.query) : ''}">
-        <div id="mention-link" class="mention-list" role="listbox"${m ? '' : ' hidden'}>${m ? mentionItems(m.items, m.active) : ''}</div>
-      </div>
-    </div>
-  </div>`;
-}
-
-// Descrizione: in lettura il Markdown con link e menzioni cliccabili; «Modifica» apre il campo, dove @ suggerisce i task.
-// Resta in modifica per un task nuovo e finché c'è testo non salvato.
-function description(t, isNew, un) {
-  const editing = isNew || S.ui.descEdit || 'descrizione' in un;
-  const head = (btn) => `<div class="row-between"><span class="section-label">DESCRIZIONE</span>${btn}</div>`;
-  if (!editing) {
-    const refTitle = (id) => { const x = ref(id); return x ? x.titolo : null; };
-    return `<div class="stack-10">
-      ${head('<button class="btn-link small" data-action="desc-edit">Modifica</button>')}
-      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle })}</div>`
-        : '<button class="desc-empty" data-action="desc-edit">Aggiungi note, link, @menzioni… (Markdown)</button>'}
-      ${S.ui.saved.descrizione ? `<span class="small save-state">Salvato</span>` : ''}
-    </div>`;
-  }
-  const m = S.ui.mention && S.ui.mention.field === 'desc' ? S.ui.mention : null;
-  return `<div class="stack-10">
-    ${head(isNew ? '' : '<button class="btn-link small" data-action="desc-done">Fine</button>')}
-    <div class="mention-wrap">
-      <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-keydown="desc-key" data-field="descrizione"
-        aria-label="Descrizione" aria-controls="mention-desc" placeholder="Note, link, @ per citare un task… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>
-      <div id="mention-desc" class="mention-list up" role="listbox"${m ? '' : ' hidden'}>${m ? mentionItems(m.items, m.active) : ''}</div>
-    </div>
-    <span class="row-between small"><span class="muted">Markdown · @ per citare un task · Esc per chiudere</span>${saveState('descrizione', un)}</span>
-  </div>`;
-}
-
-// "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
-function saveState(field, un) {
-  const dirty = field in un;
-  return `<span id="save-${field}" class="save-state small${dirty ? ' dirty' : ''}" aria-live="polite">${dirty ? 'Non salvato' : S.ui.saved[field] ? 'Salvato' : ''}</span>`;
 }
 
 export function taskPanel() {

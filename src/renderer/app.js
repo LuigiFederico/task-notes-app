@@ -8,12 +8,13 @@ import { mascot } from './mascot.js';
 import { api, root, render, autosizeTitle, reload, run, toast, checkGroupBy, stopEditing } from './core.js';
 import * as common from './handlers/common.js';
 import * as taskHandlers from './handlers/task.js';
+import * as noteHandlers from './handlers/note.js';
 import * as projectHandlers from './handlers/project.js';
 import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
 
 const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
-const HANDLERS = [common, taskHandlers, projectHandlers, tagHandlers, settingsHandlers];
+const HANDLERS = [common, taskHandlers, noteHandlers, projectHandlers, tagHandlers, settingsHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
 function merge(kind) {
@@ -101,7 +102,7 @@ document.addEventListener('keydown', (e) => {
     });
   } else if (e.key === 'Escape') {
     if (S.ui.confirm || S.ui.editing) { stopEditing(); render(); }
-    else if (S.ui.openTask) run(async () => { await flush(); document.activeElement?.blur(); closePanel(); });
+    else if (S.ui.openTask || S.ui.openNote) run(async () => { await flush(); document.activeElement?.blur(); closePanel(); });
   }
 });
 

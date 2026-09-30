@@ -1,7 +1,8 @@
-import { S, project, projectTasks, isClosed, sortTasks, openTasks, PROJECT_COLORS } from '../state.js';
+import { S, project, projectTasks, projectNotes, isClosed, sortTasks, openTasks, PROJECT_COLORS } from '../state.js';
+import { visibleNotes } from '../selectors.js';
 import { esc, safeColor, md, fmtFull, todayISO } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { taskRow, taskHeader, segmented, emptyState, confirmBox, kpiTile, colorPicker, options, select } from './components.js';
+import { taskRow, taskHeader, noteRow, noteHeader, segmented, emptyState, confirmBox, kpiTile, colorPicker, options, select } from './components.js';
 
 export function newProjectView() {
   const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '' };
@@ -30,6 +31,7 @@ export function projectView(code) {
   const late = open.filter((t) => t.scadenza && t.scadenza < todayISO()).length;
   const tab = S.ui.projectTab;
   const shown = sortTasks(all.filter((t) => tab === 'all' || (tab === 'open' ? !isClosed(t) : isClosed(t))));
+  const notes = visibleNotes(projectNotes(code), '');
   const editHead = S.ui.editing === 'project-head';
   const editDesc = S.ui.editing === 'project-desc';
   const addDec = S.ui.editing === 'decision-new';
@@ -105,6 +107,10 @@ export function projectView(code) {
           <section class="stack-12">
             <div class="row-between"><h2 class="h2">Task del progetto</h2>${segmented([['open', 'Aperti', open.length], ['done', 'Completati', done], ['all', 'Tutti', all.length]], tab, 'project-tab', 'Filtro task')}</div>
             ${shown.length ? `${taskHeader(false)}<div class="card list">${shown.map((t) => taskRow(t, { showProject: false })).join('')}</div>` : emptyState(tab === 'done' ? 'Ancora nessun task completato.' : 'Nessun task aperto.')}
+          </section>
+          <section class="stack-12">
+            <div class="row-between"><h2 class="h2">Appunti del progetto</h2><button class="btn small" data-action="new-note" data-code="${esc(code)}">${icon.plus(14)}Nuovo appunto</button></div>
+            ${notes.length ? `${noteHeader({ showProject: false })}<div class="card list">${notes.map((n) => noteRow(n, { showProject: false })).join('')}</div>` : emptyState('Nessun appunto in questo progetto.')}
           </section>
         </div>
         <section class="card pad stack-14 decisions" aria-label="Decisioni prese">

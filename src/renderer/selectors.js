@@ -1,10 +1,32 @@
 // Letture che dipendono dallo stato dell'interfaccia (filtri, pannello aperto) o dalla data di oggi.
-import { S, cat, tagOf, task, ref, project, isClosed, values, taskChips, openTasks } from './state.js';
+import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks } from './state.js';
 import { todayISO, addDays, weekStart, dueBucket } from './lib/util.js';
 
 export function currentTask() {
   if (S.ui.openTask === 'new') return S.ui.draft;
   return S.ui.openTask ? task(S.ui.openTask) : null;
+}
+
+export function currentNote() {
+  if (S.ui.openNote === 'new') return S.ui.noteDraft;
+  return S.ui.openNote ? note(S.ui.openNote) : null;
+}
+
+// Ciò che è aperto nel pannello, task o appunto.
+export function currentItem() { return S.ui.openNote ? currentNote() : currentTask(); }
+
+// ---------- appunti
+// Più recenti in cima; la ricerca guarda ID, titolo, testo e progetto.
+export function visibleNotes(list = S.data.notes, search = S.ui.noteSearch) {
+  const words = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return list
+    .filter((n) => {
+      if (!words.length) return true;
+      const p = project(n.progetto);
+      const hay = [n.id, n.titolo, n.descrizione, p && p.nome, n.progetto].join(' ').toLowerCase();
+      return words.every((w) => hay.includes(w));
+    })
+    .sort((a, b) => String(b.aggiornato || '').localeCompare(String(a.aggiornato || '')) || b.id.localeCompare(a.id, 'it', { numeric: true }));
 }
 
 export function overdueCount() {
@@ -92,22 +114,24 @@ export function linksOf(item) {
   };
   const out = (item.collegamenti || []).map((l) => ({ dir: 'out', tipo: l.tipo, id: l.id, from: item.id, to: l.id, target: ref(l.id), ...kind(l, false) }));
   const inc = [];
-  for (const t of S.data.tasks) {
+  for (const t of [...S.data.tasks, ...S.data.notes]) {
     if (t.id === item.id) continue;
     for (const l of t.collegamenti || []) if (l.id === item.id) inc.push({ dir: 'in', tipo: l.tipo, id: t.id, from: t.id, to: item.id, target: t, ...kind(l, true) });
   }
   return [...out, ...inc];
 }
 
-// Suggerimenti per @: task che contengono il testo nell'ID o nel titolo. Prima chi ha l'ID che comincia così, poi gli aperti.
+// Suggerimenti per @: task e appunti che contengono il testo nell'ID o nel titolo.
+// Prima chi ha l'ID che comincia così, poi gli elementi aperti (gli appunti non si chiudono), poi i più recenti.
 export function refCandidates(query, exclude = [], limit = 8) {
   const q = String(query || '').trim().replace(/^@/, '').toLowerCase();
-  const rank = (t) => (q && t.id.toLowerCase().startsWith(q) ? 0 : 2) + (isClosed(t) ? 1 : 0);
-  return S.data.tasks
-    .filter((t) => !exclude.includes(t.id) && (!q || t.id.toLowerCase().includes(q) || t.titolo.toLowerCase().includes(q)))
-    .sort((a, b) => rank(a) - rank(b) || b.id.localeCompare(a.id, 'it', { numeric: true }))
+  const closed = (x) => !isNoteId(x.id) && isClosed(x);
+  const rank = (x) => (q && x.id.toLowerCase().startsWith(q) ? 0 : 2) + (closed(x) ? 1 : 0);
+  return [...S.data.tasks, ...S.data.notes]
+    .filter((x) => !exclude.includes(x.id) && (!q || x.id.toLowerCase().includes(q) || x.titolo.toLowerCase().includes(q)))
+    .sort((a, b) => rank(a) - rank(b) || String(b.aggiornato || '').localeCompare(String(a.aggiornato || '')) || b.id.localeCompare(a.id, 'it', { numeric: true }))
     .slice(0, limit)
-    .map((t) => ({ id: t.id, titolo: t.titolo, chiuso: isClosed(t) }));
+    .map((x) => ({ id: x.id, titolo: x.titolo, chiuso: closed(x) }));
 }
 
 // ---------- tag

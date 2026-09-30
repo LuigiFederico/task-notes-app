@@ -21,7 +21,8 @@ async function setup(tasks) {
       { codice: 'VEND', nome: 'Dashboard vendite', colore: '#2F5BD3', stato: 'attivo', decisioni: [] },
       { codice: 'ECOM', nome: 'E-commerce', colore: '#0B8A6F', stato: 'attivo', decisioni: [] }
     ],
-    tasks: tasks.map((t) => ({ progetto: 'VEND', stato: 'da-fare', priorita: null, scadenza: null, tags: {}, descrizione: '', storico: [], ...t }))
+    tasks: tasks.map((t) => ({ progetto: 'VEND', stato: 'da-fare', priorita: null, scadenza: null, tags: {}, descrizione: '', storico: [], ...t })),
+    notes: []
   };
   Object.assign(S.ui, { showDone: false, recentDone: {}, fProject: '', fPrio: '', fTag: '', search: '' });
   return S;
@@ -182,4 +183,23 @@ test('renderer: menzioni @ nel Markdown e nel testo', async () => {
   assert.match(html, /class="mention missing" data-action="open-ref" data-id="T-9"/);
   assert.doesNotMatch(html, /data-id="T-1"|data-id="T-5"/);
   assert.deepStrictEqual(mentionsOf('@T-1 poi (@A-7) e ancora @T-1, ma non a@T-2'), ['T-1', 'A-7']);
+});
+
+test('renderer: appunti nei collegamenti, nei suggerimenti e nella ricerca', async () => {
+  const { linksOf, refCandidates, visibleNotes } = await load('selectors.js');
+  const { ref } = await load('state.js');
+  const S = await setup([{ id: 'T-001', titolo: 'Contratto', collegamenti: [{ tipo: '', id: 'A-001' }] }]);
+  S.data.notes = [
+    { id: 'A-001', titolo: 'Riunione contratto', progetto: 'VEND', aggiornato: '2026-09-01', tags: {}, collegamenti: [], descrizione: 'Con Marco' },
+    { id: 'A-002', titolo: 'Idee', progetto: '', aggiornato: '2026-09-20', tags: {}, collegamenti: [{ tipo: '', id: 'T-001' }], descrizione: '' }
+  ];
+  S.ui.noteSearch = '';
+  assert.strictEqual(ref('A-001').titolo, 'Riunione contratto');
+  assert.deepStrictEqual(linksOf(S.data.notes[0]).map((l) => [l.dir, l.id]), [['in', 'T-001']]);
+  assert.deepStrictEqual(linksOf(S.data.tasks[0]).map((l) => [l.dir, l.id]), [['out', 'A-001'], ['in', 'A-002']]);
+  assert.deepStrictEqual(refCandidates('contr').map((x) => x.id).sort(), ['A-001', 'T-001']);
+  assert.deepStrictEqual(visibleNotes().map((n) => n.id), ['A-002', 'A-001']);
+  S.ui.noteSearch = 'marco';
+  assert.deepStrictEqual(visibleNotes().map((n) => n.id), ['A-001']);
+  assert.deepStrictEqual(visibleNotes(S.data.notes, '').length, 2);
 });

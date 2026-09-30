@@ -1,9 +1,9 @@
-// Task: creazione, pannello di dettaglio (salvataggio dei campi, tag) e completamento.
-import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, TAG_COLORS } from '../state.js';
-import { currentTask, visibleTasks, overdueCount, refCandidates } from '../selectors.js';
+// Task: creazione, pannello di dettaglio (salvataggio dei campi, tag, collegamenti) e completamento.
+// Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
+import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, TAG_COLORS } from '../state.js';
+import { currentTask, currentNote, currentItem, visibleTasks, overdueCount, refCandidates } from '../selectors.js';
 import { todayISO } from '../lib/util.js';
-import { newTagHint } from '../views/taskPanel.js';
-import { mentionItems } from '../views/components.js';
+import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
 import { api, root, render, reload, run, toast } from '../core.js';
 
@@ -50,6 +50,30 @@ async function updateTask(patch) {
   reactToChange(task(t.id), wasClosed, prevState, prevDue);
 }
 
+// Appunto aperto nel pannello: come un task, uno nuovo si crea quando ha un titolo.
+async function updateNote(patch) {
+  const n = currentNote();
+  if (!n) return;
+  if (S.ui.openNote === 'new') {
+    Object.assign(n, patch);
+    if (n.titolo && n.titolo.trim()) {
+      const saved = await api.saveNote(n);
+      S.ui.openNote = saved.id;
+      S.ui.noteDraft = null;
+      await reload();
+      mascot.react('created');
+      toast(`Creato ${saved.id}`);
+    } else render();
+    return;
+  }
+  await api.saveNote({ ...n, ...patch });
+  await reload();
+}
+
+// Titolo, progetto, categorie, collegamenti e testo si salvano allo stesso modo per task e appunti.
+function updateItem(patch) { return S.ui.openNote ? updateNote(patch) : updateTask(patch); }
+function openId() { return S.ui.openNote || S.ui.openTask; }
+
 // Il corvo reagisce ai cambi di stato e di scadenza.
 function reactToChange(now, wasClosed, prevState, prevDue) {
   if (!now) return;
@@ -86,7 +110,7 @@ function setSaveState(field, text) {
 
 function markDirty(el) {
   const f = el.dataset.field;
-  if (!S.ui.unsaved || S.ui.unsaved.id !== S.ui.openTask) S.ui.unsaved = { id: S.ui.openTask };
+  if (!S.ui.unsaved || S.ui.unsaved.id !== openId()) S.ui.unsaved = { id: openId() };
   S.ui.unsaved[f] = el.value;
   delete S.ui.saved[f];
   setSaveState(f, 'Non salvato');
@@ -98,12 +122,14 @@ function clearUnsaved(field) {
   if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
 }
 
-function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; S.ui.descEdit = false; }
+export function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; S.ui.descEdit = false; }
 
 export function closePanel() {
   resetPanelState();
   S.ui.openTask = null;
   S.ui.draft = null;
+  S.ui.openNote = null;
+  S.ui.noteDraft = null;
   S.ui.confirm = null;
   render();
 }
@@ -111,16 +137,16 @@ export function closePanel() {
 // Salva un campo del pannello. Se fallisce il testo resta nel campo, "Non salvato", e l'errore risale.
 async function saveField(el) {
   const f = el.dataset.field;
-  const t = currentTask();
+  const t = currentItem();
   if (!t) return;
   const value = fieldValue(el);
   const typed = S.ui.unsaved ? S.ui.unsaved[f] : undefined;
-  if (S.ui.openTask !== 'new' && (t[f] ?? null) === value) {
+  if (openId() !== 'new' && (t[f] ?? null) === value) {
     clearUnsaved(f);
     setSaveState(f, S.ui.saved[f] ? 'Salvato' : '');
     return;
   }
-  saving = updateTask({ [f]: value });
+  saving = updateItem({ [f]: value });
   try { await saving; } finally { saving = null; }
   // Se nel frattempo si è ripreso a scrivere, il testo nuovo resta "Non salvato".
   if (S.ui.unsaved && S.ui.unsaved[f] !== typed) return;
@@ -132,7 +158,7 @@ async function saveField(el) {
 export async function flush() {
   if (saving) await saving;
   const un = S.ui.unsaved;
-  if (!un || un.id !== S.ui.openTask) return;
+  if (!un || un.id !== openId()) return;
   for (const f of ['titolo', 'descrizione']) {
     const el = root.querySelector(`[data-change="task-field"][data-field="${f}"]`);
     if (el && f in un) await saveField(el);
@@ -168,11 +194,11 @@ async function addTag(el) {
   S.ui.pendingTag = null;
   const id = await findOrCreateTag(catId, el.value);
   if (!id) return;
-  if (S.ui.openTask !== 'new') S.data = await api.load();
-  const t = currentTask();
+  if (openId() !== 'new') S.data = await api.load();
+  const t = currentItem();
   const vals = values(t, catId);
-  await updateTask({ tags: { ...t.tags, [catId]: vals.includes(id) ? vals : [...vals, id] } });
-  if (S.ui.openTask === 'new') {
+  await updateItem({ tags: { ...t.tags, [catId]: vals.includes(id) ? vals : [...vals, id] } });
+  if (openId() === 'new') {
     S.data = await api.load();
     render();
   }
@@ -200,7 +226,7 @@ function drawMentions() {
 }
 
 function showMentions(field, query) {
-  const t = currentTask();
+  const t = currentItem();
   S.ui.mention = { field, query, active: 0, items: refCandidates(query, t ? [t.id] : []) };
   drawMentions();
 }
@@ -237,12 +263,12 @@ function mentionKey(e, pick) {
 }
 
 async function addLink(id) {
-  const t = currentTask();
+  const t = currentItem();
   const tipo = document.querySelector('[data-change="link-type"]')?.value || '';
   hideMentions();
-  if (id === t.id) throw new Error('Un task non può essere collegato a sé stesso.');
+  if (id === t.id) throw new Error('Un elemento non può essere collegato a sé stesso.');
   const list = t.collegamenti || [];
-  if (!list.some((l) => l.tipo === tipo && l.id === id)) await updateTask({ collegamenti: [...list, { tipo, id }] });
+  if (!list.some((l) => l.tipo === tipo && l.id === id)) await updateItem({ collegamenti: [...list, { tipo, id }] });
   document.getElementById('link-input')?.focus();
 }
 
@@ -269,11 +295,13 @@ function detectMention(el) {
 // Chi sceglie un suggerimento, secondo il campo in cui si sta scrivendo.
 const PICKERS = { link: addLink, desc: insertMention };
 
-const openTask = afterFlush((el) => {
+export const openTask = afterFlush((el) => {
   if (!task(el.dataset.id)) return toast('Task ' + el.dataset.id + ' non trovato', 'error');
   if (S.ui.openTask !== el.dataset.id) resetPanelState();
   S.ui.openTask = el.dataset.id;
   S.ui.draft = null;
+  S.ui.openNote = null;
+  S.ui.noteDraft = null;
   S.ui.confirm = null;
   render();
 });
@@ -292,12 +320,12 @@ export const actions = {
     resetPanelState();
     S.ui.draft = newDraft(el.dataset.code);
     S.ui.openTask = 'new';
+    S.ui.openNote = null;
+    S.ui.noteDraft = null;
     render();
     document.getElementById('task-title')?.focus();
   }),
   'open-task': openTask,
-  // Menzione cliccata in un testo in Markdown.
-  'open-ref': openTask,
   'desc-edit': () => {
     S.ui.descEdit = true;
     render();
@@ -309,12 +337,12 @@ export const actions = {
   'toggle-done': (el) => run(() => toggleDone(el.dataset.id)),
   'task-set': (el) => run(() => updateTask({ [el.dataset.field]: el.dataset.value || null })),
   'task-tag-remove': (el) => run(() => {
-    const t = currentTask();
-    return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.tag) } });
+    const t = currentItem();
+    return updateItem({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.tag) } });
   }),
   'task-text-remove': (el) => run(() => {
-    const t = currentTask();
-    return updateTask({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.value) } });
+    const t = currentItem();
+    return updateItem({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.value) } });
   }),
   'sub-toggle': (el) => run(() => saveSubtasks((l) => { const x = l[Number(el.dataset.index)]; x.fatto = !x.fatto; })),
   'sub-delete': (el) => run(() => saveSubtasks((l) => l.splice(Number(el.dataset.index), 1))),
@@ -330,14 +358,16 @@ export const actions = {
     if (input) { input.focus(); input.select(); }
   },
   'mention-pick': (el) => run(() => { const m = S.ui.mention; return m && PICKERS[m.field](el.dataset.id); }),
-  // Il collegamento sta nel file del task di partenza: togliere quello in entrata riscrive l'altro task.
+  // Il collegamento sta nel file di partenza: togliere quello in entrata riscrive l'altro task o appunto.
   'link-remove': (el) => run(async () => {
     const { from, tipo, to } = el.dataset;
     const drop = (list) => (list || []).filter((l) => !(l.tipo === tipo && l.id === to));
-    const t = currentTask();
-    if (from === t.id) return updateTask({ collegamenti: drop(t.collegamenti) });
-    const other = task(from);
-    if (other) await saveTask({ ...other, collegamenti: drop(other.collegamenti) });
+    const t = currentItem();
+    if (from === t.id) return updateItem({ collegamenti: drop(t.collegamenti) });
+    const other = ref(from);
+    if (!other) return;
+    await (isNoteId(from) ? api.saveNote : api.saveTask)({ ...other, collegamenti: drop(other.collegamenti) });
+    await reload();
   }),
   'task-delete': (el) => run(async () => {
     await api.deleteTask(el.dataset.id);
@@ -359,8 +389,8 @@ export const changes = {
     return saveSubtasks((l) => { if (!l[i]) return; if (v) l[i].testo = v; else l.splice(i, 1); });
   }),
   'task-cat-single': (el) => run(() => {
-    const t = currentTask();
-    return updateTask({ tags: { ...t.tags, [el.dataset.cat]: el.value || undefined } });
+    const t = currentItem();
+    return updateItem({ tags: { ...t.tags, [el.dataset.cat]: el.value || undefined } });
   })
 };
 
@@ -376,7 +406,7 @@ export const inputs = {
     if (!el.value.trim()) return;
     // Clic su un suggerimento (o nome esistente scritto per intero): il tag si aggiunge subito.
     const hit = findTag(cat(catId), el.value);
-    if (hit && !values(currentTask(), catId).includes(hit.id)) run(() => addTag(el));
+    if (hit && !values(currentItem(), catId).includes(hit.id)) run(() => addTag(el));
   }
 };
 
@@ -404,16 +434,16 @@ export const keydowns = {
     const catId = el.dataset.cat;
     const v = el.value.trim();
     run(async () => {
-      const t = currentTask();
+      const t = currentItem();
       const vals = values(t, catId);
-      if (!vals.includes(v)) await updateTask({ tags: { ...t.tags, [catId]: [...vals, v] } });
+      if (!vals.includes(v)) await updateItem({ tags: { ...t.tags, [catId]: [...vals, v] } });
       document.querySelector(`[data-keydown="task-text-add"][data-cat="${catId}"]`)?.focus();
     });
   },
   'desc-key': (el, e) => {
     if (mentionKey(e, insertMention)) return;
     // Esc torna alla lettura; in un task nuovo chiude il pannello come sempre.
-    if (e.key === 'Escape' && S.ui.openTask !== 'new') {
+    if (e.key === 'Escape' && openId() !== 'new') {
       e.preventDefault();
       e.stopPropagation();
       run(closeDescription);

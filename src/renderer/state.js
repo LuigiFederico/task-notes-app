@@ -23,6 +23,9 @@ export const S = {
     fTag: '',
     openTask: null,     // id del task aperto nel pannello, oppure 'new'
     draft: null,        // task nuovo non ancora salvato
+    openNote: null,     // id dell'appunto aperto nel pannello, oppure 'new' (mai insieme a openTask)
+    noteDraft: null,    // appunto nuovo non ancora salvato
+    noteSearch: '',
     recentDone: {},     // task completati in questa sessione: restano visibili barrati
     projectTab: 'open',
     projFilter: 'attivo',
@@ -49,8 +52,10 @@ export function extraCats() { return S.data.categories.filter((c) => !c.sistema)
 // Categorie utente fatte di tag: le categorie a testo libero non hanno chip, filtri né raggruppamenti.
 export function tagCats() { return extraCats().filter((c) => c.tipo !== 'testo'); }
 export function task(id) { return S.data.tasks.find((t) => t.id === id); }
-// Elemento a cui punta un collegamento o una menzione (per ora solo task).
-export function ref(id) { return task(id) || null; }
+export function note(id) { return S.data.notes.find((n) => n.id === id); }
+export const isNoteId = (id) => /^A-/.test(String(id));
+// Elemento a cui punta un collegamento o una menzione: un task (T-…) o un appunto (A-…).
+export function ref(id) { return (isNoteId(id) ? note(id) : task(id)) || null; }
 
 export function isClosed(t) { const s = tagOf('stato', t.stato); return !!(s && s.chiuso); }
 export function openStates() { return (cat('stato')?.tags || []).filter((t) => !t.chiuso); }
@@ -96,5 +101,6 @@ export function sortTasks(list) {
 }
 
 export function projectTasks(code) { return S.data.tasks.filter((t) => t.progetto === code); }
+export function projectNotes(code) { return S.data.notes.filter((n) => n.progetto === code); }
 export function openCount(code) { return openTasks(projectTasks(code)).length; }
 export function activeProjects() { return S.data.projects.filter((p) => p.stato !== 'archiviato'); }

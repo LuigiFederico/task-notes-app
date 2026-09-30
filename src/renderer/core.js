@@ -1,11 +1,13 @@
 // Nucleo dell'interfaccia: disegno di #app, ricarica dai file, avvisi ed errori.
 // Gli handler in handlers/ usano queste funzioni; qui non si importa mai un handler.
 import { S, task, openTasks, tagCats } from './state.js';
-import { visibleTasks } from './selectors.js';
+import { visibleTasks, visibleNotes } from './selectors.js';
 import { esc } from './lib/util.js';
 import { sidebar } from './views/sidebar.js';
 import { tasksView, taskList } from './views/tasks.js';
 import { taskPanel } from './views/taskPanel.js';
+import { notesView, noteList } from './views/notes.js';
+import { notePanel } from './views/notePanel.js';
 import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView } from './views/tags.js';
@@ -27,6 +29,7 @@ function viewHtml() {
     case 'tags': return tagsView();
     case 'tag': return tagView(v.cat, v.tag);
     case 'settings': return settingsView();
+    case 'notes': return notesView();
     default: return tasksView();
   }
 }
@@ -49,7 +52,8 @@ export function render() {
   if (!S.config || !S.config.ready || S.view.name === 'setup') {
     root.innerHTML = setupView();
   } else {
-    root.innerHTML = `<div class="app${S.ui.openTask ? ' with-panel' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${taskPanel()}</div>`;
+    const panel = S.ui.openNote ? notePanel() : taskPanel();
+    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
 
@@ -70,7 +74,7 @@ export function render() {
 // Posa di base del corvo in funzione di ciò che si vede.
 function updateMascot() {
   const ready = S.config && S.config.ready && S.data && S.view.name !== 'setup';
-  mascot.setLayout({ panelOpen: !!S.ui.openTask, hidden: !ready });
+  mascot.setLayout({ panelOpen: !!(S.ui.openTask || S.ui.openNote), hidden: !ready });
   if (!ready) return;
   const open = openTasks().length;
   let base = 'riposo';
@@ -86,6 +90,13 @@ export function renderList() {
     el.innerHTML = taskList(visibleTasks(), S.ui.groupBy);
     updateMascot();
   } else render();
+}
+
+// Ridisegna solo la lista degli appunti (durante la ricerca).
+export function renderNotes() {
+  const el = document.getElementById('note-list');
+  if (el) el.innerHTML = noteList(visibleNotes());
+  else render();
 }
 
 export function autosizeTitle() {

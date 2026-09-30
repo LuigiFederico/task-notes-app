@@ -165,7 +165,7 @@ collegamenti:
 Testo libero in Markdown, anche con menzioni come @T-042.
 ```
 
-Un appunto ha un ID sequenziale come i task (`A-001`, …) che non cambia mai, così i collegamenti e le menzioni restano validi anche se il titolo cambia. Ha le stesse categorie utente e gli stessi collegamenti dei task, ma non stato, priorità o scadenza.
+Gli appunti si scrivono dalla sezione Appunti (o dalla pagina del progetto) in un pannello come quello dei task. Un appunto ha un ID sequenziale come i task (`A-001`, …) che non cambia mai, così i collegamenti e le menzioni restano validi anche se il titolo cambia. Ha le stesse categorie utente e gli stessi collegamenti dei task, ma non stato, priorità o scadenza.
 
 ### Progetto
 
