@@ -6,6 +6,7 @@ const os = require('os');
 const path = require('path');
 const fm = require('../src/main/frontmatter');
 const { Store, slugify } = require('../src/main/store');
+const formats = require('../src/main/formats');
 
 function tmpDir() { return fs.mkdtempSync(path.join(os.tmpdir(), 'taccuino-')); }
 
@@ -26,6 +27,48 @@ test('front matter: file scritto a mano con liste inline e CRLF', () => {
 test('slugify', () => {
   assert.strictEqual(slugify('Attesa altri!'), 'attesa-altri');
   assert.strictEqual(slugify('Priorità'), 'priorita');
+});
+
+test('formato: un task fa andata e ritorno, con le categorie utente come chiavi in cima al file', () => {
+  const t = {
+    id: 'T-007', titolo: 'Preparare: slide', progetto: 'VEND', stato: 'in-corso', priorita: 'alta', scadenza: '2026-10-01',
+    creato: '2026-09-01', aggiornato: '2026-09-02', completato: null,
+    tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio', vuota: null }, storico: ['2026-09-01 Creato'], descrizione: 'Note\n\n- punto'
+  };
+  const text = formats.serializeTask(t);
+  assert.match(text, /^contesto: ufficio$/m);
+  assert.doesNotMatch(text, /vuota/);
+  const back = formats.parseTask(text, 'T-007');
+  assert.deepStrictEqual(back, { ...t, tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio' } });
+  // l'ID viene dal nome del file, non dal campo id
+  assert.strictEqual(formats.parseTask(text, 'T-007-PC').id, 'T-007-PC');
+});
+
+test('formato: storico dei cambi con i nomi di stato e priorità', () => {
+  const cats = [
+    { id: 'stato', tags: [{ id: 'da-fare', nome: 'Da fare' }, { id: 'fatto', nome: 'Fatto' }] },
+    { id: 'priorita', tags: [{ id: 'alta', nome: 'Alta' }] }
+  ];
+  const now = '2026-09-30';
+  assert.deepStrictEqual(formats.taskHistory(null, {}, cats, now), ['2026-09-30 Creato']);
+  const prev = { stato: 'da-fare', priorita: null, scadenza: '2026-10-01', progetto: 'VEND' };
+  assert.deepStrictEqual(formats.taskHistory(prev, { ...prev }, cats, now), []);
+  assert.deepStrictEqual(formats.taskHistory(prev, { stato: 'fatto', priorita: 'alta', scadenza: null, progetto: 'ECOM' }, cats, now), [
+    '2026-09-30 Stato: Da fare → Fatto',
+    '2026-09-30 Priorità: — → Alta',
+    '2026-09-30 Scadenza: 2026-10-01 → —',
+    '2026-09-30 Progetto: VEND → ECOM'
+  ]);
+});
+
+test('formato: categorie senza file descrittivo e categorie di sistema', () => {
+  assert.deepStrictEqual(formats.parseCategory(null, 'contesto'),
+    { id: 'contesto', nome: 'contesto', tipo: 'multipla', obbligatoria: false, ordine: 99, descrizione: '', sistema: false, tags: [] });
+  // stato e priorità restano a scelta singola anche se il file dice altro
+  const stato = formats.parseCategory(formats.serializeCategory({ nome: 'Stato', tipo: 'multipla' }, 'stato'), 'stato');
+  assert.deepStrictEqual([stato.tipo, stato.sistema], ['singola', true]);
+  assert.match(formats.serializeTag({ nome: 'Fatto', chiuso: true }, 'fatto', 'stato'), /^chiuso: true$/m);
+  assert.doesNotMatch(formats.serializeTag({ nome: 'Alta', chiuso: true }, 'alta', 'priorita'), /chiuso/);
 });
 
 test('init crea struttura e categorie di base', async () => {

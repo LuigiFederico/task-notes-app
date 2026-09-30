@@ -8,17 +8,22 @@
 //     tags/<categoria>/_categoria.md
 //     tags/<categoria>/<tag>.md     un file per tag (descrizione nel corpo)
 //     .cestino/<data_ora>/…         elementi eliminati, con voce.json (tipo, nome, percorso)
+//
+// Qui stanno le letture, le scritture e le regole sui dati; il formato dei file è in formats.js.
 
 const fs = require('fs');
 const fsp = fs.promises;
 const path = require('path');
 const fm = require('./frontmatter');
+const { readDirSafe, renameRetry, writeAtomic } = require('./fsutil');
+const {
+  SYSTEM_CATEGORIES, slugify, today, stamp, isSafeName, idNum,
+  parseTask, serializeTask, taskHistory, parseProject, serializeProject,
+  parseCategory, serializeCategory, parseTag, serializeTag
+} = require('./formats');
 
-const SYSTEM_CATEGORIES = ['stato', 'priorita'];
 const TRASH = '.cestino';
-const RETRY_CODES = ['EPERM', 'EBUSY'];
-const RETRY_WAIT = [100, 200, 300, 400];
-const TASK_KEYS = ['id', 'titolo', 'progetto', 'stato', 'priorita', 'scadenza', 'creato', 'aggiornato', 'completato'];
+const CONFIG = 'taccuino.json';
 
 const DEFAULT_CATEGORIES = [
   { id: 'stato', nome: 'Stato', tipo: 'singola', obbligatoria: true, ordine: 1,
@@ -40,50 +45,23 @@ const DEFAULT_CATEGORIES = [
     descrizione: 'Etichette libere, trasversali ai progetti.', tags: [] }
 ];
 
-function slugify(s) {
-  return String(s || '')
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
-    .slice(0, 60) || 'tag';
+// Unisce i segmenti a una cartella rifiutando i nomi che potrebbero uscirne (.., separatori, percorsi assoluti).
+function safeJoin(base, parts) {
+  for (const part of parts) if (!isSafeName(part)) throw new Error('Nome file non valido: ' + part);
+  return path.join(base, ...parts);
 }
 
-function today() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function isSafeName(name) {
-  return /^[A-Za-z0-9_][A-Za-z0-9_.-]*$/.test(name) && !name.includes('..');
-}
-
-async function readDirSafe(dir) {
-  try { return await fsp.readdir(dir, { withFileTypes: true }); } catch { return []; }
-}
-
-function stamp(d = new Date()) {
-  const p = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
-}
-
-// OneDrive può tenere bloccato un file per qualche istante: riprova prima di arrendersi.
-async function renameRetry(from, to) {
-  for (let i = 0; ; i++) {
-    try { return await fsp.rename(from, to); } catch (err) {
-      if (!RETRY_CODES.includes(err.code) || i >= RETRY_WAIT.length) throw err;
-      await new Promise((r) => setTimeout(r, RETRY_WAIT[i]));
-    }
+// Legge tutti i .md di una cartella: un file illeggibile si salta e si segnala in console.
+async function readMdDir(dir, parse, label) {
+  const out = [];
+  for (const e of await readDirSafe(dir)) {
+    if (!e.isFile() || !e.name.endsWith('.md')) continue;
+    try { out.push(parse(await fsp.readFile(path.join(dir, e.name), 'utf8'), e.name.slice(0, -3))); } catch (err) { console.error(label, e.name, err); }
   }
+  return out;
 }
 
-async function writeAtomic(file, content) {
-  await fsp.mkdir(path.dirname(file), { recursive: true });
-  const tmp = file + '.tmp-' + process.pid;
-  await fsp.writeFile(tmp, content, 'utf8');
-  try { await renameRetry(tmp, file); } catch (err) {
-    await fsp.rm(tmp, { force: true }).catch(() => {});
-    throw err;
-  }
-}
+const byOrderThenName = (a, b) => a.ordine - b.ordine || a.nome.localeCompare(b.nome, 'it');
 
 class Store {
   constructor(dir) {
@@ -91,29 +69,29 @@ class Store {
     this.lastWrite = 0;
   }
 
-  p(...parts) {
-    for (const part of parts) if (!isSafeName(part)) throw new Error('Nome file non valido: ' + part);
-    return path.join(this.dir, ...parts);
-  }
+  p(...parts) { return safeJoin(this.dir, parts); }
+  trashPath(entry, ...parts) { return safeJoin(path.join(this.dir, TRASH), [entry, ...parts]); }
 
+  // lastWrite permette al watcher di main.js di ignorare le modifiche fatte dall'app stessa.
   async write(file, content) { this.lastWrite = Date.now(); await writeAtomic(file, content); this.lastWrite = Date.now(); }
   async remove(file) { this.lastWrite = Date.now(); await fsp.rm(file, { force: true, recursive: true }); }
 
   async readConfig() {
-    try { return JSON.parse(await fsp.readFile(path.join(this.dir, 'taccuino.json'), 'utf8')); } catch { return {}; }
+    try { return JSON.parse(await fsp.readFile(path.join(this.dir, CONFIG), 'utf8')); } catch { return {}; }
   }
 
+  async writeConfig(cfg) { await this.write(path.join(this.dir, CONFIG), JSON.stringify(cfg, null, 2) + '\n'); }
+
   static async isDataFolder(dir) {
-    try { await fsp.access(path.join(dir, 'taccuino.json')); return true; } catch { return false; }
+    try { await fsp.access(path.join(dir, CONFIG)); return true; } catch { return false; }
   }
 
   // Crea la struttura se manca. Non sovrascrive nulla di esistente.
   async init({ withDefaultProject = false } = {}) {
     await fsp.mkdir(this.dir, { recursive: true });
     for (const d of ['tasks', 'projects', 'tags']) await fsp.mkdir(path.join(this.dir, d), { recursive: true });
-    const cfgFile = path.join(this.dir, 'taccuino.json');
     const isNew = !(await Store.isDataFolder(this.dir));
-    if (isNew) await this.write(cfgFile, JSON.stringify({ app: 'Taccuino', version: 1, creato: today() }, null, 2) + '\n');
+    if (isNew) await this.writeConfig({ app: 'Taccuino', version: 1, creato: today() });
     for (const cat of DEFAULT_CATEGORIES) {
       const catFile = path.join(this.dir, 'tags', cat.id, '_categoria.md');
       if (fs.existsSync(catFile)) continue;
@@ -134,50 +112,10 @@ class Store {
     return { dir: this.dir, categories, projects, tasks, cestino: await this.listTrash() };
   }
 
-  // ---------- Task ----------
+  // ---------- Task
   async loadTasks() {
-    const dir = path.join(this.dir, 'tasks');
-    const out = [];
-    for (const e of await readDirSafe(dir)) {
-      if (!e.isFile() || !e.name.endsWith('.md')) continue;
-      try { out.push(this.parseTask(await fsp.readFile(path.join(dir, e.name), 'utf8'), e.name.slice(0, -3))); } catch (err) { console.error('Task illeggibile', e.name, err); }
-    }
+    const out = await readMdDir(path.join(this.dir, 'tasks'), parseTask, 'Task illeggibile');
     return out.sort((a, b) => idNum(b.id) - idNum(a.id));
-  }
-
-  parseTask(text, fallbackId) {
-    const { data, body } = fm.parse(text);
-    const tags = {};
-    for (const [k, v] of Object.entries(data)) {
-      if (TASK_KEYS.includes(k) || k === 'storico') continue;
-      tags[k] = Array.isArray(v) ? v.map(String) : v == null ? null : String(v);
-    }
-    return {
-      // L'ID è il nome del file: una copia di conflitto di OneDrive (T-042-PC.md) resta un task distinto.
-      id: String(fallbackId || data.id),
-      titolo: data.titolo == null ? '' : String(data.titolo),
-      progetto: data.progetto == null ? '' : String(data.progetto),
-      stato: data.stato == null ? 'da-fare' : String(data.stato),
-      priorita: data.priorita == null ? null : String(data.priorita),
-      scadenza: data.scadenza == null ? null : String(data.scadenza),
-      creato: data.creato == null ? null : String(data.creato),
-      aggiornato: data.aggiornato == null ? null : String(data.aggiornato),
-      completato: data.completato == null ? null : String(data.completato),
-      tags,
-      storico: Array.isArray(data.storico) ? data.storico.map(String) : [],
-      descrizione: body
-    };
-  }
-
-  serializeTask(t) {
-    const data = {};
-    for (const k of TASK_KEYS) data[k] = t[k] == null || t[k] === '' ? null : t[k];
-    for (const [k, v] of Object.entries(t.tags || {})) {
-      if (TASK_KEYS.includes(k) || k === 'storico' || !isSafeName(k)) continue;
-      if (Array.isArray(v)) data[k] = v; else if (v) data[k] = v;
-    }
-    data.storico = t.storico || [];
-    return fm.stringify(data, t.descrizione || '');
   }
 
   // Conta anche i task nel cestino e quelli già cancellati per sempre (ultimoId): un ID non torna mai.
@@ -188,12 +126,13 @@ class Store {
     return 'T-' + String(max + 1).padStart(3, '0');
   }
 
+  // Salva un task nuovo (senza id) o esistente: aggiorna date, completato e storico rispetto alla versione su disco.
   async saveTask(input, categories) {
     const t = JSON.parse(JSON.stringify(input));
     const now = today();
     let prev = null;
     if (t.id) {
-      try { prev = this.parseTask(await fsp.readFile(this.p('tasks', t.id + '.md'), 'utf8'), t.id); } catch { prev = null; }
+      try { prev = parseTask(await fsp.readFile(this.p('tasks', t.id + '.md'), 'utf8'), t.id); } catch { prev = null; }
     } else {
       t.id = await this.nextTaskId();
     }
@@ -201,21 +140,14 @@ class Store {
     t.stato = t.stato || 'da-fare';
     t.creato = prev ? prev.creato || t.creato || now : t.creato || now;
     t.aggiornato = now;
-    t.storico = prev ? prev.storico.slice() : [];
     const cats = categories || (await this.loadCategories());
+    // completato si imposta entrando in uno stato "chiuso" e si toglie uscendone.
     const closed = new Set(((cats.find((c) => c.id === 'stato') || {}).tags || []).filter((x) => x.chiuso).map((x) => x.id));
     if (closed.has(t.stato)) t.completato = (prev && closed.has(prev.stato) && prev.completato) || t.completato || now;
     else t.completato = null;
-    if (!prev) t.storico.push(`${now} Creato`);
-    else {
-      const name = (catId, v) => { const c = cats.find((x) => x.id === catId); const tag = c && c.tags.find((x) => x.id === v); return tag ? tag.nome : v || '—'; };
-      if (prev.stato !== t.stato) t.storico.push(`${now} Stato: ${name('stato', prev.stato)} → ${name('stato', t.stato)}`);
-      if ((prev.priorita || null) !== (t.priorita || null)) t.storico.push(`${now} Priorità: ${name('priorita', prev.priorita)} → ${name('priorita', t.priorita)}`);
-      if ((prev.scadenza || null) !== (t.scadenza || null)) t.storico.push(`${now} Scadenza: ${prev.scadenza || '—'} → ${t.scadenza || '—'}`);
-      if (prev.progetto !== t.progetto) t.storico.push(`${now} Progetto: ${prev.progetto || '—'} → ${t.progetto || '—'}`);
-    }
-    await this.write(this.p('tasks', t.id + '.md'), this.serializeTask(t));
-    return this.parseTask(this.serializeTask(t), t.id);
+    t.storico = [...(prev ? prev.storico : []), ...taskHistory(prev, t, cats, now)];
+    await this.write(this.p('tasks', t.id + '.md'), serializeTask(t));
+    return parseTask(serializeTask(t), t.id);
   }
 
   async deleteTask(id) {
@@ -223,60 +155,20 @@ class Store {
     await this.trash('task', titolo ? `${id} · ${titolo}` : id, 'tasks', id + '.md');
   }
 
-  // ---------- Progetti ----------
+  async writeTask(t) { await this.write(this.p('tasks', t.id + '.md'), serializeTask(t)); }
+
+  // ---------- Progetti
   async loadProjects() {
-    const dir = path.join(this.dir, 'projects');
-    const out = [];
-    for (const e of await readDirSafe(dir)) {
-      if (!e.isFile() || !e.name.endsWith('.md')) continue;
-      try { out.push(this.parseProject(await fsp.readFile(path.join(dir, e.name), 'utf8'), e.name.slice(0, -3))); } catch (err) { console.error('Progetto illeggibile', e.name, err); }
-    }
+    const out = await readMdDir(path.join(this.dir, 'projects'), parseProject, 'Progetto illeggibile');
     return out.sort((a, b) => (a.ordine ?? 999) - (b.ordine ?? 999) || a.nome.localeCompare(b.nome, 'it'));
-  }
-
-  parseProject(text, fallback) {
-    const { data, body } = fm.parse(text);
-    const idx = body.search(/^## Decisioni\s*$/m);
-    const descr = (idx === -1 ? body : body.slice(0, idx)).replace(/^## Descrizione\s*\n/m, '').trim();
-    const decisioni = [];
-    if (idx !== -1) {
-      const blocks = body.slice(idx).split(/^### /m).slice(1);
-      for (const b of blocks) {
-        const [first, ...rest] = b.split('\n');
-        const m = first.match(/^(\d{4}-\d{2}-\d{2})\s*[·—-]\s*(.*)$/);
-        let task = null;
-        const lines = rest.filter((l) => { const tm = l.match(/^Task:\s*(\S+)\s*$/); if (tm) { task = tm[1]; return false; } return true; });
-        decisioni.push({ data: m ? m[1] : null, titolo: (m ? m[2] : first).trim(), testo: lines.join('\n').trim(), task });
-      }
-    }
-    return {
-      codice: String(data.codice || fallback),
-      nome: data.nome == null ? String(fallback) : String(data.nome),
-      colore: data.colore ? String(data.colore) : '#2F5BD3',
-      stato: data.stato ? String(data.stato) : 'attivo',
-      creato: data.creato ? String(data.creato) : null,
-      ordine: typeof data.ordine === 'number' ? data.ordine : null,
-      descrizione: descr,
-      decisioni: decisioni.sort((a, b) => String(b.data).localeCompare(String(a.data)))
-    };
-  }
-
-  serializeProject(p) {
-    let body = '## Descrizione\n\n' + (p.descrizione || '').trim() + '\n\n## Decisioni\n';
-    for (const d of p.decisioni || []) {
-      body += `\n### ${d.data || today()} · ${String(d.titolo || '').replace(/\n/g, ' ')}\n`;
-      if (d.testo) body += '\n' + d.testo.trim() + '\n';
-      if (d.task) body += `\nTask: ${d.task}\n`;
-    }
-    return fm.stringify({ codice: p.codice, nome: p.nome, colore: p.colore, stato: p.stato || 'attivo', creato: p.creato || today(), ordine: p.ordine ?? null }, body);
   }
 
   async saveProject(p) {
     const codice = String(p.codice || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
     if (!codice) throw new Error('Il codice progetto è obbligatorio.');
     const out = { ...p, codice, nome: String(p.nome || codice).trim() };
-    await this.write(this.p('projects', codice + '.md'), this.serializeProject(out));
-    return this.parseProject(this.serializeProject(out), codice);
+    await this.write(this.p('projects', codice + '.md'), serializeProject(out));
+    return parseProject(serializeProject(out), codice);
   }
 
   async deleteProject(codice) {
@@ -285,38 +177,24 @@ class Store {
     await this.trash('progetto', await this.displayName(this.p('projects', codice + '.md'), codice), 'projects', codice + '.md');
   }
 
-  // ---------- Categorie e tag ----------
+  // ---------- Categorie e tag
   async loadCategories() {
     const root = path.join(this.dir, 'tags');
     const out = [];
     for (const e of await readDirSafe(root)) {
       if (!e.isDirectory() || !isSafeName(e.name)) continue;
       const dir = path.join(root, e.name);
-      let cat = { id: e.name, nome: e.name, tipo: 'multipla', obbligatoria: false, ordine: 99, descrizione: '' };
-      try {
-        const { data, body } = fm.parse(await fsp.readFile(path.join(dir, '_categoria.md'), 'utf8'));
-        cat = { ...cat, nome: data.nome ? String(data.nome) : e.name, tipo: data.tipo === 'singola' ? 'singola' : 'multipla', obbligatoria: data.obbligatoria === true, ordine: typeof data.ordine === 'number' ? data.ordine : 99, descrizione: body };
-      } catch { /* categoria senza file descrittivo */ }
-      if (SYSTEM_CATEGORIES.includes(cat.id)) cat.tipo = 'singola';
-      cat.sistema = SYSTEM_CATEGORIES.includes(cat.id);
-      cat.tags = [];
-      for (const f of await readDirSafe(dir)) {
-        if (!f.isFile() || !f.name.endsWith('.md') || f.name === '_categoria.md') continue;
-        try {
-          const { data, body } = fm.parse(await fsp.readFile(path.join(dir, f.name), 'utf8'));
-          cat.tags.push({ id: f.name.slice(0, -3), nome: data.nome ? String(data.nome) : f.name.slice(0, -3), colore: data.colore ? String(data.colore) : '#6B675E', ordine: typeof data.ordine === 'number' ? data.ordine : 99, chiuso: data.chiuso === true, creato: data.creato ? String(data.creato) : null, descrizione: body });
-        } catch (err) { console.error('Tag illeggibile', f.name, err); }
-      }
-      cat.tags.sort((a, b) => a.ordine - b.ordine || a.nome.localeCompare(b.nome, 'it'));
+      const text = await fsp.readFile(path.join(dir, '_categoria.md'), 'utf8').catch(() => null);   // categoria senza file descrittivo
+      const cat = parseCategory(text, e.name);
+      cat.tags = (await readMdDir(dir, parseTag, 'Tag illeggibile')).filter((t) => t.id !== '_categoria').sort(byOrderThenName);
       out.push(cat);
     }
-    return out.sort((a, b) => a.ordine - b.ordine || a.nome.localeCompare(b.nome, 'it'));
+    return out.sort(byOrderThenName);
   }
 
   async saveCategory(c) {
     const id = c.id || slugify(c.nome);
-    const data = { nome: c.nome || id, tipo: SYSTEM_CATEGORIES.includes(id) ? 'singola' : c.tipo === 'singola' ? 'singola' : 'multipla', obbligatoria: !!c.obbligatoria, ordine: c.ordine ?? 99 };
-    await this.write(this.p('tags', id, '_categoria.md'), fm.stringify(data, c.descrizione || ''));
+    await this.write(this.p('tags', id, '_categoria.md'), serializeCategory(c, id));
     return id;
   }
 
@@ -326,6 +204,7 @@ class Store {
     await this.stripFromTasks(id, null);
   }
 
+  // Un tag nuovo prende l'ID dal nome; se esiste già si aggiunge un numero (riunione-2).
   async saveTag(catId, t) {
     let id = t.id;
     if (!id) {
@@ -333,10 +212,7 @@ class Store {
       let n = 2;
       while (fs.existsSync(this.p('tags', catId, id + '.md'))) id = slugify(t.nome) + '-' + n++;
     }
-    const data = { nome: t.nome || id, colore: t.colore || '#6B675E', ordine: t.ordine ?? 99 };
-    if (catId === 'stato') data.chiuso = !!t.chiuso;
-    data.creato = t.creato || today();
-    await this.write(this.p('tags', catId, id + '.md'), fm.stringify(data, t.descrizione || ''));
+    await this.write(this.p('tags', catId, id + '.md'), serializeTag(t, id, catId));
     return id;
   }
 
@@ -364,33 +240,34 @@ class Store {
       if (Array.isArray(v) && v.includes(fromId)) t.tags[catId] = Array.from(new Set(v.map((x) => (x === fromId ? toId : x))));
       else if (v === fromId) t.tags[catId] = toId;
       else continue;
-      await this.write(this.p('tasks', t.id + '.md'), this.serializeTask(t));
+      await this.writeTask(t);
     }
     await this.trash('tag', await this.displayName(this.p('tags', catId, fromId + '.md'), fromId), 'tags', catId, fromId + '.md');
   }
 
+  // Toglie un tag (o, con tagId null, tutta la categoria) dai task che lo usano.
   async stripFromTasks(catId, tagId) {
     const tasks = await this.loadTasks();
     for (const t of tasks) {
       const v = t.tags[catId];
       if (v === undefined) continue;
       if (tagId === null) delete t.tags[catId];
-      else if (Array.isArray(v)) { if (!v.includes(tagId)) continue; t.tags[catId] = v.filter((x) => x !== tagId); }
-      else if (v === tagId) delete t.tags[catId];
+      else if (Array.isArray(v)) {
+        if (!v.includes(tagId)) continue;
+        t.tags[catId] = v.filter((x) => x !== tagId);
+      } else if (v === tagId) delete t.tags[catId];
       else continue;
-      await this.write(this.p('tasks', t.id + '.md'), this.serializeTask(t));
+      await this.writeTask(t);
     }
   }
 
-  // ---------- Cestino ----------
-  trashPath(entry, ...parts) {
-    for (const part of [entry, ...parts]) if (!isSafeName(part)) throw new Error('Nome file non valido: ' + part);
-    return path.join(this.dir, TRASH, entry, ...parts);
-  }
-
+  // ---------- Cestino
   // Nome leggibile di un file che sta per finire nel cestino.
   async displayName(file, fallback) {
-    try { const { data } = fm.parse(await fsp.readFile(file, 'utf8')); return String(data.titolo || data.nome || fallback); } catch { return fallback; }
+    try {
+      const { data } = fm.parse(await fsp.readFile(file, 'utf8'));
+      return String(data.titolo || data.nome || fallback);
+    } catch { return fallback; }
   }
 
   // Sposta un file o una cartella in .cestino/<data_ora>/, mantenendo il percorso relativo.
@@ -451,12 +328,10 @@ class Store {
     if (ids.length) {
       const cfg = await this.readConfig();
       const max = Math.max(...ids);
-      if ((Number(cfg.ultimoId) || 0) < max) await this.write(path.join(this.dir, 'taccuino.json'), JSON.stringify({ ...cfg, ultimoId: max }, null, 2) + '\n');
+      if ((Number(cfg.ultimoId) || 0) < max) await this.writeConfig({ ...cfg, ultimoId: max });
     }
     for (const v of entries) await this.remove(this.trashPath(v.id));
   }
 }
-
-function idNum(id) { const m = String(id).match(/(\d+)/); return m ? parseInt(m[1], 10) : 0; }
 
 module.exports = { Store, slugify, today };
