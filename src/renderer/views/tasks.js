@@ -2,7 +2,7 @@ import { S, cat, project, activeProjects, extraCats, sortTasks, openTasks } from
 import { visibleTasks, groupDefs, emptyReason } from '../selectors.js';
 import { esc, safeColor, fmtToday } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { taskRow, taskHeader, segmented, emptyState } from './components.js';
+import { taskRow, taskHeader, segmented, emptyState, options } from './components.js';
 
 export function taskList(list, by, { showProject = true } = {}) {
   const groups = groupDefs(by).map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) })).filter((g) => g.items.length);
@@ -29,7 +29,7 @@ export function tasksView() {
     <label class="filter${value ? ' on' : ''}"><span class="sr">${label}</span>
       <select data-change="filter" data-name="${name}">
         <option value="">${label}: tutti</option>
-        ${opts.map(([v, l]) => `<option value="${esc(v)}"${v === value ? ' selected' : ''}>${esc(l)}</option>`).join('')}
+        ${options(opts, value)}
       </select>${icon.chevron(12)}</label>`;
   const anyFilter = u.fProject || u.fPrio || u.fTag || u.search;
   return `

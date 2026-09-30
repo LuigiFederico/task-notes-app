@@ -2,12 +2,9 @@ import { S, cat, values, TAG_COLORS, projectTasks, openTasks } from '../state.js
 import { tagUsage } from '../selectors.js';
 import { esc, safeColor } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox } from './components.js';
+import { confirmBox, colorPicker, options, select } from './components.js';
 
-export function swatches(current, action, extra = '') {
-  return `<div class="row-6 wrap" role="radiogroup" aria-label="Colore">${TAG_COLORS.map((c) =>
-    `<button type="button" role="radio" aria-checked="${c === current}" class="swatch sm${c === current ? ' on' : ''}" style="background:${c}" data-action="${action}" data-value="${c}" ${extra} aria-label="Colore ${c}"></button>`).join('')}</div>`;
-}
+const KINDS = [['multipla', 'Scelta multipla'], ['singola', 'Scelta singola']];
 
 function kindLabel(c) { return (c.tipo === 'singola' ? 'Scelta singola' : 'Scelta multipla'); }
 
@@ -21,7 +18,7 @@ export function tagsView() {
   const newCat = S.ui.editing === 'cat-new' ? `
     <form class="card pad stack-10 form" data-submit="create-category">
       <label class="field"><span>Nome categoria</span><input name="nome" required placeholder="Es. Contesto" autofocus></label>
-      <label class="field"><span>Tipo</span><span class="select-wrap"><select name="tipo"><option value="multipla">Scelta multipla</option><option value="singola">Scelta singola</option></select>${icon.chevron(12)}</span></label>
+      <label class="field"><span>Tipo</span>${select('name="tipo"', options(KINDS))}</label>
       <div class="row-8 end"><button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Crea</button></div>
     </form>` : `<button class="dashed-btn" data-action="edit" data-key="cat-new">${icon.plus(14)}Nuova categoria</button>`;
 
@@ -49,7 +46,7 @@ export function tagsView() {
         return `<form class="tag-edit" data-submit="save-tag" data-cat="${esc(c.id)}" data-tag="${esc(t.id)}">
           <div class="row-10 wrap"><label class="field grow"><span>Nome</span><input name="nome" required value="${esc(t.nome)}" autofocus></label>
           ${c.id === 'stato' ? `<label class="toggle"><input type="checkbox" name="chiuso" ${t.chiuso ? 'checked' : ''}>Conta come chiuso</label>` : ''}</div>
-          <div class="field"><span>Colore</span>${swatches(S.ui.tagColor || t.colore, 'tag-color')}</div>
+          <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, S.ui.tagColor || t.colore, 'tag-color', { small: true })}</div>
           <div class="row-8"><button type="button" class="btn-link small" data-action="go" data-view="tag" data-cat="${esc(c.id)}" data-tag="${esc(t.id)}">Apri pagina e descrizione</button><span class="grow"></span>
           <button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Salva</button></div>
         </form>`;
@@ -69,13 +66,13 @@ export function tagsView() {
     const newTag = S.ui.editing === 'tag-new' ? `
       <form class="tag-edit" data-submit="create-tag" data-cat="${esc(c.id)}">
         <label class="field"><span>Nome del nuovo tag</span><input name="nome" required autofocus></label>
-        <div class="field"><span>Colore</span>${swatches(S.ui.tagColor || TAG_COLORS[c.tags.length % TAG_COLORS.length], 'tag-color')}</div>
+        <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, S.ui.tagColor || TAG_COLORS[c.tags.length % TAG_COLORS.length], 'tag-color', { small: true })}</div>
         <div class="row-8 end"><button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Aggiungi</button></div>
       </form>` : `<button class="add-row" data-action="edit" data-key="tag-new">${icon.plus(14)}Aggiungi ${c.id === 'stato' ? 'uno stato' : c.id === 'priorita' ? 'un livello' : 'un tag'}</button>`;
     const head = editingCat ? `
       <form class="cat-head form" data-submit="save-category" data-cat="${esc(c.id)}">
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(c.nome)}"></label>
-        ${c.sistema ? '' : `<label class="field"><span>Tipo</span><span class="select-wrap"><select name="tipo"><option value="multipla"${c.tipo !== 'singola' ? ' selected' : ''}>Scelta multipla</option><option value="singola"${c.tipo === 'singola' ? ' selected' : ''}>Scelta singola</option></select>${icon.chevron(12)}</span></label>`}
+        ${c.sistema ? '' : `<label class="field"><span>Tipo</span>${select('name="tipo"', options(KINDS, c.tipo === 'singola' ? 'singola' : 'multipla'))}</label>`}
         <label class="field grow2"><span>Descrizione</span><input name="descrizione" value="${esc(c.descrizione)}"></label>
         <div class="row-8 self-end">
           ${c.sistema || confirmCat ? '' : `<button type="button" class="btn-link small danger-text" data-action="ask-confirm" data-key="cat:${esc(c.id)}">Elimina</button>`}

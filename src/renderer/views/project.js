@@ -1,13 +1,7 @@
 import { S, project, projectTasks, isClosed, sortTasks, openTasks, PROJECT_COLORS } from '../state.js';
 import { esc, safeColor, md, fmtFull, todayISO } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { taskRow, taskHeader, segmented, emptyState, confirmBox } from './components.js';
-import { kpiTile } from './projects.js';
-
-function colorPicker(current, action) {
-  return `<div class="row-8" role="radiogroup" aria-label="Colore">${PROJECT_COLORS.map((c) =>
-    `<button role="radio" aria-checked="${c === current}" class="swatch${c === current ? ' on' : ''}" style="background:${c}" data-action="${action}" data-value="${c}" aria-label="Colore ${c}"></button>`).join('')}</div>`;
-}
+import { taskRow, taskHeader, segmented, emptyState, confirmBox, kpiTile, colorPicker, options, select } from './components.js';
 
 export function newProjectView() {
   const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '' };
@@ -19,7 +13,7 @@ export function newProjectView() {
     <form class="card pad stack-16 form" data-submit="create-project">
       <label class="field"><span>Nome</span><input name="nome" required value="${esc(d.nome)}" data-input="project-draft" data-field="nome" placeholder="Es. Dashboard vendite" autofocus></label>
       <label class="field"><span>Codice (tag del progetto)</span><input name="codice" required maxlength="8" value="${esc(d.codice)}" data-input="project-draft" data-field="codice" class="mono" placeholder="VEND"><small class="muted">Da 2 a 8 lettere o numeri. Dà il nome al file e non si può cambiare in seguito.</small></label>
-      <div class="field"><span>Colore</span>${colorPicker(d.colore, 'draft-color')}</div>
+      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, d.colore, 'draft-color')}</div>
       <label class="field"><span>Descrizione</span><textarea name="descrizione" rows="5" data-input="project-draft" data-field="descrizione" placeholder="A cosa serve il progetto (Markdown)">${esc(d.descrizione)}</textarea></label>
       <div class="row-10 end"><button type="button" class="btn" data-action="go" data-view="projects">Annulla</button><button type="submit" class="btn primary">Crea progetto</button></div>
     </form>
@@ -45,9 +39,9 @@ export function projectView(code) {
     <form class="card pad stack-16 form" data-submit="save-project-head">
       <div class="row-16 wrap">
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(p.nome)}"></label>
-        <label class="field"><span>Stato</span><span class="select-wrap"><select name="stato"><option value="attivo"${p.stato !== 'archiviato' ? ' selected' : ''}>Attivo</option><option value="archiviato"${p.stato === 'archiviato' ? ' selected' : ''}>Archiviato</option></select>${icon.chevron(12)}</span></label>
+        <label class="field"><span>Stato</span>${select('name="stato"', options([['attivo', 'Attivo'], ['archiviato', 'Archiviato']], p.stato === 'archiviato' ? 'archiviato' : 'attivo'))}</label>
       </div>
-      <div class="field"><span>Colore</span>${colorPicker(p.colore, 'project-color')}</div>
+      <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, p.colore, 'project-color')}</div>
       ${confirmDel ? confirmBox(`Eliminare «${p.nome}»? Potrai ripristinarlo dal Cestino.`, 'data-action="project-delete"') : ''}
       <div class="row-10">
         ${all.length === 0 ? (confirmDel ? '' : `<button type="button" class="btn-link danger-text" data-action="ask-confirm" data-key="project:${esc(code)}">Elimina progetto</button>`) : '<span class="muted small">Un progetto con task si può archiviare, non eliminare.</span>'}
@@ -84,7 +78,7 @@ export function projectView(code) {
   const decForm = addDec ? `
     <form class="stack-10 form dec-form" data-submit="add-decision">
       <div class="row-8"><label class="field"><span>Data</span><input type="date" name="data" value="${todayISO()}" required></label>
-        <label class="field grow"><span>Task collegato</span><span class="select-wrap"><select name="task"><option value="">Nessuno</option>${sortTasks(all).map((t) => `<option value="${esc(t.id)}">${esc(t.id)} · ${esc(t.titolo)}</option>`).join('')}</select>${icon.chevron(12)}</span></label></div>
+        <label class="field grow"><span>Task collegato</span>${select('name="task"', '<option value="">Nessuno</option>' + options(sortTasks(all).map((t) => [t.id, `${t.id} · ${t.titolo}`])))}</label></div>
       <label class="field"><span>Decisione</span><input name="titolo" required placeholder="Cosa è stato deciso" autofocus></label>
       <label class="field"><span>Dettagli</span><textarea name="testo" rows="3" placeholder="Perché, alternative scartate… (facoltativo)"></textarea></label>
       <div class="row-8 end"><button type="button" class="btn" data-action="cancel-edit">Annulla</button><button type="submit" class="btn primary">Registra</button></div>

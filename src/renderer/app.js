@@ -8,7 +8,8 @@ import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView } from './views/tags.js';
 import { tagView } from './views/tag.js';
-import { setupView, settingsView, updateStatus } from './views/setup.js';
+import { setupView } from './views/setup.js';
+import { settingsView, updateStatus } from './views/settings.js';
 import { mascot } from './mascot.js';
 
 const api = window.api;

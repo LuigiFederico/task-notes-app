@@ -9,6 +9,11 @@ export function safeColor(c, fallback = '#6B675E') {
   return /^#[0-9a-fA-F]{3,8}$/.test(String(c || '')) ? c : fallback;
 }
 
+// Sfondo tenue di un colore già passato da safeColor: aggiunge l'alfa (es. '1A') solo ai #RRGGBB.
+export function tint(c, alpha) {
+  return c.length === 7 ? c + alpha : 'var(--chip)';
+}
+
 const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
 const MESI_LUNGHI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
 const GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];

@@ -1,16 +1,15 @@
-import { S, tagOf, project, isClosed, taskChips } from '../state.js';
-import { esc, safeColor, dueLabel } from '../lib/util.js';
+import { S, cat, tagOf, project, isClosed, taskChips } from '../state.js';
+import { esc, safeColor, tint, dueLabel } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 
 export function statusPill(stateId) {
   const t = tagOf('stato', stateId);
   const c = safeColor(t ? t.colore : '#4A473F');
-  const bg = c.length === 7 ? c + '1A' : 'var(--chip)';
-  return `<span class="pill" style="color:${c};background:${bg}">${esc(t ? t.nome : stateId || '—')}</span>`;
+  return `<span class="pill" style="color:${c};background:${tint(c, '1A')}">${esc(t ? t.nome : stateId || '—')}</span>`;
 }
 
 export function prioIndicator(prioId) {
-  const tags = (S.data.categories.find((c) => c.id === 'priorita') || {}).tags || [];
+  const tags = cat('priorita')?.tags || [];
   const i = tags.findIndex((t) => t.id === prioId);
   if (i === -1) return '<span class="prio muted small">—</span>';
   const t = tags[i];
@@ -70,4 +69,26 @@ export function emptyState(text, action = '') {
 export function segmented(options, current, action, label) {
   return `<div class="segmented" role="group" aria-label="${esc(label)}">${options.map(([v, l, extra]) =>
     `<button data-action="${action}" data-value="${esc(v)}" aria-pressed="${v === current}" class="${v === current ? 'on' : ''}">${esc(l)}${extra != null ? ` <span class="muted">${esc(extra)}</span>` : ''}</button>`).join('')}</div>`;
+}
+
+export function kpiTile(label, value, sub, subCls = '') {
+  return `<div class="kpi card"><span class="muted small">${esc(label)}</span><span class="kpi-value">${esc(value)}</span><span class="small ${subCls}">${sub}</span></div>`;
+}
+
+// Scelta di un colore della palette. small: pallini piccoli che vanno a capo; attrs: attributi in più per ogni pallino.
+export function colorPicker(colors, current, action, { small = false, attrs = '' } = {}) {
+  const swatch = (c) => `<button type="button" role="radio" aria-checked="${c === current}" class="swatch${small ? ' sm' : ''}${c === current ? ' on' : ''}" style="background:${c}" data-action="${action}" data-value="${c}" ${attrs ? attrs + ' ' : ''}aria-label="Colore ${c}"></button>`;
+  return `<div class="${small ? 'row-6 wrap' : 'row-8'}" role="radiogroup" aria-label="Colore">${colors.map(swatch).join('')}</div>`;
+}
+
+// Opzioni di una <select> da coppie [valore, etichetta]. current può essere un valore o una lista di valori.
+export function options(list, current) {
+  const on = (v) => (Array.isArray(current) ? current.includes(v) : v === current);
+  return list.map(([v, l]) => `<option value="${esc(v)}"${on(v) ? ' selected' : ''}>${esc(l)}</option>`).join('');
+}
+
+// <select> nel contenitore con la freccia. Con label, il contenitore è una <label> con il nome per i lettori di schermo.
+export function select(attrs, opts, label = '') {
+  const tag = label ? 'label' : 'span';
+  return `<${tag} class="select-wrap">${label ? `<span class="sr">${esc(label)}</span>` : ''}<select ${attrs}>${opts}</select>${icon.chevron(12)}</${tag}>`;
 }

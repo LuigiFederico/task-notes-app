@@ -1,15 +1,15 @@
 import { S, cat, project, extraCats, isClosed, values } from '../state.js';
 import { currentTask } from '../selectors.js';
-import { esc, safeColor, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
+import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox } from './components.js';
+import { confirmBox, options, select } from './components.js';
 
 function radioGroup(label, catId, current, allowNone) {
   const c = cat(catId);
   const opts = (c ? c.tags : []).map((t) => {
     const on = t.id === current;
     const col = safeColor(t.colore);
-    const style = on ? `border-color:${col};color:${col};background:${col.length === 7 ? col + '14' : 'var(--chip)'};font-weight:600` : '';
+    const style = on ? `border-color:${col};color:${col};background:${tint(col, '14')};font-weight:600` : '';
     return `<button role="radio" aria-checked="${on}" class="radio-pill" style="${style}" data-action="task-set" data-field="${catId}" data-value="${esc(t.id)}">${esc(t.nome)}</button>`;
   });
   if (allowNone) opts.push(`<button role="radio" aria-checked="${!current}" class="radio-pill${!current ? ' on-neutral' : ''}" data-action="task-set" data-field="${catId}" data-value="">Nessuna</button>`);
@@ -19,9 +19,8 @@ function radioGroup(label, catId, current, allowNone) {
 function categoryField(t, c) {
   const vals = values(t, c.id);
   if (c.tipo === 'singola') {
-    return `<label class="select-wrap"><span class="sr">${esc(c.nome)}</span><select data-change="task-cat-single" data-cat="${esc(c.id)}">
-      <option value="">—</option>${c.tags.map((x) => `<option value="${esc(x.id)}"${vals.includes(x.id) ? ' selected' : ''}>${esc(x.nome)}</option>`).join('')}
-    </select>${icon.chevron(12)}</label>`;
+    const opts = '<option value="">—</option>' + options(c.tags.map((x) => [x.id, x.nome]), vals);
+    return select(`data-change="task-cat-single" data-cat="${esc(c.id)}"`, opts, c.nome);
   }
   const chips = vals.map((id) => {
     const tg = c.tags.find((x) => x.id === id);
@@ -53,6 +52,8 @@ export function taskPanel() {
   const due = dueLabel(t.scadenza, done);
   const confirmDel = S.ui.confirm === 'task:' + t.id;
   const un = S.ui.unsaved && S.ui.unsaved.id === S.ui.openTask ? S.ui.unsaved : {};
+  // I progetti archiviati non si propongono, tranne quello a cui il task appartiene già.
+  const projects = S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto);
   return `
   <section class="panel" aria-label="Dettaglio task">
     <div class="panel-head">
@@ -74,9 +75,7 @@ export function taskPanel() {
       ${isNew ? '<div class="hint">Scrivi il titolo e premi Invio per creare il task.</div>' : ''}
       <div class="props">
         <span class="prop-label">Progetto</span>
-        <label class="select-wrap"><span class="sr">Progetto</span><select data-change="task-field" data-field="progetto">
-          ${S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto).map((x) => `<option value="${esc(x.codice)}"${x.codice === t.progetto ? ' selected' : ''}>${esc(x.nome)} · ${esc(x.codice)}</option>`).join('')}
-        </select>${icon.chevron(12)}</label>
+        ${select('data-change="task-field" data-field="progetto"', options(projects.map((x) => [x.codice, `${x.nome} · ${x.codice}`]), t.progetto), 'Progetto')}
         <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato, false)}
         <span class="prop-label">Priorità</span>${radioGroup('Priorità', 'priorita', t.priorita, true)}
         <span class="prop-label">Scadenza</span>

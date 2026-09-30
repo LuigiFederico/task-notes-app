@@ -1,12 +1,8 @@
 import { S, projectTasks, openTasks } from '../state.js';
 import { WEEKS, weekStarts, weeklyDone, isHot } from '../selectors.js';
-import { esc, safeColor, todayISO, fmtShort, daysBetween, monthName } from '../lib/util.js';
+import { esc, safeColor, tint, todayISO, fmtShort, daysBetween, monthName } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { segmented } from './components.js';
-
-export function kpiTile(label, value, sub, subCls = '') {
-  return `<div class="kpi card"><span class="muted small">${esc(label)}</span><span class="kpi-value">${esc(value)}</span><span class="small ${subCls}">${sub}</span></div>`;
-}
+import { segmented, kpiTile } from './components.js';
 
 export function projectsView() {
   const t0 = todayISO();
@@ -67,7 +63,7 @@ export function projectsView() {
     const maxW = Math.max(1, ...weekly);
     const spark = weekly.map((v) => `<span style="height:${v ? 4 + (v / maxW) * 18 : 2}px;background:${v ? c : 'var(--line)'}"></span>`).join('');
     return `<button class="proj-card card" data-action="go" data-view="project" data-code="${esc(p.codice)}">
-      <span class="row-10"><span class="code-badge" style="color:${c};background:${c.length === 7 ? c + '1A' : 'var(--chip)'}">${esc(p.codice)}</span>
+      <span class="row-10"><span class="code-badge" style="color:${c};background:${tint(c, '1A')}">${esc(p.codice)}</span>
         ${p.stato === 'archiviato' ? '<span class="pill">Archiviato</span>' : ''}<span class="grow"></span><span class="spark" aria-hidden="true">${spark}</span></span>
       <span class="stack-4"><span class="card-title">${esc(p.nome)}</span><span class="muted small clamp2">${esc((p.descrizione || '').split('\n')[0] || 'Nessuna descrizione')}</span></span>
       <span class="stack-6"><span class="row-between small"><span>${d} di ${pt.length} completati</span><strong>${pct}%</strong></span>
