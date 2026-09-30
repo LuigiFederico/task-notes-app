@@ -12,7 +12,7 @@ import * as projectHandlers from './handlers/project.js';
 import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
 
-const { flush, closePanel, setTagHint } = taskHandlers;
+const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
 const HANDLERS = [common, taskHandlers, projectHandlers, tagHandlers, settingsHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
@@ -66,7 +66,11 @@ root.addEventListener('mouseover', (e) => {
   const i = Number(el.dataset.index);
   if (S.ui.hoverWeek !== i) { S.ui.hoverWeek = i; render(); }
 });
+// Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
+root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
+  // I suggerimenti di @ si chiudono uscendo dal campo.
+  if (S.ui.mention && e.target.getAttribute && e.target.getAttribute('aria-controls') === 'mention-' + S.ui.mention.field) hideMentions();
   // La richiesta di creare un tag nuovo decade quando si esce dal campo.
   if (S.ui.pendingTag && e.target.dataset && e.target.dataset.keydown === 'task-tag-add') {
     setTagHint(S.ui.pendingTag.cat, '');

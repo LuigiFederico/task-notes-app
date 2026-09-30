@@ -9,7 +9,12 @@ const KINDS = [['multipla', 'Scelta multipla'], ['singola', 'Scelta singola']];
 const NEW_KINDS = [...KINDS, ['testo', 'Testo libero (es. ticket, link)']];
 const KIND_LABELS = { singola: 'Scelta singola', multipla: 'Scelta multipla', testo: 'Testo libero' };
 
-function kindLabel(c) { return KIND_LABELS[c.tipo] || KIND_LABELS.multipla; }
+// Nome del collegamento visto dal task collegato (es. Bloccato da → Blocca).
+function inverseField(value) {
+  return `<label class="field grow"><span>Nome inverso</span><input name="inverso" value="${esc(value || '')}" placeholder="Es. Blocca (vuoto: uguale al nome)"></label>`;
+}
+
+function kindLabel(c) { return c.id === 'collegamento' ? 'Tipi di collegamento' : KIND_LABELS[c.tipo] || KIND_LABELS.multipla; }
 
 export function tagsView() {
   const sel = S.view.cat || 'progetto';
@@ -52,7 +57,8 @@ export function tagsView() {
       if (S.ui.editing === 'tag:' + t.id) {
         return `<form class="tag-edit" data-submit="save-tag" data-cat="${esc(c.id)}" data-tag="${esc(t.id)}">
           <div class="row-10 wrap"><label class="field grow"><span>Nome</span><input name="nome" required value="${esc(t.nome)}" autofocus></label>
-          ${c.id === 'stato' ? `<label class="toggle"><input type="checkbox" name="chiuso" ${t.chiuso ? 'checked' : ''}>Conta come chiuso</label>` : ''}</div>
+          ${c.id === 'stato' ? `<label class="toggle"><input type="checkbox" name="chiuso" ${t.chiuso ? 'checked' : ''}>Conta come chiuso</label>` : ''}
+          ${c.id === 'collegamento' ? inverseField(t.inverso) : ''}</div>
           <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, S.ui.tagColor || t.colore, 'tag-color', { small: true })}</div>
           <div class="row-8"><button type="button" class="btn-link small" data-action="go" data-view="tag" data-cat="${esc(c.id)}" data-tag="${esc(t.id)}">Apri pagina e descrizione</button><span class="grow"></span>
           <button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Salva</button></div>
@@ -61,7 +67,7 @@ export function tagsView() {
       return `<div class="tag-row">
         <span class="swatch-static" style="background:${safeColor(t.colore)}"></span>
         <button class="link strong ellipsis" data-action="go" data-view="tag" data-cat="${esc(c.id)}" data-tag="${esc(t.id)}">${esc(t.nome)}${t.chiuso ? ' <span class="pill xs">chiuso</span>' : ''}</button>
-        <span class="ellipsis small">${esc((t.descrizione || '').split('\n')[0])}</span>
+        <span class="ellipsis small">${c.id === 'collegamento' ? `<span class="muted">Dall'altro lato: </span>${esc(t.inverso || t.nome)}` : esc((t.descrizione || '').split('\n')[0])}</span>
         <span>${u.open}</span><span class="muted">${u.total}</span>
         <span class="row-2">
           <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>↑</button>
@@ -72,10 +78,11 @@ export function tagsView() {
     }).join('');
     const newTag = S.ui.editing === 'tag-new' ? `
       <form class="tag-edit" data-submit="create-tag" data-cat="${esc(c.id)}">
-        <label class="field"><span>Nome del nuovo tag</span><input name="nome" required autofocus></label>
+        <div class="row-10 wrap"><label class="field grow"><span>Nome del nuovo ${c.id === 'collegamento' ? 'tipo' : 'tag'}</span><input name="nome" required autofocus></label>
+        ${c.id === 'collegamento' ? inverseField('') : ''}</div>
         <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, S.ui.tagColor || TAG_COLORS[c.tags.length % TAG_COLORS.length], 'tag-color', { small: true })}</div>
         <div class="row-8 end"><button type="button" class="btn small" data-action="cancel-edit">Annulla</button><button class="btn primary small">Aggiungi</button></div>
-      </form>` : `<button class="add-row" data-action="edit" data-key="tag-new">${icon.plus(14)}Aggiungi ${c.id === 'stato' ? 'uno stato' : c.id === 'priorita' ? 'un livello' : 'un tag'}</button>`;
+      </form>` : `<button class="add-row" data-action="edit" data-key="tag-new">${icon.plus(14)}Aggiungi ${c.id === 'stato' ? 'uno stato' : c.id === 'priorita' ? 'un livello' : c.id === 'collegamento' ? 'un tipo' : 'un tag'}</button>`;
     const head = editingCat ? `
       <form class="cat-head form" data-submit="save-category" data-cat="${esc(c.id)}">
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(c.nome)}"></label>

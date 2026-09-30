@@ -125,6 +125,8 @@ aggiornato: 2026-09-28
 completato:
 etichette:
   - riunione
+collegamenti:        # "<tipo> <ID>", solo sul task di partenza
+  - bloccato-da T-012
 sottotask:           # checklist, scritta solo se ha voci
   - "[x] Raccogliere i dati"
   - "[ ] Bozza slide"
@@ -135,6 +137,8 @@ storico:
 
 Descrizione libera in Markdown.
 ```
+
+I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <ID>"` ciascuno (una riga con il solo ID è un collegamento senza tipo). Il task collegato li mostra con il nome inverso del tipo (T-042 «Bloccato da» T-012 → T-012 «Blocca» T-042) senza che il suo file cambi. Se il task collegato finisce nel Cestino, il collegamento resta e compare come «non trovato».
 
 I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
 
@@ -167,6 +171,7 @@ Task: T-029
 
 ### Categorie e tag
 
+- **Collegamento** è la terza categoria di sistema: i suoi tag sono i tipi di collegamento (di serie Bloccato da / Blocca, Dipende da / Necessario per, Correlato a), ognuno con `inverso:` nel file, il nome letto dal task collegato. Si rinominano, riordinano, uniscono e se ne aggiungono altri dalla sezione Tag; un tipo usato da qualche collegamento non si elimina.
 - **Stato** e **Priorità** sono categorie di sistema: si possono rinominare, ricolorare e riordinare, ma non eliminare. Gli stati con `chiuso: true` (di serie solo "Fatto") nascondono il task dalla lista principale, che resta comunque visibile nello storico e nelle pagine di progetto e tag.
 - Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista, e i task senza priorità vanno dopo l'ultimo livello. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.

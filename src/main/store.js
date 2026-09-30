@@ -49,7 +49,14 @@ const DEFAULT_CATEGORIES = [
       BACKLOG
     ] },
   { id: 'etichette', nome: 'Etichette', tipo: 'multipla', obbligatoria: false, ordine: 3,
-    descrizione: 'Etichette libere, trasversali ai progetti.', tags: [] }
+    descrizione: 'Etichette libere, trasversali ai progetti.', tags: [] },
+  { id: 'collegamento', nome: 'Collegamento', tipo: 'singola', obbligatoria: false, ordine: 4,
+    descrizione: "Tipi di collegamento fra task. Il nome inverso è quello che si legge sul task collegato.",
+    tags: [
+      { id: 'bloccato-da', nome: 'Bloccato da', inverso: 'Blocca', colore: '#B42318', ordine: 1, descrizione: 'Non può andare avanti finché l\'altro task non è chiuso.' },
+      { id: 'dipende-da', nome: 'Dipende da', inverso: 'Necessario per', colore: '#B54708', ordine: 2, descrizione: "Ha bisogno del risultato dell'altro task." },
+      { id: 'correlato-a', nome: 'Correlato a', inverso: 'Correlato a', colore: '#6B675E', ordine: 3, descrizione: 'Stesso argomento, senza dipendenze.' }
+    ] }
 ];
 
 // Unisce i segmenti a una cartella rifiutando i nomi che potrebbero uscirne (.., separatori, percorsi assoluti).
@@ -224,7 +231,7 @@ class Store {
   }
 
   async deleteCategory(id) {
-    if (SYSTEM_CATEGORIES.includes(id)) throw new Error('Stato e Priorità non si possono eliminare.');
+    if (SYSTEM_CATEGORIES.includes(id)) throw new Error('Stato, Priorità e Collegamento non si possono eliminare.');
     await this.trash('categoria', await this.displayName(this.p('tags', id, '_categoria.md'), id), 'tags', id);
     await this.stripFromTasks(id, null);
   }
@@ -244,7 +251,8 @@ class Store {
   async deleteTag(catId, id) {
     if (SYSTEM_CATEGORIES.includes(catId)) {
       const tasks = await this.loadTasks();
-      if (tasks.some((t) => t[catId] === id)) throw new Error('Il valore è usato da alcuni task: cambiali prima di eliminarlo.');
+      const used = catId === 'collegamento' ? (t) => t.collegamenti.some((l) => l.tipo === id) : (t) => t[catId] === id;
+      if (tasks.some(used)) throw new Error('Il valore è usato da alcuni task: cambiali prima di eliminarlo.');
     }
     await this.trash('tag', await this.displayName(this.p('tags', catId, id + '.md'), id), 'tags', catId, id + '.md');
     if (!SYSTEM_CATEGORIES.includes(catId)) await this.stripFromTasks(catId, id);
@@ -254,8 +262,16 @@ class Store {
   async mergeTag(catId, fromId, toId) {
     const tasks = await this.loadTasks();
     const system = SYSTEM_CATEGORIES.includes(catId);
-    const cats = system ? await this.loadCategories() : null;
+    const cats = system && catId !== 'collegamento' ? await this.loadCategories() : null;
     for (const t of tasks) {
+      if (catId === 'collegamento') {
+        if (!t.collegamenti.some((l) => l.tipo === fromId)) continue;
+        const seen = new Set();
+        t.collegamenti = t.collegamenti.map((l) => (l.tipo === fromId ? { ...l, tipo: toId } : l))
+          .filter((l) => { const k = l.tipo + ' ' + l.id; if (seen.has(k)) return false; seen.add(k); return true; });
+        await this.writeTask(t);
+        continue;
+      }
       if (system) {
         // Stato e priorità sono campi del task, non tag: saveTask aggiorna anche storico e completato.
         if (t[catId] === fromId) await this.saveTask({ ...t, [catId]: toId }, cats);

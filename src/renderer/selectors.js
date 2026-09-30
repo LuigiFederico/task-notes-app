@@ -1,5 +1,5 @@
 // Letture che dipendono dallo stato dell'interfaccia (filtri, pannello aperto) o dalla data di oggi.
-import { S, cat, task, project, isClosed, values, taskChips, openTasks } from './state.js';
+import { S, cat, tagOf, task, ref, project, isClosed, values, taskChips, openTasks } from './state.js';
 import { todayISO, addDays, weekStart, dueBucket } from './lib/util.js';
 
 export function currentTask() {
@@ -80,6 +80,34 @@ export function emptyReason() {
   if (u.fProject || u.fPrio || u.fTag || u.search.trim()) return 'Nessun task corrisponde ai filtri attivi.';
   if (!u.showDone && S.data.tasks.every(isClosed)) return 'Tutti i task sono completati.';
   return 'Nessun task da mostrare.';
+}
+
+// ---------- collegamenti
+// Collegamenti di un elemento: quelli scritti nel suo file (out, con il nome del tipo) e quelli scritti negli altri
+// che puntano a lui (in, con il nome inverso). target è null se l'elemento collegato non esiste (es. nel Cestino).
+export function linksOf(item) {
+  const kind = (l, inverse) => {
+    const tp = l.tipo ? tagOf('collegamento', l.tipo) : null;
+    return { nome: tp ? (inverse ? tp.inverso || tp.nome : tp.nome) : l.tipo || 'Collegato a', colore: tp ? tp.colore : '#6B675E' };
+  };
+  const out = (item.collegamenti || []).map((l) => ({ dir: 'out', tipo: l.tipo, id: l.id, from: item.id, to: l.id, target: ref(l.id), ...kind(l, false) }));
+  const inc = [];
+  for (const t of S.data.tasks) {
+    if (t.id === item.id) continue;
+    for (const l of t.collegamenti || []) if (l.id === item.id) inc.push({ dir: 'in', tipo: l.tipo, id: t.id, from: t.id, to: item.id, target: t, ...kind(l, true) });
+  }
+  return [...out, ...inc];
+}
+
+// Suggerimenti per @: task che contengono il testo nell'ID o nel titolo. Prima chi ha l'ID che comincia così, poi gli aperti.
+export function refCandidates(query, exclude = [], limit = 8) {
+  const q = String(query || '').trim().replace(/^@/, '').toLowerCase();
+  const rank = (t) => (q && t.id.toLowerCase().startsWith(q) ? 0 : 2) + (isClosed(t) ? 1 : 0);
+  return S.data.tasks
+    .filter((t) => !exclude.includes(t.id) && (!q || t.id.toLowerCase().includes(q) || t.titolo.toLowerCase().includes(q)))
+    .sort((a, b) => rank(a) - rank(b) || b.id.localeCompare(a.id, 'it', { numeric: true }))
+    .slice(0, limit)
+    .map((t) => ({ id: t.id, titolo: t.titolo, chiuso: isClosed(t) }));
 }
 
 // ---------- tag

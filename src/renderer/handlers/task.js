@@ -1,8 +1,9 @@
 // Task: creazione, pannello di dettaglio (salvataggio dei campi, tag) e completamento.
 import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, TAG_COLORS } from '../state.js';
-import { currentTask, visibleTasks, overdueCount } from '../selectors.js';
+import { currentTask, visibleTasks, overdueCount, refCandidates } from '../selectors.js';
 import { todayISO } from '../lib/util.js';
 import { newTagHint } from '../views/taskPanel.js';
+import { mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
 import { api, root, render, reload, run, toast } from '../core.js';
 
@@ -89,7 +90,7 @@ function clearUnsaved(field) {
   if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
 }
 
-function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; }
+function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; }
 
 export function closePanel() {
   resetPanelState();
@@ -178,6 +179,67 @@ function saveSubtasks(fn) {
   return updateTask({ sottotask: list });
 }
 
+// ---------------------------------------------------------------- collegamenti e suggerimenti di @
+// L'elenco dei suggerimenti si aggiorna senza ridisegnare, così il campo non perde il focus mentre si scrive.
+function drawMentions() {
+  const m = S.ui.mention;
+  const box = m && document.getElementById('mention-' + m.field);
+  if (!box) return;
+  box.innerHTML = mentionItems(m.items, m.active);
+  box.hidden = false;
+  document.querySelector(`[aria-controls="mention-${m.field}"]`)?.setAttribute('aria-expanded', 'true');
+}
+
+function showMentions(field, query) {
+  const t = currentTask();
+  S.ui.mention = { field, query, active: 0, items: refCandidates(query, t ? [t.id] : []) };
+  drawMentions();
+}
+
+export function hideMentions() {
+  const m = S.ui.mention;
+  S.ui.mention = null;
+  const box = m && document.getElementById('mention-' + m.field);
+  if (!box) return;
+  box.hidden = true;
+  box.innerHTML = '';
+  document.querySelector(`[aria-controls="mention-${m.field}"]`)?.setAttribute('aria-expanded', 'false');
+}
+
+// Frecce, Invio ed Esc sull'elenco aperto. Restituisce true se il tasto è stato usato.
+function mentionKey(e, pick) {
+  const m = S.ui.mention;
+  if (!m) return false;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const n = m.items.length;
+    if (n) m.active = (m.active + (e.key === 'ArrowDown' ? 1 : -1) + n) % n;
+    drawMentions();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    const x = m.items[m.active];
+    if (x) run(() => pick(x.id));
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    e.stopPropagation();   // Esc chiude i suggerimenti, non il pannello
+    hideMentions();
+  } else return false;
+  return true;
+}
+
+async function addLink(id) {
+  const t = currentTask();
+  const tipo = document.querySelector('[data-change="link-type"]')?.value || '';
+  hideMentions();
+  if (id === t.id) throw new Error('Un task non può essere collegato a sé stesso.');
+  const list = t.collegamenti || [];
+  if (!list.some((l) => l.tipo === tipo && l.id === id)) await updateTask({ collegamenti: [...list, { tipo, id }] });
+  document.getElementById('link-input')?.focus();
+}
+
+// Chi sceglie un suggerimento: per ora solo il campo dei collegamenti.
+const PICKERS = { link: addLink };
+
 // ---------------------------------------------------------------- handler
 export const actions = {
   'new-task': afterFlush((el) => {
@@ -219,6 +281,16 @@ export const actions = {
     const input = document.getElementById('sub-edit');
     if (input) { input.focus(); input.select(); }
   },
+  'mention-pick': (el) => run(() => { const m = S.ui.mention; return m && PICKERS[m.field](el.dataset.id); }),
+  // Il collegamento sta nel file del task di partenza: togliere quello in entrata riscrive l'altro task.
+  'link-remove': (el) => run(async () => {
+    const { from, tipo, to } = el.dataset;
+    const drop = (list) => (list || []).filter((l) => !(l.tipo === tipo && l.id === to));
+    const t = currentTask();
+    if (from === t.id) return updateTask({ collegamenti: drop(t.collegamenti) });
+    const other = task(from);
+    if (other) await saveTask({ ...other, collegamenti: drop(other.collegamenti) });
+  }),
   'task-delete': (el) => run(async () => {
     await api.deleteTask(el.dataset.id);
     S.ui.openTask = null;
@@ -230,6 +302,7 @@ export const actions = {
 
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
+  'link-type': (el) => { S.ui.linkType = el.value; },
   // Un testo vuoto elimina la voce.
   'sub-edit': (el) => run(() => {
     S.ui.subEdit = null;
@@ -244,6 +317,7 @@ export const changes = {
 };
 
 export const inputs = {
+  'link-search': (el) => showMentions('link', el.value),
   'task-dirty': (el) => {
     const f = el.dataset.field;
     if (!S.ui.unsaved || S.ui.unsaved.id !== S.ui.openTask) S.ui.unsaved = { id: S.ui.openTask };
@@ -290,6 +364,10 @@ export const keydowns = {
       if (!vals.includes(v)) await updateTask({ tags: { ...t.tags, [catId]: [...vals, v] } });
       document.querySelector(`[data-keydown="task-text-add"][data-cat="${catId}"]`)?.focus();
     });
+  },
+  'link-key': (el, e) => {
+    if (mentionKey(e, addLink)) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); showMentions('link', el.value); }
   },
   'sub-add': (el, e) => {
     if (e.key !== 'Enter' || !el.value.trim()) return;

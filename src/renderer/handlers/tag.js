@@ -48,6 +48,10 @@ export const actions = {
 };
 
 export const changes = {
+  'tag-inverse': (el) => run(async () => {
+    await api.saveTag(el.dataset.cat, { ...targetTag(el), inverso: el.value.trim() });
+    await reload();
+  }),
   'tag-rename': (el) => run(async () => {
     const t = targetTag(el);
     if (!el.value.trim()) return render();
@@ -81,7 +85,7 @@ export const submits = {
   'create-tag': (form) => run(async () => {
     const c = cat(form.dataset.cat);
     const f = new FormData(form);
-    await api.saveTag(c.id, { nome: f.get('nome').trim(), colore: S.ui.tagColor || TAG_COLORS[c.tags.length % TAG_COLORS.length], ordine: c.tags.length + 1 });
+    await api.saveTag(c.id, { nome: f.get('nome').trim(), colore: S.ui.tagColor || TAG_COLORS[c.tags.length % TAG_COLORS.length], ordine: c.tags.length + 1, inverso: String(f.get('inverso') || '').trim() });
     S.ui.editing = 'tag-new';
     S.ui.tagColor = null;
     await reload();
@@ -90,7 +94,8 @@ export const submits = {
     const c = cat(form.dataset.cat);
     const t = targetTag(form);
     const f = new FormData(form);
-    await api.saveTag(c.id, { ...t, nome: f.get('nome').trim(), colore: S.ui.tagColor || t.colore, chiuso: c.id === 'stato' ? f.get('chiuso') === 'on' : t.chiuso });
+    const inverso = c.id === 'collegamento' ? String(f.get('inverso') || '').trim() : t.inverso;
+    await api.saveTag(c.id, { ...t, nome: f.get('nome').trim(), colore: S.ui.tagColor || t.colore, chiuso: c.id === 'stato' ? f.get('chiuso') === 'on' : t.chiuso, inverso });
     S.ui.editing = null;
     S.ui.tagColor = null;
     await reload();

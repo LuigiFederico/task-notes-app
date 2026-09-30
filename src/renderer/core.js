@@ -1,6 +1,6 @@
 // Nucleo dell'interfaccia: disegno di #app, ricarica dai file, avvisi ed errori.
 // Gli handler in handlers/ usano queste funzioni; qui non si importa mai un handler.
-import { S, task, openTasks } from './state.js';
+import { S, task, openTasks, tagCats } from './state.js';
 import { visibleTasks } from './selectors.js';
 import { esc } from './lib/util.js';
 import { sidebar } from './views/sidebar.js';
@@ -128,7 +128,7 @@ export async function run(fn) {
 // ---------------------------------------------------------------- dati
 // Il raggruppamento ricordato può riferirsi a una categoria che nel frattempo è stata eliminata.
 export function checkGroupBy() {
-  const ids = ['progetto', 'priorita', 'stato', 'scadenza', ...S.data.categories.filter((c) => c.tipo !== 'testo').map((c) => c.id)];
+  const ids = ['progetto', 'priorita', 'stato', 'scadenza', ...tagCats().map((c) => c.id)];
   if (!ids.includes(S.ui.groupBy)) S.ui.groupBy = 'progetto';
 }
 

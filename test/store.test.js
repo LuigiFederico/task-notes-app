@@ -33,7 +33,7 @@ test('formato: un task fa andata e ritorno, con le categorie utente come chiavi 
   const t = {
     id: 'T-007', titolo: 'Preparare: slide', progetto: 'VEND', stato: 'in-corso', priorita: 'alta', scadenza: '2026-10-01',
     creato: '2026-09-01', aggiornato: '2026-09-02', completato: null,
-    tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio', vuota: null }, sottotask: [], storico: ['2026-09-01 Creato'], descrizione: 'Note\n\n- punto'
+    tags: { etichette: ['riunione', 'dati'], contesto: 'ufficio', vuota: null }, sottotask: [], collegamenti: [], storico: ['2026-09-01 Creato'], descrizione: 'Note\n\n- punto'
   };
   const text = formats.serializeTask(t);
   assert.match(text, /^contesto: ufficio$/m);
@@ -88,7 +88,7 @@ test('init crea struttura e categorie di base', async () => {
   const s = new Store(tmpDir());
   await s.init({ withDefaultProject: true });
   const all = await s.loadAll();
-  assert.deepStrictEqual(all.categories.map((c) => c.id), ['stato', 'priorita', 'etichette']);
+  assert.deepStrictEqual(all.categories.map((c) => c.id), ['stato', 'priorita', 'etichette', 'collegamento']);
   assert.strictEqual(all.categories[0].tags.find((t) => t.id === 'fatto').chiuso, true);
   assert.deepStrictEqual(all.categories[1].tags.map((t) => t.id), ['urgente', 'alta', 'media', 'bassa', 'backlog']);
   assert.strictEqual(all.projects[0].codice, 'GEN');
@@ -321,4 +321,36 @@ test('formato: sotto-task come checklist nel file del task', () => {
   assert.doesNotMatch(formats.serializeTask({ ...t, sottotask: [] }), /sottotask/);
   assert.deepStrictEqual(formats.parseTask('---\nsottotask:\n  - "[X] fatto"\n  - libera\n---\n', 'T-2').sottotask,
     [{ fatto: true, testo: 'fatto' }, { fatto: false, testo: 'libera' }]);
+});
+
+test('formato: collegamenti "tipo ID" nel file del task, e il nome inverso dei tipi', () => {
+  const t = { id: 'T-042', titolo: 'a', tags: {}, storico: [], collegamenti: [{ tipo: 'bloccato-da', id: 'T-012' }, { tipo: '', id: 'T-007' }] };
+  const text = formats.serializeTask(t);
+  assert.match(text, /^collegamenti:\n {2}- bloccato-da T-012\n {2}- T-007$/m);
+  const back = formats.parseTask(text, 'T-042');
+  assert.deepStrictEqual(back.collegamenti, t.collegamenti);
+  assert.strictEqual('collegamenti' in back.tags, false);
+  assert.doesNotMatch(formats.serializeTask({ ...t, collegamenti: [] }), /collegamenti/);
+  // l'inverso si scrive solo per i tipi di collegamento, e se manca vale il nome
+  assert.match(formats.serializeTag({ nome: 'Bloccato da', inverso: 'Blocca' }, 'bloccato-da', 'collegamento'), /^inverso: Blocca$/m);
+  assert.match(formats.serializeTag({ nome: 'Simile a' }, 'simile-a', 'collegamento'), /^inverso: Simile a$/m);
+  assert.doesNotMatch(formats.serializeTag({ nome: 'Alta', inverso: 'x' }, 'alta', 'priorita'), /inverso/);
+});
+
+test('collegamento: categoria di sistema anche nelle cartelle esistenti, tipi uniti e protetti', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.remove(s.p('tags', 'collegamento'));
+  await s.init();   // cartella esistente: la categoria di sistema torna, con i tipi di serie
+  const tipi = (await s.loadCategories()).find((c) => c.id === 'collegamento');
+  assert.deepStrictEqual(tipi.tags.map((t) => [t.id, t.inverso]), [['bloccato-da', 'Blocca'], ['dipende-da', 'Necessario per'], ['correlato-a', 'Correlato a']]);
+  await assert.rejects(() => s.deleteCategory('collegamento'));
+
+  const a = await s.saveTask({ titolo: 'A', progetto: 'X' });
+  const b = await s.saveTask({ titolo: 'B', progetto: 'X', collegamenti: [{ tipo: 'dipende-da', id: a.id }, { tipo: 'bloccato-da', id: a.id }] });
+  await assert.rejects(() => s.deleteTag('collegamento', 'dipende-da'), /usato/);
+  // unire due tipi riscrive i collegamenti e toglie i doppioni
+  await s.mergeTag('collegamento', 'dipende-da', 'bloccato-da');
+  const [back] = (await s.loadTasks()).filter((t) => t.id === b.id);
+  assert.deepStrictEqual(back.collegamenti, [{ tipo: 'bloccato-da', id: a.id }]);
 });

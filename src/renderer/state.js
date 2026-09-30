@@ -49,6 +49,8 @@ export function extraCats() { return S.data.categories.filter((c) => !c.sistema)
 // Categorie utente fatte di tag: le categorie a testo libero non hanno chip, filtri né raggruppamenti.
 export function tagCats() { return extraCats().filter((c) => c.tipo !== 'testo'); }
 export function task(id) { return S.data.tasks.find((t) => t.id === id); }
+// Elemento a cui punta un collegamento o una menzione (per ora solo task).
+export function ref(id) { return task(id) || null; }
 
 export function isClosed(t) { const s = tagOf('stato', t.stato); return !!(s && s.chiuso); }
 export function openStates() { return (cat('stato')?.tags || []).filter((t) => !t.chiuso); }
@@ -59,6 +61,7 @@ export function values(t, catId) {
   if (catId === 'stato') return t.stato ? [t.stato] : [];
   if (catId === 'priorita') return t.priorita ? [t.priorita] : [];
   if (catId === 'progetto') return t.progetto ? [t.progetto] : [];
+  if (catId === 'collegamento') return Array.from(new Set((t.collegamenti || []).map((l) => l.tipo).filter(Boolean)));
   const v = t.tags[catId];
   if (Array.isArray(v)) return v;
   return v ? [v] : [];

@@ -149,3 +149,28 @@ test('renderer: le categorie a testo non danno chip', async () => {
   S.data.categories.push({ id: 'jira', nome: 'Jira', tipo: 'testo', sistema: false, tags: [] });
   assert.deepStrictEqual(taskChips(S.data.tasks[0]).map((c) => c.id), ['riunione']);
 });
+
+test('renderer: collegamenti in uscita con il nome del tipo, in entrata con il nome inverso, mancanti segnati', async () => {
+  const { linksOf } = await load('selectors.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'Contratto', collegamenti: [] },
+    { id: 'T-002', titolo: 'Slide', collegamenti: [{ tipo: 'bloccato-da', id: 'T-001' }, { tipo: 'correlato-a', id: 'T-099' }] }
+  ]);
+  S.data.categories.push({ id: 'collegamento', nome: 'Collegamento', tipo: 'singola', sistema: true, tags: [
+    { id: 'bloccato-da', nome: 'Bloccato da', inverso: 'Blocca', colore: '#B42318' }, { id: 'correlato-a', nome: 'Correlato a', inverso: 'Correlato a' }] });
+  const pick = (l) => [l.dir, l.nome, l.id, !!l.target];
+  assert.deepStrictEqual(linksOf(S.data.tasks[1]).map(pick), [['out', 'Bloccato da', 'T-001', true], ['out', 'Correlato a', 'T-099', false]]);
+  assert.deepStrictEqual(linksOf(S.data.tasks[0]).map(pick), [['in', 'Blocca', 'T-002', true]]);
+});
+
+test('renderer: suggerimenti di @ per ID o titolo, senza il task stesso', async () => {
+  const { refCandidates } = await load('selectors.js');
+  await setup([
+    { id: 'T-001', titolo: 'Contratto fornitore' },
+    { id: 'T-010', titolo: 'Slide contratto', stato: 'fatto' },
+    { id: 'T-012', titolo: 'Export datamart' }
+  ]);
+  assert.deepStrictEqual(refCandidates('@contr').map((x) => x.id), ['T-001', 'T-010']);
+  assert.deepStrictEqual(refCandidates('t-01', ['T-012']).map((x) => x.id), ['T-010']);
+  assert.strictEqual(refCandidates('').length, 3);
+});

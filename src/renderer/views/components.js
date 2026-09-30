@@ -68,6 +68,14 @@ export function taskHeader(showProject = true) {
   return `<div class="task-row head${showProject ? '' : ' no-project'}"><span></span><span>ID</span><span>TITOLO</span>${showProject ? '<span class="h-proj">PROGETTO</span>' : ''}<span class="h-prio">PRIORITÀ</span><span>SCADENZA</span><span>STATO</span></div>`;
 }
 
+// Suggerimenti di @ (collegamenti e menzioni): items da refCandidates, active è quello evidenziato dalle frecce.
+// Le voci non prendono il focus (vedi il mousedown in app.js), così il campo resta attivo mentre si sceglie.
+export function mentionItems(items, active) {
+  if (!items.length) return '<div class="mention-empty small muted">Nessun task trovato</div>';
+  return items.map((x, i) => `<button type="button" role="option" aria-selected="${i === active}" class="mention-item${i === active ? ' on' : ''}${x.chiuso ? ' closed' : ''}" data-action="mention-pick" data-id="${esc(x.id)}">
+    <span class="mono muted small">${esc(x.id)}</span><span class="ellipsis">${esc(x.titolo)}</span></button>`).join('');
+}
+
 // Conferma di un'azione distruttiva: una frase con l'effetto, il pulsante dell'azione e Annulla.
 export function confirmBox(text, attrs, label = 'Elimina') {
   return `<div class="confirm" role="alert"><span class="grow">${esc(text)}</span><button type="button" class="btn danger small" ${attrs}>${esc(label)}</button><button type="button" class="btn small" data-action="cancel-confirm">Annulla</button></div>`;

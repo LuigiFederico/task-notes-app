@@ -1,8 +1,8 @@
 import { S, cat, project, extraCats, isClosed, values } from '../state.js';
-import { currentTask } from '../selectors.js';
+import { currentTask, linksOf } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort, textLink } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox, options, select } from './components.js';
+import { confirmBox, options, select, mentionItems } from './components.js';
 
 function radioGroup(label, catId, current, allowNone) {
   const c = cat(catId);
@@ -73,6 +73,35 @@ function subtasks(t) {
   </div>`;
 }
 
+// Collegamenti del task: quelli scritti nel suo file e, con il nome inverso, quelli degli altri task che puntano a lui.
+// Si aggiungono scegliendo il tipo e cercando il task con @ (ID o titolo).
+function links(t) {
+  const types = cat('collegamento')?.tags || [];
+  const rows = linksOf(t).map((l) => {
+    const target = l.target
+      ? `<button class="link-ref" data-action="open-task" data-id="${esc(l.id)}"><span class="mono muted">${esc(l.id)}</span><span class="ellipsis">${esc(l.target.titolo)}</span></button>`
+      : `<span class="link-ref missing" title="Non trovato: forse è nel Cestino"><span class="mono">${esc(l.id)}</span><span>non trovato</span></span>`;
+    return `<div class="link-row${l.target && isClosed(l.target) ? ' closed' : ''}">
+      <span class="link-type" style="color:${safeColor(l.colore)}">${esc(l.nome)}</span>${target}
+      <button class="icon-btn sm" data-action="link-remove" data-from="${esc(l.from)}" data-tipo="${esc(l.tipo)}" data-to="${esc(l.to)}" aria-label="Togli il collegamento con ${esc(l.id)}">${icon.close(12)}</button>
+    </div>`;
+  }).join('');
+  const m = S.ui.mention && S.ui.mention.field === 'link' ? S.ui.mention : null;
+  const typeId = S.ui.linkType && types.some((x) => x.id === S.ui.linkType) ? S.ui.linkType : (types[0] || {}).id || '';
+  return `<div class="stack-10">
+    <span class="section-label">COLLEGAMENTI</span>
+    ${rows ? `<div class="link-list">${rows}</div>` : ''}
+    <div class="link-add">
+      ${select('data-change="link-type"', options(types.map((x) => [x.id, x.nome]), typeId), 'Tipo di collegamento')}
+      <div class="mention-wrap grow">
+        <input id="link-input" class="tag-add" placeholder="@ cerca un task per ID o titolo" autocomplete="off" data-input="link-search" data-keydown="link-key"
+          role="combobox" aria-expanded="${!!m}" aria-controls="mention-link" aria-label="Task da collegare" value="${m ? esc(m.query) : ''}">
+        <div id="mention-link" class="mention-list" role="listbox"${m ? '' : ' hidden'}>${m ? mentionItems(m.items, m.active) : ''}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
 // "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.
 function saveState(field, un) {
   const dirty = field in un;
@@ -123,6 +152,7 @@ export function taskPanel() {
       </div>
       <div class="hr"></div>
       ${subtasks(t)}
+      ${isNew ? '' : links(t)}
       <label class="stack-10">
         <span class="section-label">DESCRIZIONE</span>
         <textarea id="task-desc" class="desc-input" rows="8" data-change="task-field" data-input="task-dirty" data-field="descrizione" placeholder="Note, link, sotto-attività… (Markdown)">${esc(un.descrizione ?? (t.descrizione || ''))}</textarea>

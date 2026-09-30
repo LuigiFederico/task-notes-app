@@ -4,10 +4,11 @@
 
 const fm = require('./frontmatter');
 
-const SYSTEM_CATEGORIES = ['stato', 'priorita'];
+// stato e priorita sono campi del task; collegamento elenca i tipi dei collegamenti fra task (campo collegamenti).
+const SYSTEM_CATEGORIES = ['stato', 'priorita', 'collegamento'];
 const TASK_KEYS = ['id', 'titolo', 'progetto', 'stato', 'priorita', 'scadenza', 'creato', 'aggiornato', 'completato'];
 // Chiavi del task con un formato proprio, scritte solo se servono: non sono categorie utente.
-const RESERVED_KEYS = ['sottotask', 'storico'];
+const RESERVED_KEYS = ['sottotask', 'collegamenti', 'storico'];
 const isTaskKey = (k) => TASK_KEYS.includes(k) || RESERVED_KEYS.includes(k);
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -59,6 +60,7 @@ function parseTask(text, fallbackId) {
     completato: str(data.completato),
     tags,
     sottotask: parseSubtasks(data.sottotask),
+    collegamenti: parseLinks(data.collegamenti),
     storico: Array.isArray(data.storico) ? data.storico.map(String) : [],
     descrizione: body
   };
@@ -72,6 +74,7 @@ function serializeTask(t) {
     if (Array.isArray(v)) data[k] = v; else if (v) data[k] = v;
   }
   if (t.sottotask && t.sottotask.length) data.sottotask = t.sottotask.map((x) => `[${x.fatto ? 'x' : ' '}] ${x.testo}`);
+  if (t.collegamenti && t.collegamenti.length) data.collegamenti = t.collegamenti.map((l) => (l.tipo ? `${l.tipo} ${l.id}` : l.id));
   data.storico = t.storico || [];
   return fm.stringify(data, t.descrizione || '');
 }
@@ -84,6 +87,16 @@ function parseSubtasks(v) {
     const m = String(line).match(/^\[([ xX]?)\]\s*(.*)$/);
     return m ? { fatto: m[1].toLowerCase() === 'x', testo: m[2] } : { fatto: false, testo: String(line) };
   }).filter((x) => x.testo.trim());
+}
+
+// Collegamenti: una riga "<tipo> <ID>" per collegamento (es. "bloccato-da T-012"), salvata solo sul task di partenza.
+// Il tipo è l'ID di un tag della categoria collegamento; una riga con il solo ID è un collegamento senza tipo.
+function parseLinks(v) {
+  if (!Array.isArray(v)) return [];
+  return v.map((line) => {
+    const parts = String(line).trim().split(/\s+/);
+    return parts.length > 1 ? { tipo: parts[0], id: parts[1] } : { tipo: '', id: parts[0] };
+  }).filter((l) => l.id);
 }
 
 // Righe di storico di un salvataggio: "Creato" per un task nuovo, altrimenti i cambi di stato,
@@ -189,15 +202,17 @@ function parseTag(text, id) {
     colore: data.colore ? String(data.colore) : '#6B675E',
     ordine: typeof data.ordine === 'number' ? data.ordine : 99,
     chiuso: data.chiuso === true,
+    inverso: data.inverso ? String(data.inverso) : null,
     creato: data.creato ? String(data.creato) : null,
     descrizione: body
   };
 }
 
-// Solo gli stati hanno "chiuso".
+// Solo gli stati hanno "chiuso"; solo i tipi di collegamento hanno "inverso" (il nome visto dall'altro task).
 function serializeTag(t, id, catId) {
   const data = { nome: t.nome || id, colore: t.colore || '#6B675E', ordine: t.ordine ?? 99 };
   if (catId === 'stato') data.chiuso = !!t.chiuso;
+  if (catId === 'collegamento') data.inverso = (t.inverso || '').trim() || t.nome || id;
   data.creato = t.creato || today();
   return fm.stringify(data, t.descrizione || '');
 }

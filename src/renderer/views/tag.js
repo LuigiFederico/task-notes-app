@@ -54,6 +54,7 @@ export function tagView(catId, tagId) {
         <aside class="card pad stack-16 self-start" aria-label="Proprietà del tag">
           <h2 class="section-label">PROPRIETÀ</h2>
           <label class="field"><span>Nome</span><input value="${esc(t.nome)}" data-change="tag-rename" data-cat="${esc(catId)}" data-tag="${esc(tagId)}"></label>
+          ${catId === 'collegamento' ? `<label class="field"><span>Nome inverso</span><input value="${esc(t.inverso || '')}" placeholder="${esc(t.nome)}" data-change="tag-inverse" ${attrs}></label>` : ''}
           <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, t.colore, 'tag-page-color', { small: true, attrs })}</div>
           <div class="kv small"><span class="muted">Categoria</span><span>${esc(c.nome)}</span><span class="muted">Creato</span><span>${esc(fmtFull(t.creato))}</span><span class="muted">File</span><span class="mono">tags/${esc(catId)}/${esc(tagId)}.md</span></div>
           ${Object.keys(byProject).length ? `<div class="hr"></div><div class="stack-10"><span class="muted small">Per progetto</span>${Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([code, n]) => { const p = project(code); return `<button class="row-8 link" data-action="go" data-view="project" data-code="${esc(code)}"><span class="dot sq" style="background:${safeColor(p ? p.colore : '')}"></span><span class="grow">${esc(p ? p.nome : code)}</span><span class="muted">${n}</span></button>`; }).join('')}</div>` : ''}

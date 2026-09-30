@@ -321,6 +321,23 @@ pre { margin: 0; }
 .tag-edit { display: flex; flex-direction: column; gap: 12px; padding: 16px 22px; background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 .add-row { display: flex; align-items: center; gap: 8px; padding: 14px 22px; color: var(--accent); font-size: 14px; }
 .add-row:hover { background: var(--surface-2); }
+/* Collegamenti e suggerimenti di @ */
+.link-list { display: flex; flex-direction: column; gap: 2px; }
+.link-row { display: grid; grid-template-columns: minmax(90px, auto) 1fr auto; align-items: center; gap: 10px; min-height: 32px; }
+.link-row.closed .link-ref { color: var(--muted); text-decoration: line-through; }
+.link-type { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.link-ref { display: flex; align-items: center; gap: 8px; min-width: 0; text-align: left; font-size: 14px; }
+.link-ref:hover .ellipsis { text-decoration: underline; }
+.link-ref.missing { color: var(--muted); text-decoration: line-through; }
+.link-add { display: flex; align-items: center; gap: 8px; }
+.mention-wrap { position: relative; }
+.mention-wrap .tag-add { width: 100%; }
+.mention-list { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; right: 0; max-height: 280px; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, .12); padding: 4px; }
+.mention-list[hidden] { display: none; }
+.mention-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: 6px; text-align: left; font-size: 13px; min-width: 0; }
+.mention-item.on, .mention-item:hover { background: var(--chip); }
+.mention-item.closed .ellipsis { color: var(--muted); text-decoration: line-through; }
+.mention-empty { padding: 8px; }
 .cat-note { padding: 18px 22px; max-width: 72ch; }
 .chip.text-value a { color: var(--accent); text-decoration: none; max-width: 32ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chip.text-value a:hover { text-decoration: underline; }

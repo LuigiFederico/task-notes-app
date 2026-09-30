@@ -48,6 +48,8 @@ npm run dist                                     # Windows installer + portable 
 ## Data model rules worth knowing
 
 - A task's ID is its **filename**, not its `id` field, so a OneDrive conflict copy (`T-042-PC.md`) appears as a separate task.
-- `stato` and `priorita` are system categories (`sistema: true`). They can be renamed and reordered but not deleted. User categories live under `task.tags[catId]` in memory and are written as top-level front-matter keys named after the category ID (a list when the category is `multipla`).
+- `stato`, `priorita` and `collegamento` are system categories (`sistema: true`). They can be renamed and reordered but not deleted, and `init()` recreates them in existing folders. `stato` and `priorita` are task fields; `collegamento` holds the link types (with an `inverso` name), used by the task's `collegamenti` list, so code that special-cases `SYSTEM_CATEGORIES` must handle it separately. User categories live under `task.tags[catId]` in memory and are written as top-level front-matter keys named after the category ID (a list when the category is `multipla` or `testo`).
+- Front-matter keys with their own format (`sottotask`, `collegamenti`, `storico`) are in `RESERVED_KEYS` in `formats.js`; any other unknown key is read as a user category, so a new task field must be added there.
+- A link (`collegamenti: - bloccato-da T-012`) is written only in the source task. The target shows it with the type's `inverso` name, computed by `linksOf()` in `selectors.js`; a target that is missing (e.g. in the trash) stays in the file and shows as "non trovato".
 - A tag's ID is its filename slug and does not change when the tag is renamed, so tasks never need rewriting after a rename.
 - Tag order (`ordine`) matters: priority order drives task sorting (`prioRank`).
