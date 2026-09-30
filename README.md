@@ -65,18 +65,18 @@ src/
     main.js        finestra, impostazioni locali, canali IPC, osservazione della cartella
     updater.js     aggiornamenti da GitHub Releases
     preload.js     API esposta all'interfaccia (window.api), niente accesso diretto a Node
-    store.js       lettura/scrittura di task, progetti, categorie e tag, regole sui dati, cestino
-    formats.js     formato dei file di task, progetti, categorie e tag (funzioni pure)
+    store.js       lettura/scrittura di task, appunti, progetti, categorie e tag, regole sui dati, cestino
+    formats.js     formato dei file di task, appunti, progetti, categorie e tag (funzioni pure)
     fsutil.js      scrittura atomica e riprova quando OneDrive blocca un file
     frontmatter.js parser/serializer del front matter YAML (sottoinsieme)
   renderer/        interfaccia (HTML + CSS + moduli JS, nessun passaggio di build)
     app.js         avvio, collegamento degli eventi agli handler, scorciatoie
     core.js        render, ricarica dai file, avvisi ed errori
-    handlers/      azioni dell'utente, un file per argomento (task, progetti, tag, impostazioni…)
+    handlers/      azioni dell'utente, un file per argomento (task, appunti, grafo, progetti, tag, impostazioni…)
     state.js       stato dell'interfaccia e funzioni di lettura sui dati
     selectors.js   letture che dipendono da filtri, pannello aperto o data di oggi
-    views/         una vista per schermata (task, dettaglio, progetti, progetto, tag…) e components.js
-    lib/           utilità (date, markdown, icone)
+    views/         una vista per schermata (task, appunti, grafo, dettaglio, progetti, progetto, tag…) e components.js
+    lib/           utilità (date, markdown, icone, disposizione del grafo)
 test/              test con node:test
 ```
 
@@ -97,6 +97,10 @@ La mascotte vive in basso a destra e reagisce alle azioni:
 | Errore | pensa |
 
 Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/mascot.js` (tabella `REACTIONS`) e le animazioni in fondo a `styles.css`. Nelle Impostazioni si può nascondere il corvo o attivare il movimento ridotto, che si attiva da solo anche quando Windows ha le animazioni disattivate.
+
+## Grafo
+
+La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell'ordine dei progetti) con il suo colore, e i collegamenti come curve che passano per il centro; le menzioni `@` sono tratteggiate e gli appunti sono cerchi vuoti. Il pallino è più grande quanto più l'elemento è collegato. I filtri scelgono task e/o appunti, progetti, stati e tipi di collegamento, e se colorare gli archi per progetto o per tipo. Passando sopra un nodo si evidenziano i suoi collegamenti; un clic lo apre.
 
 ## Formato dei dati
 

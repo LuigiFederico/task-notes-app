@@ -8,6 +8,7 @@ import { tasksView, taskList } from './views/tasks.js';
 import { taskPanel } from './views/taskPanel.js';
 import { notesView, noteList } from './views/notes.js';
 import { notePanel } from './views/notePanel.js';
+import { graphView } from './views/graph.js';
 import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView } from './views/tags.js';
@@ -30,6 +31,7 @@ function viewHtml() {
     case 'tag': return tagView(v.cat, v.tag);
     case 'settings': return settingsView();
     case 'notes': return notesView();
+    case 'graph': return graphView();
     default: return tasksView();
   }
 }

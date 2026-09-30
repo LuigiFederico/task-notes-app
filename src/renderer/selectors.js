@@ -1,6 +1,6 @@
 // Letture che dipendono dallo stato dell'interfaccia (filtri, pannello aperto) o dalla data di oggi.
 import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks } from './state.js';
-import { todayISO, addDays, weekStart, dueBucket } from './lib/util.js';
+import { todayISO, addDays, weekStart, dueBucket, mentionsOf } from './lib/util.js';
 
 export function currentTask() {
   if (S.ui.openTask === 'new') return S.ui.draft;
@@ -132,6 +132,62 @@ export function refCandidates(query, exclude = [], limit = 8) {
     .sort((a, b) => rank(a) - rank(b) || String(b.aggiornato || '').localeCompare(String(a.aggiornato || '')) || b.id.localeCompare(a.id, 'it', { numeric: true }))
     .slice(0, limit)
     .map((x) => ({ id: x.id, titolo: x.titolo, chiuso: closed(x) }));
+}
+
+// ---------- grafo
+export const NO_PROJECT = '__none';
+export const MENTION_TYPE = '@';      // tipo degli archi che vengono dalle menzioni nel testo
+export const UNTYPED = '_';           // collegamento senza tipo
+const GREY = '#B8B4A9';
+
+// Gruppi (un arco del cerchio per progetto, nell'ordine dei progetti, poi "Senza progetto") e archi del grafo,
+// con i filtri di S.ui.graph. Ci sono anche i task chiusi, i progetti archiviati e i nodi senza collegamenti.
+export function graphData() {
+  const g = S.ui.graph;
+  const hideP = new Set(g.hideProjects);
+  const hideS = new Set(g.hideStates);
+  const hideT = new Set(g.hideTypes);
+  const items = [
+    ...(g.kind === 'appunti' ? [] : S.data.tasks.filter((t) => !hideS.has(t.stato)).map((t) => ({ item: t, kind: 'task', closed: isClosed(t) }))),
+    ...(g.kind === 'task' ? [] : S.data.notes.map((n) => ({ item: n, kind: 'appunto', closed: false })))
+  ].filter(({ item }) => !hideP.has(project(item.progetto) ? item.progetto : NO_PROJECT));
+
+  const byKey = new Map();
+  const groupOf = (code) => {
+    const key = project(code) ? code : NO_PROJECT;
+    if (!byKey.has(key)) byKey.set(key, []);
+    return byKey.get(key);
+  };
+  for (const x of items) groupOf(x.item.progetto).push(x);
+  const order = [...S.data.projects.map((p) => p.codice), NO_PROJECT];
+  const num = (id) => Number(String(id).replace(/\D/g, '')) || 0;
+  const groups = order.filter((k) => byKey.has(k)).map((key) => {
+    const p = project(key);
+    const color = p ? p.colore : GREY;
+    const list = byKey.get(key).sort((a, b) => (a.kind === b.kind ? num(a.item.id) - num(b.item.id) : a.kind === 'task' ? -1 : 1));
+    return {
+      key, color, label: p ? p.nome : 'Senza progetto',
+      nodes: list.map(({ item, kind, closed }) => ({ id: item.id, label: item.titolo, kind, closed, color }))
+    };
+  });
+
+  const visible = new Map(groups.flatMap((gr) => gr.nodes.map((n) => [n.id, n])));
+  const edges = [];
+  const seen = new Set();
+  const add = (from, to, type, typeColor) => {
+    const key = `${from}>${to}>${type}`;
+    if (!visible.has(from) || !visible.has(to) || from === to || hideT.has(type) || seen.has(key)) return;
+    seen.add(key);
+    edges.push({ from, to, type, color: g.edgeColor === 'tipo' ? typeColor : visible.get(from).color });
+  };
+  for (const { item } of items) {
+    for (const l of item.collegamenti || []) {
+      const tp = l.tipo ? tagOf('collegamento', l.tipo) : null;
+      add(item.id, l.id, l.tipo || UNTYPED, tp ? tp.colore : GREY);
+    }
+    for (const id of mentionsOf(item.descrizione)) add(item.id, id, MENTION_TYPE, GREY);
+  }
+  return { groups, edges };
 }
 
 // ---------- tag

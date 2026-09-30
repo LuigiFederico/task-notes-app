@@ -9,12 +9,13 @@ import { api, root, render, autosizeTitle, reload, run, toast, checkGroupBy, sto
 import * as common from './handlers/common.js';
 import * as taskHandlers from './handlers/task.js';
 import * as noteHandlers from './handlers/note.js';
+import * as graphHandlers from './handlers/graph.js';
 import * as projectHandlers from './handlers/project.js';
 import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
 
 const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
-const HANDLERS = [common, taskHandlers, noteHandlers, projectHandlers, tagHandlers, settingsHandlers];
+const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
 function merge(kind) {
@@ -60,6 +61,9 @@ root.addEventListener('submit', (e) => {
   const form = e.target.closest('[data-submit]');
   if (form) { e.preventDefault(); submits[form.dataset.submit](form, e); }
 });
+// Grafo: il nodo sotto il mouse (o con il focus) mette in evidenza i suoi collegamenti.
+root.addEventListener('mouseover', (e) => { if (S.view.name === 'graph') graphHandlers.highlightNode(e.target.closest('[data-hover="gnode"]')?.dataset.id || null); });
+root.addEventListener('focusin', (e) => { if (S.view.name === 'graph') graphHandlers.highlightNode(e.target.closest('[data-hover="gnode"]')?.dataset.id || null); });
 // Grafico dei progetti: la settimana sotto il mouse si evidenzia e compare nel riepilogo.
 root.addEventListener('mouseover', (e) => {
   const el = e.target.closest('[data-hover="week"]');

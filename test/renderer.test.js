@@ -203,3 +203,45 @@ test('renderer: appunti nei collegamenti, nei suggerimenti e nella ricerca', asy
   assert.deepStrictEqual(visibleNotes().map((n) => n.id), ['A-001']);
   assert.deepStrictEqual(visibleNotes(S.data.notes, '').length, 2);
 });
+
+test('renderer: layout del grafo, nodi raggruppati sul cerchio e raggio secondo i collegamenti', async () => {
+  const { layoutGraph, labelSize } = await load('lib/graph.js');
+  const groups = [{ key: 'A', nodes: [{ id: 'T-1' }, { id: 'T-2' }] }, { key: 'B', nodes: [{ id: 'T-3' }] }, { key: 'C', nodes: [] }];
+  const edges = [{ from: 'T-1', to: 'T-3' }, { from: 'T-1', to: 'T-2' }, { from: 'T-1', to: 'T-9' }];
+  const g = layoutGraph(groups, edges, { size: 1000, radius: 300, gap: 0.2 });
+  assert.deepStrictEqual(g.nodes.map((n) => n.id), ['T-1', 'T-2', 'T-3']);
+  const [a, b, c] = g.nodes;
+  // angoli crescenti in senso orario, e fra un gruppo e l'altro c'è uno spazio in più
+  assert.ok(a.angle < b.angle && b.angle < c.angle);
+  assert.ok(c.angle - b.angle > b.angle - a.angle);
+  // tutti sul cerchio
+  for (const n of g.nodes) assert.ok(Math.abs(Math.hypot(n.x - 500, n.y - 500) - 300) < 1e-6);
+  // T-1 ha più collegamenti: pallino più grande; l'arco verso un nodo assente si scarta
+  assert.ok(a.r > b.r && b.r === c.r);
+  assert.strictEqual(g.edges.length, 2);
+  assert.match(g.edges[0].d, /^M[\d.]+ [\d.]+ C/);
+  assert.deepStrictEqual(layoutGraph([], []).nodes, []);
+  assert.ok(labelSize(500) < labelSize(20));
+});
+
+test('renderer: dati del grafo con filtri, menzioni e colori degli archi', async () => {
+  const { graphData, NO_PROJECT, MENTION_TYPE } = await load('selectors.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'A', progetto: 'VEND', collegamenti: [{ tipo: 'bloccato-da', id: 'T-002' }] },
+    { id: 'T-002', titolo: 'B', progetto: 'ECOM', stato: 'fatto', descrizione: 'vedi @A-001 e @T-001' },
+    { id: 'T-003', titolo: 'C', progetto: '' }
+  ]);
+  S.data.categories.push({ id: 'collegamento', nome: 'Collegamento', tipo: 'singola', sistema: true, tags: [{ id: 'bloccato-da', nome: 'Bloccato da', colore: '#B42318' }] });
+  S.data.notes = [{ id: 'A-001', titolo: 'Nota', progetto: 'VEND', tags: {}, collegamenti: [], descrizione: '' }];
+  S.ui.graph = { kind: 'tutti', edgeColor: 'progetto', hideProjects: [], hideStates: [], hideTypes: [] };
+  let d = graphData();
+  assert.deepStrictEqual(d.groups.map((g) => [g.key, g.nodes.map((n) => n.id)]), [['VEND', ['T-001', 'A-001']], ['ECOM', ['T-002']], [NO_PROJECT, ['T-003']]]);
+  assert.deepStrictEqual(d.edges.map((e) => [e.from, e.to, e.type, e.color]),
+    [['T-001', 'T-002', 'bloccato-da', '#2F5BD3'], ['T-002', 'A-001', MENTION_TYPE, '#0B8A6F'], ['T-002', 'T-001', MENTION_TYPE, '#0B8A6F']]);
+  S.ui.graph = { ...S.ui.graph, edgeColor: 'tipo', hideTypes: [MENTION_TYPE] };
+  assert.deepStrictEqual(graphData().edges.map((e) => e.color), ['#B42318']);
+  S.ui.graph = { ...S.ui.graph, kind: 'task', hideStates: ['fatto'], hideProjects: [NO_PROJECT] };
+  d = graphData();
+  assert.deepStrictEqual(d.groups.flatMap((g) => g.nodes.map((n) => n.id)), ['T-001']);
+  assert.strictEqual(d.edges.length, 0);
+});

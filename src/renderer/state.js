@@ -26,6 +26,8 @@ export const S = {
     openNote: null,     // id dell'appunto aperto nel pannello, oppure 'new' (mai insieme a openTask)
     noteDraft: null,    // appunto nuovo non ancora salvato
     noteSearch: '',
+    // Filtri del grafo: gli elenchi dicono cosa nascondere (vuoti = tutto visibile).
+    graph: { kind: 'tutti', edgeColor: 'progetto', hideProjects: [], hideStates: [], hideTypes: [] },
     recentDone: {},     // task completati in questa sessione: restano visibili barrati
     projectTab: 'open',
     projFilter: 'attivo',

@@ -32,6 +32,7 @@ export function sidebar() {
     <nav aria-label="Sezioni" class="nav">
       ${nav('tasks', 'Task', icon.tasks(18), openTotal, v === 'tasks')}
       ${nav('notes', 'Appunti', icon.note(18), S.data.notes.length, v === 'notes')}
+      ${nav('graph', 'Grafo', icon.graph(18), null, v === 'graph')}
       ${nav('projects', 'Progetti', icon.folder(18), activeProjects().length, v === 'projects' || v === 'project')}
       ${nav('tags', 'Tag', icon.tag(18), null, v === 'tags' || v === 'tag')}
     </nav>

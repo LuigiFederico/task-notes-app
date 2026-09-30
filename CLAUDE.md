@@ -19,7 +19,7 @@ npm run dist                                     # Windows installer + portable 
 - There is no linter, formatter, bundler or build step. `.editorconfig` sets 2-space indent, LF and UTF-8.
 - `TACCUINO_USERDATA=<dir> npm start` moves the local config (`config.json`: data folder, window bounds) away from `%APPDATA%\Taccuino`, so dev runs can use a throwaway data folder. `Taccuino/` and `test-data/` are gitignored for this purpose.
 - In the running app, `F5` reloads the renderer and `Ctrl+Shift+I` opens DevTools (unpackaged builds only).
-- `test/store.test.js` covers `src/main/` (store, formats, front matter), each test against a fresh temp dir. `test/renderer.test.js` imports the renderer's pure modules (`state.js`, `selectors.js`, `lib/util.js`) as ES modules, which is what `src/renderer/package.json` (`"type": "module"`) is for, and fills `S.data` by hand. Views, handlers and `core.js` touch the DOM and have no tests.
+- `test/store.test.js` covers `src/main/` (store, formats, front matter), each test against a fresh temp dir. `test/renderer.test.js` imports the renderer's pure modules (`state.js`, `selectors.js`, `lib/util.js`, `lib/graph.js`) as ES modules, which is what `src/renderer/package.json` (`"type": "module"`) is for, and fills `S.data` by hand. Views, handlers and `core.js` touch the DOM and have no tests.
 
 ## Architecture
 
@@ -43,6 +43,7 @@ npm run dist                                     # Windows installer + portable 
 - Imports go one way: `app.js` → `handlers/` → `core.js` → `views/` → `selectors.js` → `state.js`. `core.js` never imports a handler; the task panel's save logic (`flush`, `afterFlush`, `closePanel`) lives in `handlers/task.js`, and other handlers import it from there.
 - One side panel at a time: `S.ui.openTask` or `S.ui.openNote`. The note panel (`views/notePanel.js`) reuses the task panel's field ids (`task-title`, `task-desc`) and handlers; fields shared by both go through `currentItem()` / `updateItem()` in `handlers/task.js`, and the shared field views (`categoryField`, `links`, `description`) live in `views/components.js`. `ref(id)` in `state.js` resolves a `T-…` or `A-…` ID for links and @mentions.
 - An external `data:changed` event is deferred while the user is typing (`pendingReload`) and applied on focus-out.
+- The Grafo page is a hand-drawn SVG (no chart library): `graphData()` in `selectors.js` builds groups and edges with the filters in `S.ui.graph`, `layoutGraph()` in `lib/graph.js` (pure) places them on the circle, and `handlers/graph.js` highlights a node's links on hover without re-rendering.
 - `mascot.js`: the crow mascot. It lives outside `#app` so re-renders don't interrupt its animations. Event → pose sequences are in `REACTIONS`, and the animations are at the bottom of `styles.css`.
 - The CSP in `index.html` blocks inline scripts and all network access from the renderer (updates run in the main process). Fonts come from `@fontsource` packages in `node_modules` (listed in the `build.files` array of `package.json`).
 
