@@ -1,14 +1,8 @@
-import { S, cat, isClosed, values, PROJECT_COLORS, projectTasks } from '../state.js';
+import { S, cat, values, TAG_COLORS, projectTasks, openTasks } from '../state.js';
+import { tagUsage } from '../selectors.js';
 import { esc, safeColor } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox } from './components.js';
-
-export const TAG_COLORS = [...PROJECT_COLORS, '#4A473F', '#146C43', '#2346A8', '#8A4B06'];
-
-export function tagUsage(catId, tagId) {
-  const list = S.data.tasks.filter((t) => values(t, catId).includes(tagId));
-  return { open: list.filter((t) => !isClosed(t)).length, total: list.length, list };
-}
 
 export function swatches(current, action, extra = '') {
   return `<div class="row-6 wrap" role="radiogroup" aria-label="Colore">${TAG_COLORS.map((c) =>
@@ -41,7 +35,7 @@ export function tagsView() {
         <div class="tag-row"><span class="swatch-static" style="background:${safeColor(p.colore)}"></span>
           <button class="link strong" data-action="go" data-view="project" data-code="${esc(p.codice)}">${esc(p.nome)}</button>
           <span class="ellipsis small">${esc((p.descrizione || '').split('\n')[0])}</span>
-          <span>${pt.filter((t) => !isClosed(t)).length}</span><span class="muted">${pt.length}</span><span></span></div>`; }).join('')}
+          <span>${openTasks(pt).length}</span><span class="muted">${pt.length}</span><span></span></div>`; }).join('')}
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">projects/*.md</span></div>`;
   } else {
     const c = cat(sel);

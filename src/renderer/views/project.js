@@ -1,4 +1,4 @@
-import { S, project, projectTasks, isClosed, sortTasks, PROJECT_COLORS } from '../state.js';
+import { S, project, projectTasks, isClosed, sortTasks, openTasks, PROJECT_COLORS } from '../state.js';
 import { esc, safeColor, md, fmtFull, todayISO } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { taskRow, taskHeader, segmented, emptyState, confirmBox } from './components.js';
@@ -31,7 +31,7 @@ export function projectView(code) {
   if (!p) return `<div class="page">${emptyState('Progetto non trovato.')}</div>`;
   const c = safeColor(p.colore);
   const all = projectTasks(code);
-  const open = all.filter((t) => !isClosed(t));
+  const open = openTasks(all);
   const done = all.length - open.length;
   const late = open.filter((t) => t.scadenza && t.scadenza < todayISO()).length;
   const tab = S.ui.projectTab;

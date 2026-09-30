@@ -40,6 +40,7 @@ export const S = {
 };
 
 export const PROJECT_COLORS = ['#2F5BD3', '#0B8A6F', '#C2410C', '#7C3AED', '#B42318', '#B54708', '#0E7490', '#6B675E'];
+export const TAG_COLORS = [...PROJECT_COLORS, '#4A473F', '#146C43', '#2346A8', '#8A4B06'];
 
 export function cat(id) { return S.data.categories.find((c) => c.id === id); }
 export function tagOf(catId, id) { const c = cat(catId); return c ? c.tags.find((t) => t.id === id) : null; }
@@ -50,6 +51,7 @@ export function task(id) { return S.data.tasks.find((t) => t.id === id); }
 export function isClosed(t) { const s = tagOf('stato', t.stato); return !!(s && s.chiuso); }
 export function openStates() { return (cat('stato')?.tags || []).filter((t) => !t.chiuso); }
 export function closedState() { return (cat('stato')?.tags || []).find((t) => t.chiuso); }
+export function openTasks(list = S.data.tasks) { return list.filter((t) => !isClosed(t)); }
 
 export function values(t, catId) {
   if (catId === 'stato') return t.stato ? [t.stato] : [];
@@ -89,5 +91,5 @@ export function sortTasks(list) {
 }
 
 export function projectTasks(code) { return S.data.tasks.filter((t) => t.progetto === code); }
-export function openCount(code) { return projectTasks(code).filter((t) => !isClosed(t)).length; }
+export function openCount(code) { return openTasks(projectTasks(code)).length; }
 export function activeProjects() { return S.data.projects.filter((p) => p.stato !== 'archiviato'); }

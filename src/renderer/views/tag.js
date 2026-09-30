@@ -1,7 +1,8 @@
-import { S, cat, project, isClosed, sortTasks } from '../state.js';
+import { S, cat, project, isClosed, sortTasks, openTasks } from '../state.js';
 import { esc, safeColor, md, fmtFull } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { tagUsage, swatches } from './tags.js';
+import { tagUsage } from '../selectors.js';
+import { swatches } from './tags.js';
 import { taskRow, taskHeader, emptyState, confirmBox } from './components.js';
 
 export function tagView(catId, tagId) {
@@ -10,7 +11,7 @@ export function tagView(catId, tagId) {
   if (!t) return `<div class="page">${emptyState('Tag non trovato.')}</div>`;
   const u = tagUsage(catId, tagId);
   const col = safeColor(t.colore);
-  const open = sortTasks(u.list.filter((x) => !isClosed(x)));
+  const open = sortTasks(openTasks(u.list));
   const closed = sortTasks(u.list.filter((x) => isClosed(x)));
   const byProject = {};
   for (const x of u.list) byProject[x.progetto] = (byProject[x.progetto] || 0) + 1;

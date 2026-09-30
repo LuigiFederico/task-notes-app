@@ -1,11 +1,12 @@
-import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values, saveView } from './state.js';
+import { S, task, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, saveView, TAG_COLORS } from './state.js';
+import { currentTask, visibleTasks, overdueCount } from './selectors.js';
 import { esc, todayISO } from './lib/util.js';
 import { sidebar } from './views/sidebar.js';
-import { tasksView, taskList, visibleTasks } from './views/tasks.js';
-import { taskPanel, currentTask, newTagHint } from './views/taskPanel.js';
+import { tasksView, taskList } from './views/tasks.js';
+import { taskPanel, newTagHint } from './views/taskPanel.js';
 import { projectsView } from './views/projects.js';
 import { projectView, newProjectView } from './views/project.js';
-import { tagsView, TAG_COLORS } from './views/tags.js';
+import { tagsView } from './views/tags.js';
 import { tagView } from './views/tag.js';
 import { setupView, settingsView, updateStatus } from './views/setup.js';
 import { mascot } from './mascot.js';
@@ -59,18 +60,11 @@ function updateMascot() {
   const ready = S.config && S.config.ready && S.data && S.view.name !== 'setup';
   mascot.setLayout({ panelOpen: !!S.ui.openTask, hidden: !ready });
   if (!ready) return;
-  const open = S.data.tasks.filter((t) => !isClosed(t)).length;
+  const open = openTasks().length;
   let base = 'riposo';
   if (S.view.name === 'tasks' && S.ui.search.trim()) base = visibleTasks().length ? 'cerca' : 'pensa';
   else if (open === 0) base = 'dorme';
   mascot.setBase(base);
-}
-
-function openCountNow() { return S.data.tasks.filter((t) => !isClosed(t)).length; }
-
-function overdueCount() {
-  const t0 = todayISO();
-  return S.data.tasks.filter((t) => !isClosed(t) && t.scadenza && t.scadenza < t0).length;
 }
 
 function renderList() {
@@ -157,7 +151,7 @@ async function updateTask(patch) {
 // Il corvo reagisce ai cambi di stato e di scadenza.
 function reactToChange(now, wasClosed, prevState, prevDue) {
   if (!now) return;
-  if (!wasClosed && isClosed(now)) mascot.react(openCountNow() === 0 ? 'allDone' : 'completed');
+  if (!wasClosed && isClosed(now)) mascot.react(openTasks().length === 0 ? 'allDone' : 'completed');
   else if (now.stato === 'in-attesa' && prevState !== 'in-attesa') mascot.react('waiting');
   else if (now.scadenza && now.scadenza !== prevDue && now.scadenza < todayISO() && !isClosed(now)) mascot.react('overdue', { count: overdueCount() });
 }
@@ -222,7 +216,7 @@ async function toggleDone(id) {
   else {
     S.ui.recentDone[id] = true;
     await saveTask({ ...t, stato: (closedState() || {}).id || 'fatto' });
-    mascot.react(openCountNow() === 0 ? 'allDone' : 'completed');
+    mascot.react(openTasks().length === 0 ? 'allDone' : 'completed');
   }
 }
 

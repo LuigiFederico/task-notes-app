@@ -1,23 +1,8 @@
-import { S, isClosed, projectTasks } from '../state.js';
-import { esc, safeColor, todayISO, addDays, weekStart, fmtShort, daysBetween, monthName } from '../lib/util.js';
+import { S, projectTasks, openTasks } from '../state.js';
+import { WEEKS, weekStarts, weeklyDone, isHot } from '../selectors.js';
+import { esc, safeColor, todayISO, fmtShort, daysBetween, monthName } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { segmented } from './components.js';
-
-const WEEKS = 8;
-
-export function weekStarts() {
-  const cur = weekStart(todayISO());
-  return Array.from({ length: WEEKS }, (_, i) => addDays(cur, (i - WEEKS + 1) * 7));
-}
-
-export function weeklyDone(tasks, starts) {
-  return starts.map((ws) => { const we = addDays(ws, 6); return tasks.filter((t) => isClosed(t) && t.completato && t.completato >= ws && t.completato <= we).length; });
-}
-
-function isHot(t) {
-  if (isClosed(t) || !t.scadenza) return false;
-  return t.scadenza <= addDays(todayISO(), 2);
-}
 
 export function kpiTile(label, value, sub, subCls = '') {
   return `<div class="kpi card"><span class="muted small">${esc(label)}</span><span class="kpi-value">${esc(value)}</span><span class="small ${subCls}">${sub}</span></div>`;
@@ -29,7 +14,7 @@ export function projectsView() {
   const list = S.data.projects.filter((p) => filter === 'tutti' || (filter === 'archiviato' ? p.stato === 'archiviato' : p.stato !== 'archiviato'));
   const codes = new Set(list.map((p) => p.codice));
   const tasks = S.data.tasks.filter((t) => codes.has(t.progetto));
-  const open = tasks.filter((t) => !isClosed(t));
+  const open = openTasks(tasks);
   const late = open.filter((t) => t.scadenza && t.scadenza < t0);
   const starts = weekStarts();
   const perProject = list.map((p) => ({ p, weekly: weeklyDone(projectTasks(p.codice), starts) }));
@@ -58,9 +43,9 @@ export function projectsView() {
     (perProject.length ? ' · ' + perProject.map((x) => `${x.p.codice} ${x.weekly[hover]}`).join(' · ') : '');
   const gridLines = ticks.map((v) => `<div class="gridline${v === 0 ? ' base' : ''}" style="top:${H - (v / top) * H}px"></div>`).join('');
 
-  const maxOpen = Math.max(1, ...list.map((p) => projectTasks(p.codice).filter((t) => !isClosed(t)).length));
+  const maxOpen = Math.max(1, ...list.map((p) => openTasks(projectTasks(p.codice)).length));
   const load = list.map((p) => {
-    const o = projectTasks(p.codice).filter((t) => !isClosed(t));
+    const o = openTasks(projectTasks(p.codice));
     const hot = o.filter(isHot).length;
     const l = o.filter((t) => t.scadenza && t.scadenza < t0).length;
     const note = [l ? `${l} in ritardo` : '', hot - l ? `${hot - l} in scadenza a breve` : '', o.filter((t) => t.stato === 'in-attesa').length ? `${o.filter((t) => t.stato === 'in-attesa').length} in attesa` : ''].filter(Boolean).join(' · ') || 'Nessuna urgenza';
@@ -73,7 +58,7 @@ export function projectsView() {
 
   const cards = perProject.map(({ p, weekly }) => {
     const pt = projectTasks(p.codice);
-    const o = pt.filter((t) => !isClosed(t));
+    const o = openTasks(pt);
     const d = pt.length - o.length;
     const pct = pt.length ? Math.round((d / pt.length) * 100) : 0;
     const next = o.filter((t) => t.scadenza).sort((a, b) => a.scadenza.localeCompare(b.scadenza))[0];

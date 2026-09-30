@@ -39,7 +39,7 @@ test('renderer: sortTasks mette prima gli aperti, poi priorità, scadenza e ID p
 });
 
 test('renderer: visibleTasks applica completati, filtri e ricerca', async () => {
-  const { visibleTasks } = await load('views/tasks.js');
+  const { visibleTasks } = await load('selectors.js');
   const S = await setup([
     { id: 'T-001', titolo: 'Slide review', priorita: 'alta', tags: { etichette: ['riunione'] } },
     { id: 'T-002', titolo: 'Catalogo', progetto: 'ECOM', priorita: 'bassa' },
@@ -66,6 +66,35 @@ test('renderer: visibleTasks applica completati, filtri e ricerca', async () => 
   assert.deepStrictEqual(ids(), ['T-001']);
   S.ui.search = 'riunione';        // nome del tag
   assert.deepStrictEqual(ids(), ['T-001']);
+});
+
+test('renderer: groupDefs divide la lista per progetto, scadenza e categoria', async () => {
+  const { groupDefs } = await load('selectors.js');
+  const { todayISO, addDays } = await load('lib/util.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'a', scadenza: addDays(todayISO(), -1), tags: { etichette: ['riunione', 'sparito'] } },
+    { id: 'T-002', titolo: 'b', progetto: 'NOPE', tags: { etichette: ['sparito'] } },
+    { id: 'T-003', titolo: 'c', stato: 'fatto', scadenza: addDays(todayISO(), -1) }
+  ]);
+  const groups = (by) => groupDefs(by).map((g) => [g.key, S.data.tasks.filter(g.test).map((t) => t.id).join(',')]).filter(([, ids]) => ids);
+  assert.deepStrictEqual(groups('progetto'), [['VEND', 'T-001,T-003'], ['__none', 'T-002']]);
+  assert.deepStrictEqual(groups('scadenza'), [['ritardo', 'T-001'], ['nessuna', 'T-002'], ['chiusi', 'T-003']]);
+  // un tag che non esiste più nella categoria conta come "senza"
+  assert.deepStrictEqual(groups('etichette'), [['riunione', 'T-001'], ['__none', 'T-002,T-003']]);
+  assert.deepStrictEqual(groups('stato').map(([k]) => k), ['da-fare', 'fatto']);
+  assert.deepStrictEqual(groupDefs('inesistente'), []);
+});
+
+test('renderer: tagUsage conta i task aperti e totali di un tag', async () => {
+  const { tagUsage } = await load('selectors.js');
+  await setup([
+    { id: 'T-001', titolo: 'a', tags: { etichette: ['riunione'] } },
+    { id: 'T-002', titolo: 'b', stato: 'fatto', tags: { etichette: ['riunione'] } },
+    { id: 'T-003', titolo: 'c' }
+  ]);
+  const u = tagUsage('etichette', 'riunione');
+  assert.deepStrictEqual([u.open, u.total], [1, 2]);
+  assert.strictEqual(tagUsage('stato', 'fatto').total, 1);
 });
 
 test('renderer: dueBucket e dueLabel rispetto a oggi', async () => {

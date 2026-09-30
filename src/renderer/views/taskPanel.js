@@ -1,12 +1,8 @@
-import { S, cat, task, project, extraCats, isClosed, values } from '../state.js';
+import { S, cat, project, extraCats, isClosed, values } from '../state.js';
+import { currentTask } from '../selectors.js';
 import { esc, safeColor, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox } from './components.js';
-
-export function currentTask() {
-  if (S.ui.openTask === 'new') return S.ui.draft;
-  return S.ui.openTask ? task(S.ui.openTask) : null;
-}
 
 function radioGroup(label, catId, current, allowNone) {
   const c = cat(catId);

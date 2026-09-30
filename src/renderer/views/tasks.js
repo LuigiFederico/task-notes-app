@@ -1,52 +1,8 @@
-import { S, cat, project, activeProjects, extraCats, isClosed, values, sortTasks, taskChips } from '../state.js';
-import { esc, safeColor, fmtToday, dueBucket } from '../lib/util.js';
+import { S, cat, project, activeProjects, extraCats, sortTasks, openTasks } from '../state.js';
+import { visibleTasks, groupDefs, emptyReason } from '../selectors.js';
+import { esc, safeColor, fmtToday } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { taskRow, taskHeader, segmented, emptyState } from './components.js';
-
-export function matchesSearch(t, q) {
-  if (!q) return true;
-  q = q.toLowerCase();
-  const p = project(t.progetto);
-  const hay = [t.id, t.titolo, t.descrizione, p && p.nome, t.progetto, ...taskChips(t).map((c) => c.nome)].join(' ').toLowerCase();
-  return q.split(/\s+/).every((w) => hay.includes(w));
-}
-
-export function visibleTasks() {
-  const u = S.ui;
-  return S.data.tasks.filter((t) => {
-    if (isClosed(t) && !u.showDone && !u.recentDone[t.id]) return false;
-    if (u.fProject && t.progetto !== u.fProject) return false;
-    if (u.fPrio && t.priorita !== u.fPrio) return false;
-    if (u.fTag) { const [c, id] = u.fTag.split(':'); if (!values(t, c).includes(id)) return false; }
-    return matchesSearch(t, u.search);
-  });
-}
-
-function groupDefs(by) {
-  if (by === 'progetto') {
-    const known = S.data.projects.map((p) => ({ key: p.codice, label: p.nome, color: p.colore, test: (t) => t.progetto === p.codice, link: p.codice }));
-    return [...known, { key: '__none', label: 'Senza progetto', color: '#B8B4A9', test: (t) => !project(t.progetto) }];
-  }
-  if (by === 'scadenza') {
-    return [['ritardo', 'In ritardo', '#B42318'], ['oggi', 'Oggi', '#2346A8'], ['settimana', 'Questa settimana', '#4A473F'], ['dopo', 'Più avanti', '#6B675E'], ['nessuna', 'Senza scadenza', '#B8B4A9']]
-      .map(([k, l, c]) => ({ key: k, label: l, color: c, test: (t) => (isClosed(t) ? 'chiusi' : dueBucket(t.scadenza)) === k }))
-      .concat([{ key: 'chiusi', label: 'Completati', color: '#146C43', test: (t) => isClosed(t) }]);
-  }
-  const c = cat(by);
-  if (!c) return [];
-  const defs = c.tags.map((tg) => ({ key: tg.id, label: by === 'priorita' ? 'Priorità ' + tg.nome.toLowerCase() : tg.nome, color: tg.colore, test: (t) => values(t, by).includes(tg.id) }));
-  if (by !== 'stato') defs.push({ key: '__none', label: 'Senza ' + c.nome.toLowerCase(), color: '#B8B4A9', test: (t) => values(t, by).filter((v) => c.tags.some((x) => x.id === v)).length === 0 });
-  return defs;
-}
-
-// Perché la lista è vuota: nessun task, filtri che escludono tutto, oppure tutti completati e nascosti.
-function emptyReason() {
-  const u = S.ui;
-  if (!S.data.tasks.length) return 'Ancora nessun task: scrivine uno qui sopra.';
-  if (u.fProject || u.fPrio || u.fTag || u.search.trim()) return 'Nessun task corrisponde ai filtri attivi.';
-  if (!u.showDone && S.data.tasks.every(isClosed)) return 'Tutti i task sono completati.';
-  return 'Nessun task da mostrare.';
-}
 
 export function taskList(list, by, { showProject = true } = {}) {
   const groups = groupDefs(by).map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) })).filter((g) => g.items.length);
@@ -64,7 +20,7 @@ export function taskList(list, by, { showProject = true } = {}) {
 
 export function tasksView() {
   const u = S.ui;
-  const open = S.data.tasks.filter((t) => !isClosed(t)).length;
+  const open = openTasks().length;
   const done = S.data.tasks.length - open;
   const groupOpts = [['progetto', 'Progetto'], ['priorita', 'Priorità'], ['stato', 'Stato'], ['scadenza', 'Scadenza'], ...extraCats().map((c) => [c.id, c.nome])];
   const prioTags = cat('priorita')?.tags || [];
