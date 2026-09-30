@@ -169,6 +169,8 @@ registerUpdates(handle, () => win, () => { closeOk = true; });
 handle('data:load', async () => requireStore().loadAll());
 handle('task:save', async (t) => requireStore().saveTask(t));
 handle('task:delete', async (id) => requireStore().deleteTask(id));
+handle('note:save', async (n) => requireStore().saveNote(n));
+handle('note:delete', async (id) => requireStore().deleteNote(id));
 handle('project:save', async (p) => requireStore().saveProject(p));
 handle('project:delete', async (codice) => requireStore().deleteProject(codice));
 handle('category:save', async (c) => requireStore().saveCategory(c));

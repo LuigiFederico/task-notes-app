@@ -4,7 +4,7 @@ import { icon } from '../lib/icons.js';
 import { mascot } from '../mascot.js';
 import { confirmBox } from './components.js';
 
-const TRASH_KIND = { task: 'Task', progetto: 'Progetto', categoria: 'Categoria', tag: 'Tag' };
+const TRASH_KIND = { task: 'Task', appunto: 'Appunto', progetto: 'Progetto', categoria: 'Categoria', tag: 'Tag' };
 
 function trashSection() {
   const list = S.data.cestino || [];

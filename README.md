@@ -104,6 +104,7 @@ Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/
 <cartella dati>/
   taccuino.json                  marcatore della cartella, ultimo ID di task cancellato, migrazioni già fatte
   tasks/T-042.md                 un file per task
+  appunti/A-007.md               un file per appunto
   projects/VEND.md               un file per progetto
   tags/<categoria>/_categoria.md impostazioni della categoria
   tags/<categoria>/<tag>.md      un file per tag, con la descrizione nel corpo
@@ -146,6 +147,26 @@ I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` 
 
 Ogni categoria di tag creata dall'utente (es. `contesto`) diventa una chiave del front matter con lo stesso nome. Il valore è una lista se la categoria è "a scelta multipla" o "a testo libero".
 
+### Appunto
+
+```markdown
+---
+id: A-007
+titolo: Riunione KPI con Marco
+progetto: ECOM       # facoltativo
+creato: 2026-09-30
+aggiornato: 2026-09-30
+etichette:
+  - riunione
+collegamenti:
+  - correlato-a T-042
+---
+
+Testo libero in Markdown, anche con menzioni come @T-042.
+```
+
+Un appunto ha un ID sequenziale come i task (`A-001`, …) che non cambia mai, così i collegamenti e le menzioni restano validi anche se il titolo cambia. Ha le stesse categorie utente e gli stessi collegamenti dei task, ma non stato, priorità o scadenza.
+
 ### Progetto
 
 ```markdown
@@ -182,11 +203,12 @@ Task: T-029
 
 ### Cestino
 
-Task, progetti, tag e categorie eliminati non vengono cancellati: finiscono in `.cestino/<data_ora>/`, con lo stesso percorso che avevano (es. `.cestino/2026-09-29_143205/tasks/T-042.md`) e un `voce.json` che dice cos'erano. Dalla sezione Cestino di Impostazioni si ripristinano o si eliminano per sempre. All'avvio, gli elementi eliminati da più di 30 giorni vengono cancellati.
+Task, appunti, progetti, tag e categorie eliminati non vengono cancellati: finiscono in `.cestino/<data_ora>/`, con lo stesso percorso che avevano (es. `.cestino/2026-09-29_143205/tasks/T-042.md`) e un `voce.json` che dice cos'erano. Dalla sezione Cestino di Impostazioni si ripristinano o si eliminano per sempre. All'avvio, gli elementi eliminati da più di 30 giorni vengono cancellati.
 
 - Il ripristino si ferma se nel frattempo esiste già un file con lo stesso nome, o se il tag appartiene a una categoria che non c'è più.
 - Eliminando un tag o una categoria, il valore viene tolto dai task, e ripristinandoli non torna.
-- Gli ID dei task non vengono mai riusati: il prossimo ID tiene conto anche dei task nel cestino e, dopo lo svuotamento, di `ultimoId` in `taccuino.json`.
+- Gli ID dei task e degli appunti non vengono mai riusati: il prossimo ID tiene conto anche di quelli nel cestino e, dopo lo svuotamento, di `ultimoId` e `ultimoAppunto` in `taccuino.json`.
+- Un progetto con task o appunti non si elimina: si archivia.
 
 I file si possono modificare anche a mano. L'app si accorge dei cambiamenti (anche quelli sincronizzati da OneDrive da un altro PC) e ricarica i dati.
 

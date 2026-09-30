@@ -2,8 +2,9 @@
 // Archivio su file: ogni task, progetto, categoria e tag è un file Markdown.
 //
 //   <cartella>/
-//     taccuino.json                 impostazioni della cartella (versione, prossimo ID)
+//     taccuino.json                 impostazioni della cartella (versione, ultimi ID cancellati, migrazioni)
 //     tasks/T-042.md                un file per task
+//     appunti/A-007.md              un file per appunto
 //     projects/VEND.md              un file per progetto (descrizione + decisioni)
 //     tags/<categoria>/_categoria.md
 //     tags/<categoria>/<tag>.md     un file per tag (descrizione nel corpo)
@@ -18,11 +19,13 @@ const fm = require('./frontmatter');
 const { readDirSafe, renameRetry, writeAtomic } = require('./fsutil');
 const {
   SYSTEM_CATEGORIES, slugify, today, stamp, isSafeName, idNum,
-  parseTask, serializeTask, taskHistory, parseProject, serializeProject,
+  parseTask, serializeTask, taskHistory, parseNote, serializeNote, parseProject, serializeProject,
   parseCategory, serializeCategory, parseTag, serializeTag
 } = require('./formats');
 
 const TRASH = '.cestino';
+// Chiave di taccuino.json con l'ID più alto cancellato per sempre, per tipo di elemento.
+const LAST_ID = { task: 'ultimoId', appunto: 'ultimoAppunto' };
 const CONFIG = 'taccuino.json';
 
 // Urgente e Backlog sono arrivati dopo: le cartelle esistenti li ricevono una volta sola (vedi migrate).
@@ -103,7 +106,7 @@ class Store {
   // Crea la struttura se manca. Non sovrascrive nulla di esistente.
   async init({ withDefaultProject = false } = {}) {
     await fsp.mkdir(this.dir, { recursive: true });
-    for (const d of ['tasks', 'projects', 'tags']) await fsp.mkdir(path.join(this.dir, d), { recursive: true });
+    for (const d of ['tasks', 'appunti', 'projects', 'tags']) await fsp.mkdir(path.join(this.dir, d), { recursive: true });
     const isNew = !(await Store.isDataFolder(this.dir));
     if (isNew) await this.writeConfig({ app: 'Taccuino', version: 1, creato: today(), migrazioni: MIGRATIONS });
     for (const cat of DEFAULT_CATEGORIES) {
@@ -140,8 +143,8 @@ class Store {
   }
 
   async loadAll() {
-    const [categories, projects, tasks] = await Promise.all([this.loadCategories(), this.loadProjects(), this.loadTasks()]);
-    return { dir: this.dir, categories, projects, tasks, cestino: await this.listTrash() };
+    const [categories, projects, tasks, notes] = await Promise.all([this.loadCategories(), this.loadProjects(), this.loadTasks(), this.loadNotes()]);
+    return { dir: this.dir, categories, projects, tasks, notes, cestino: await this.listTrash() };
   }
 
   // ---------- Task
@@ -150,13 +153,14 @@ class Store {
     return out.sort((a, b) => idNum(b.id) - idNum(a.id));
   }
 
-  // Conta anche i task nel cestino e quelli già cancellati per sempre (ultimoId): un ID non torna mai.
-  async nextTaskId() {
-    const tasks = await this.loadTasks();
-    const trashed = (await this.listTrash()).filter((v) => v.tipo === 'task').map((v) => idNum(path.basename(v.percorso)));
-    const max = Math.max(0, Number((await this.readConfig()).ultimoId) || 0, ...trashed, ...tasks.map((t) => idNum(t.id)));
-    return 'T-' + String(max + 1).padStart(3, '0');
+  // Conta anche gli elementi nel cestino e quelli già cancellati per sempre (ultimoId, ultimoAppunto): un ID non torna mai.
+  async nextId(prefix, tipo, items) {
+    const trashed = (await this.listTrash()).filter((v) => v.tipo === tipo).map((v) => idNum(path.basename(v.percorso)));
+    const max = Math.max(0, Number((await this.readConfig())[LAST_ID[tipo]]) || 0, ...trashed, ...items.map((x) => idNum(x.id)));
+    return prefix + String(max + 1).padStart(3, '0');
   }
+
+  async nextTaskId() { return this.nextId('T-', 'task', await this.loadTasks()); }
 
   // Salva un task nuovo (senza id) o esistente: aggiorna date, completato e storico rispetto alla versione su disco.
   async saveTask(input, categories) {
@@ -189,6 +193,44 @@ class Store {
 
   async writeTask(t) { await this.write(this.p('tasks', t.id + '.md'), serializeTask(t)); }
 
+  // ---------- Appunti
+  async loadNotes() {
+    const out = await readMdDir(path.join(this.dir, 'appunti'), parseNote, 'Appunto illeggibile');
+    return out.sort((a, b) => idNum(b.id) - idNum(a.id));
+  }
+
+  async nextNoteId() { return this.nextId('A-', 'appunto', await this.loadNotes()); }
+
+  // Salva un appunto nuovo (senza id) o esistente: creato resta quello su disco, aggiornato diventa oggi.
+  async saveNote(input) {
+    const n = JSON.parse(JSON.stringify(input));
+    const now = today();
+    let prev = null;
+    if (n.id) {
+      try { prev = parseNote(await fsp.readFile(this.p('appunti', n.id + '.md'), 'utf8'), n.id); } catch { prev = null; }
+    } else {
+      n.id = await this.nextNoteId();
+    }
+    n.titolo = String(n.titolo || '').trim() || 'Senza titolo';
+    n.creato = (prev && prev.creato) || n.creato || now;
+    n.aggiornato = now;
+    await this.writeNote(n);
+    return parseNote(serializeNote(n), n.id);
+  }
+
+  async writeNote(n) { await this.write(this.p('appunti', n.id + '.md'), serializeNote(n)); }
+
+  async deleteNote(id) {
+    const titolo = await this.displayName(this.p('appunti', id + '.md'), '');
+    await this.trash('appunto', titolo ? `${id} · ${titolo}` : id, 'appunti', id + '.md');
+  }
+
+  // Task e appunti insieme, ognuno con la sua funzione di scrittura: per le operazioni che toccano le categorie utente.
+  async loadItems() {
+    const [tasks, notes] = await Promise.all([this.loadTasks(), this.loadNotes()]);
+    return [...tasks.map((item) => ({ item, save: (x) => this.writeTask(x) })), ...notes.map((item) => ({ item, save: (x) => this.writeNote(x) }))];
+  }
+
   // ---------- Progetti
   async loadProjects() {
     const out = await readMdDir(path.join(this.dir, 'projects'), parseProject, 'Progetto illeggibile');
@@ -206,6 +248,7 @@ class Store {
   async deleteProject(codice) {
     const tasks = await this.loadTasks();
     if (tasks.some((t) => t.progetto === codice)) throw new Error('Il progetto ha dei task: archivialo invece di eliminarlo.');
+    if ((await this.loadNotes()).some((n) => n.progetto === codice)) throw new Error('Il progetto ha degli appunti: archivialo invece di eliminarlo.');
     await this.trash('progetto', await this.displayName(this.p('projects', codice + '.md'), codice), 'projects', codice + '.md');
   }
 
@@ -250,9 +293,9 @@ class Store {
 
   async deleteTag(catId, id) {
     if (SYSTEM_CATEGORIES.includes(catId)) {
-      const tasks = await this.loadTasks();
+      const items = catId === 'collegamento' ? (await this.loadItems()).map((x) => x.item) : await this.loadTasks();
       const used = catId === 'collegamento' ? (t) => t.collegamenti.some((l) => l.tipo === id) : (t) => t[catId] === id;
-      if (tasks.some(used)) throw new Error('Il valore è usato da alcuni task: cambiali prima di eliminarlo.');
+      if (items.some(used)) throw new Error('Il valore è usato da alcuni task o appunti: cambiali prima di eliminarlo.');
     }
     await this.trash('tag', await this.displayName(this.p('tags', catId, id + '.md'), id), 'tags', catId, id + '.md');
     if (!SYSTEM_CATEGORIES.includes(catId)) await this.stripFromTasks(catId, id);
@@ -260,36 +303,33 @@ class Store {
 
   // Unisce il tag "fromId" in "toId" (stessa categoria) e poi elimina "fromId".
   async mergeTag(catId, fromId, toId) {
-    const tasks = await this.loadTasks();
-    const system = SYSTEM_CATEGORIES.includes(catId);
-    const cats = system && catId !== 'collegamento' ? await this.loadCategories() : null;
-    for (const t of tasks) {
-      if (catId === 'collegamento') {
-        if (!t.collegamenti.some((l) => l.tipo === fromId)) continue;
-        const seen = new Set();
-        t.collegamenti = t.collegamenti.map((l) => (l.tipo === fromId ? { ...l, tipo: toId } : l))
-          .filter((l) => { const k = l.tipo + ' ' + l.id; if (seen.has(k)) return false; seen.add(k); return true; });
-        await this.writeTask(t);
-        continue;
+    if (catId === 'stato' || catId === 'priorita') {
+      // Stato e priorità sono campi del task, non tag: saveTask aggiorna anche storico e completato.
+      const cats = await this.loadCategories();
+      for (const t of await this.loadTasks()) if (t[catId] === fromId) await this.saveTask({ ...t, [catId]: toId }, cats);
+    } else {
+      for (const { item: t, save } of await this.loadItems()) {
+        if (catId === 'collegamento') {
+          if (!t.collegamenti.some((l) => l.tipo === fromId)) continue;
+          const seen = new Set();
+          t.collegamenti = t.collegamenti.map((l) => (l.tipo === fromId ? { ...l, tipo: toId } : l))
+            .filter((l) => { const k = l.tipo + ' ' + l.id; if (seen.has(k)) return false; seen.add(k); return true; });
+          await save(t);
+          continue;
+        }
+        const v = t.tags[catId];
+        if (Array.isArray(v) && v.includes(fromId)) t.tags[catId] = Array.from(new Set(v.map((x) => (x === fromId ? toId : x))));
+        else if (v === fromId) t.tags[catId] = toId;
+        else continue;
+        await save(t);
       }
-      if (system) {
-        // Stato e priorità sono campi del task, non tag: saveTask aggiorna anche storico e completato.
-        if (t[catId] === fromId) await this.saveTask({ ...t, [catId]: toId }, cats);
-        continue;
-      }
-      const v = t.tags[catId];
-      if (Array.isArray(v) && v.includes(fromId)) t.tags[catId] = Array.from(new Set(v.map((x) => (x === fromId ? toId : x))));
-      else if (v === fromId) t.tags[catId] = toId;
-      else continue;
-      await this.writeTask(t);
     }
     await this.trash('tag', await this.displayName(this.p('tags', catId, fromId + '.md'), fromId), 'tags', catId, fromId + '.md');
   }
 
-  // Toglie un tag (o, con tagId null, tutta la categoria) dai task che lo usano.
+  // Toglie un tag (o, con tagId null, tutta la categoria) dai task e dagli appunti che lo usano.
   async stripFromTasks(catId, tagId) {
-    const tasks = await this.loadTasks();
-    for (const t of tasks) {
+    for (const { item: t, save } of await this.loadItems()) {
       const v = t.tags[catId];
       if (v === undefined) continue;
       if (tagId === null) delete t.tags[catId];
@@ -298,7 +338,7 @@ class Store {
         t.tags[catId] = v.filter((x) => x !== tagId);
       } else if (v === tagId) delete t.tags[catId];
       else continue;
-      await this.writeTask(t);
+      await save(t);
     }
   }
 
@@ -363,14 +403,15 @@ class Store {
     await this.purge((await this.listTrash()).filter((v) => Date.parse(v.eliminato) < limit));
   }
 
-  // Cancella per sempre. L'ID più alto dei task cancellati resta in taccuino.json, così non viene riassegnato.
+  // Cancella per sempre. L'ID più alto dei task e degli appunti cancellati resta in taccuino.json, così non viene riassegnato.
   async purge(entries) {
-    const ids = entries.filter((v) => v.tipo === 'task').map((v) => idNum(path.basename(v.percorso)));
-    if (ids.length) {
-      const cfg = await this.readConfig();
-      const max = Math.max(...ids);
-      if ((Number(cfg.ultimoId) || 0) < max) await this.writeConfig({ ...cfg, ultimoId: max });
+    const cfg = await this.readConfig();
+    let changed = false;
+    for (const [tipo, key] of Object.entries(LAST_ID)) {
+      const ids = entries.filter((v) => v.tipo === tipo).map((v) => idNum(path.basename(v.percorso)));
+      if (ids.length && (Number(cfg[key]) || 0) < Math.max(...ids)) { cfg[key] = Math.max(...ids); changed = true; }
     }
+    if (changed) await this.writeConfig(cfg);
     for (const v of entries) await this.remove(this.trashPath(v.id));
   }
 }

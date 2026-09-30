@@ -38,15 +38,29 @@ function idNum(id) { const m = String(id).match(/(\d+)/); return m ? parseInt(m[
 
 const str = (v) => (v == null ? null : String(v));
 
-// ---------- Task
-// Le chiavi che non sono campi del task sono categorie utente: finiscono in tags[catId].
-function parseTask(text, fallbackId) {
-  const { data, body } = fm.parse(text);
+// Le chiavi che non sono campi noti sono categorie utente: finiscono in tags[catId].
+function userTags(data, isKnown) {
   const tags = {};
   for (const [k, v] of Object.entries(data)) {
-    if (isTaskKey(k)) continue;
+    if (isKnown(k)) continue;
     tags[k] = Array.isArray(v) ? v.map(String) : str(v);
   }
+  return tags;
+}
+
+function writeUserTags(data, tags, isKnown) {
+  for (const [k, v] of Object.entries(tags || {})) {
+    if (isKnown(k) || !isSafeName(k)) continue;
+    if (Array.isArray(v)) data[k] = v; else if (v) data[k] = v;
+  }
+}
+
+const serializeLinks = (list) => list.map((l) => (l.tipo ? `${l.tipo} ${l.id}` : l.id));
+
+// ---------- Task
+function parseTask(text, fallbackId) {
+  const { data, body } = fm.parse(text);
+  const tags = userTags(data, isTaskKey);
   return {
     // L'ID è il nome del file: una copia di conflitto di OneDrive (T-042-PC.md) resta un task distinto.
     id: String(fallbackId || data.id),
@@ -69,12 +83,9 @@ function parseTask(text, fallbackId) {
 function serializeTask(t) {
   const data = {};
   for (const k of TASK_KEYS) data[k] = t[k] == null || t[k] === '' ? null : t[k];
-  for (const [k, v] of Object.entries(t.tags || {})) {
-    if (isTaskKey(k) || !isSafeName(k)) continue;
-    if (Array.isArray(v)) data[k] = v; else if (v) data[k] = v;
-  }
+  writeUserTags(data, t.tags, isTaskKey);
   if (t.sottotask && t.sottotask.length) data.sottotask = t.sottotask.map((x) => `[${x.fatto ? 'x' : ' '}] ${x.testo}`);
-  if (t.collegamenti && t.collegamenti.length) data.collegamenti = t.collegamenti.map((l) => (l.tipo ? `${l.tipo} ${l.id}` : l.id));
+  if (t.collegamenti && t.collegamenti.length) data.collegamenti = serializeLinks(t.collegamenti);
   data.storico = t.storico || [];
   return fm.stringify(data, t.descrizione || '');
 }
@@ -114,6 +125,33 @@ function taskHistory(prev, t, cats, now) {
   if ((prev.scadenza || null) !== (t.scadenza || null)) lines.push(`${now} Scadenza: ${prev.scadenza || '—'} → ${t.scadenza || '—'}`);
   if (prev.progetto !== t.progetto) lines.push(`${now} Progetto: ${prev.progetto || '—'} → ${t.progetto || '—'}`);
   return lines;
+}
+
+// ---------- Appunti
+// Come un task ma senza stato, priorità e scadenza: titolo, progetto facoltativo, categorie utente, collegamenti e testo.
+const NOTE_KEYS = ['id', 'titolo', 'progetto', 'creato', 'aggiornato'];
+const isNoteKey = (k) => NOTE_KEYS.includes(k) || k === 'collegamenti';
+
+function parseNote(text, fallbackId) {
+  const { data, body } = fm.parse(text);
+  return {
+    id: String(fallbackId || data.id),
+    titolo: data.titolo == null ? '' : String(data.titolo),
+    progetto: data.progetto == null ? '' : String(data.progetto),
+    creato: str(data.creato),
+    aggiornato: str(data.aggiornato),
+    tags: userTags(data, isNoteKey),
+    collegamenti: parseLinks(data.collegamenti),
+    descrizione: body
+  };
+}
+
+function serializeNote(n) {
+  const data = {};
+  for (const k of NOTE_KEYS) data[k] = n[k] == null || n[k] === '' ? null : n[k];
+  writeUserTags(data, n.tags, isNoteKey);
+  if (n.collegamenti && n.collegamenti.length) data.collegamenti = serializeLinks(n.collegamenti);
+  return fm.stringify(data, n.descrizione || '');
 }
 
 // ---------- Progetti
@@ -221,6 +259,7 @@ module.exports = {
   SYSTEM_CATEGORIES, TASK_KEYS, RESERVED_KEYS,
   slugify, today, stamp, isSafeName, idNum,
   parseTask, serializeTask, taskHistory,
+  parseNote, serializeNote,
   parseProject, serializeProject,
   parseCategory, serializeCategory, parseTag, serializeTag
 };

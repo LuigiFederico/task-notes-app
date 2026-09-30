@@ -354,3 +354,43 @@ test('collegamento: categoria di sistema anche nelle cartelle esistenti, tipi un
   const [back] = (await s.loadTasks()).filter((t) => t.id === b.id);
   assert.deepStrictEqual(back.collegamenti, [{ tipo: 'bloccato-da', id: a.id }]);
 });
+
+test('appunti: formato, ID sequenziali che non tornano, date', async () => {
+  const n = { id: 'A-007', titolo: 'Riunione KPI', progetto: 'ECOM', creato: '2026-09-30', aggiornato: '2026-09-30',
+    tags: { etichette: ['riunione'] }, collegamenti: [{ tipo: 'correlato-a', id: 'T-042' }], descrizione: 'Testo\n\n- @T-042' };
+  assert.deepStrictEqual(formats.parseNote(formats.serializeNote(n), 'A-007'), n);
+
+  const s = new Store(tmpDir());
+  await s.init();
+  const a = await s.saveNote({ titolo: '  Primo  ' });
+  const b = await s.saveNote({ titolo: '' });
+  assert.deepStrictEqual([a.id, a.titolo, b.id, b.titolo], ['A-001', 'Primo', 'A-002', 'Senza titolo']);
+  const again = await s.saveNote({ ...a, creato: '2000-01-01', descrizione: 'x' });
+  assert.strictEqual(again.creato, a.creato);
+  await s.deleteNote('A-002');
+  assert.strictEqual(await s.nextNoteId(), 'A-003');
+  await s.emptyTrash();
+  assert.strictEqual(await s.nextNoteId(), 'A-003');
+  assert.strictEqual((await s.readConfig()).ultimoAppunto, 2);
+  assert.deepStrictEqual((await s.loadAll()).notes.map((x) => x.id), ['A-001']);
+});
+
+test('appunti: eliminare o unire un tag tocca anche gli appunti; un progetto con appunti non si elimina', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveTag('etichette', { nome: 'Riunione' });
+  await s.saveTag('etichette', { nome: 'Incontro' });
+  await s.saveProject({ codice: 'ECOM', nome: 'E-commerce' });
+  const n = await s.saveNote({ titolo: 'Note', progetto: 'ECOM', tags: { etichette: ['riunione'] }, collegamenti: [{ tipo: 'dipende-da', id: 'T-001' }] });
+  await s.mergeTag('etichette', 'riunione', 'incontro');
+  await s.mergeTag('collegamento', 'dipende-da', 'correlato-a');
+  let [back] = await s.loadNotes();
+  assert.deepStrictEqual([back.tags.etichette, back.collegamenti], [['incontro'], [{ tipo: 'correlato-a', id: 'T-001' }]]);
+  await assert.rejects(() => s.deleteTag('collegamento', 'correlato-a'), /usato/);
+  await s.deleteTag('etichette', 'incontro');
+  [back] = await s.loadNotes();
+  assert.deepStrictEqual(back.tags.etichette, []);
+  await assert.rejects(() => s.deleteProject('ECOM'), /appunti/);
+  await s.deleteNote(n.id);
+  await s.deleteProject('ECOM');
+});
