@@ -1,7 +1,7 @@
 {
   "name": "task-manager",
   "productName": "Taccuino",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Task manager personale in locale: task, progetti e tag salvati come file Markdown in una cartella (es. OneDrive).",
   "main": "src/main/main.js",
   "author": "Luigi Federico",
