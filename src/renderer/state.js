@@ -74,7 +74,7 @@ export function values(t, catId) {
   return v ? [v] : [];
 }
 
-// Tag "liberi" (tutte le categorie non di sistema) di un task, per i chip.
+// Tag "liberi" (tutte le categorie non di sistema) di un task, per la ricerca.
 export function taskChips(t) {
   const out = [];
   for (const c of tagCats()) {

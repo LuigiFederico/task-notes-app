@@ -1,4 +1,4 @@
-import { S, cat, tagOf, project, isClosed, taskChips, values, ref } from '../state.js';
+import { S, cat, tagOf, project, isClosed, values, ref } from '../state.js';
 import { linksOf } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, textLink, md, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
@@ -20,10 +20,6 @@ export function prioIndicator(prioId) {
   const lvl = n - Math.round((i / Math.max(1, tags.length - 1)) * (n - 1));
   const bars = Array.from({ length: n }, (_, k) => k + 1).map((b) => `<span style="height:${3 + b * 3}px;background:${b <= lvl ? c : 'var(--line-strong)'}"></span>`).join('');
   return `<span class="prio"><span class="bars" aria-hidden="true">${bars}</span><span style="color:${c}">${esc(t.nome)}</span></span>`;
-}
-
-export function chip(c) {
-  return `<button class="chip" data-action="go" data-view="tag" data-cat="${esc(c.catId)}" data-tag="${esc(c.id)}"><span class="chip-dot" style="background:${safeColor(c.colore)}"></span>${esc(c.nome)}</button>`;
 }
 
 export function projectLabel(code) {
@@ -56,7 +52,6 @@ export function taskRow(t, { showProject = true } = {}) {
     <span class="title-cell">
       <button class="task-title" data-action="open-task" data-id="${esc(t.id)}">${esc(t.titolo)}</button>
       ${subProgress(t)}
-      ${taskChips(t).map(chip).join('')}
     </span>
     ${showProject ? projectLabel(t.progetto) : ''}
     ${prioIndicator(t.priorita)}
@@ -65,14 +60,13 @@ export function taskRow(t, { showProject = true } = {}) {
   </div>`;
 }
 
-// Riga di un appunto: ID, titolo con i tag, progetto e data dell'ultima modifica.
+// Riga di un appunto: ID, titolo, progetto e data dell'ultima modifica.
 export function noteRow(n, { showProject = true } = {}) {
   const sel = S.ui.openNote === n.id ? ' selected' : '';
   return `<div class="note-row${sel}${showProject ? '' : ' no-project'}">
     <span class="mono muted small">${esc(n.id)}</span>
     <span class="title-cell">
       <button class="task-title" data-action="open-note" data-id="${esc(n.id)}">${esc(n.titolo)}</button>
-      ${taskChips(n).map(chip).join('')}
     </span>
     ${showProject ? `<span class="note-proj">${n.progetto ? projectLabel(n.progetto) : '<span class="muted small">—</span>'}</span>` : ''}
     <span class="muted small">${esc(fmtShort(n.aggiornato))}</span>

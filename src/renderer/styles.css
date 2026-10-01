@@ -186,7 +186,6 @@ pre { margin: 0; }
 .with-panel .main .task-row { grid-template-columns: 30px 56px minmax(0, 1fr) 96px 92px; column-gap: 10px; }
 .with-panel .main .task-row > .proj-link, .with-panel .main .task-row > .prio,
 .with-panel .main .task-row > .h-proj, .with-panel .main .task-row > .h-prio { display: none; }
-.with-panel .main .chip { display: none; }
 .task-title { flex: 0 1 auto; min-width: 80px; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .is-done .task-title { color: #8C887E; text-decoration: line-through; }
 .proj-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
