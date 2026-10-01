@@ -84,8 +84,8 @@ export function taskPanel() {
       </div>
       <div class="hr"></div>
       ${subtasks(t)}
-      ${isNew ? '' : links(t)}
       ${description(t, isNew, un)}
+      ${isNew ? '' : links(t)}
       ${!isNew && t.storico.length ? `<div class="stack-10"><span class="section-label">STORICO</span><div class="history">${t.storico.slice().reverse().map((l) => {
         const m = l.match(/^(\d{4}-\d{2}-\d{2})\s+(.*)$/);
         return `<div class="row-10"><span class="mono muted small w64">${esc(m ? fmtShort(m[1]) : '')}</span><span>${esc(m ? m[2] : l)}</span></div>`;
