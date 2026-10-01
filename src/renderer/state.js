@@ -1,12 +1,12 @@
 // Stato dell'interfaccia e funzioni di lettura sui dati caricati.
 
-// Raggruppamento, "Mostra completati" e sidebar chiusa restano uguali tra un avvio e l'altro (solo su questo PC).
+// Raggruppamento, "Mostra completati", sidebar chiusa e larghezza del pannello restano uguali tra un avvio e l'altro (solo su questo PC).
 const VIEW_KEY = 'taccuino.vista';
 function readView() {
   try { return JSON.parse(localStorage.getItem(VIEW_KEY) || '{}'); } catch { return {}; }
 }
 export function saveView() {
-  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ groupBy: S.ui.groupBy, showDone: S.ui.showDone, sideCollapsed: S.ui.sideCollapsed })); } catch { /* preferenza solo locale */ }
+  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ groupBy: S.ui.groupBy, showDone: S.ui.showDone, sideCollapsed: S.ui.sideCollapsed, panelWidth: S.ui.panelWidth })); } catch { /* preferenza solo locale */ }
 }
 const vista = readView();
 
@@ -18,6 +18,7 @@ export const S = {
     groupBy: typeof vista.groupBy === 'string' ? vista.groupBy : 'progetto',
     showDone: vista.showDone === true,
     sideCollapsed: vista.sideCollapsed === true,
+    panelWidth: Number.isFinite(vista.panelWidth) ? vista.panelWidth : null,   // null = larghezza di partenza del CSS
     search: '',
     fProject: '',
     fPrio: '',

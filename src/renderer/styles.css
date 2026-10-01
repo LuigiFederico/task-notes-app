@@ -224,7 +224,12 @@ pre { margin: 0; }
 .list-sub { padding: 10px 16px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 
 /* pannello dettaglio */
-.panel { width: 540px; flex-shrink: 0; height: 100vh; background: var(--surface); border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(28,27,25,.06); display: flex; flex-direction: column; }
+.panel { position: relative; width: var(--panel-w, 540px); flex-shrink: 0; height: 100vh; background: var(--surface); border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(28,27,25,.06); display: flex; flex-direction: column; }
+/* Maniglia sul bordo sinistro del pannello: si trascina per allargarlo o stringerlo. */
+.panel-resize { position: absolute; top: 0; bottom: 0; left: -4px; width: 8px; z-index: 2; cursor: col-resize; }
+.panel-resize:hover, .resizing .panel-resize { background: linear-gradient(to right, transparent 3px, var(--accent) 3px, var(--accent) 5px, transparent 5px); }
+body.resizing { cursor: col-resize; user-select: none; }
+body.resizing .mascot { transition: none; }
 .panel-head { display: flex; align-items: center; gap: 10px; height: 60px; padding: 0 16px 0 28px; border-bottom: 1px solid var(--line-soft); flex-shrink: 0; }
 .panel-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; padding: 24px 28px 32px; }
 .panel-foot { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 28px; border-top: 1px solid var(--line-soft); font-size: 12px; color: var(--muted); flex-shrink: 0; }
@@ -445,7 +450,7 @@ svg.graph.dim .gnode.hl text { font-weight: 600; }
 }
 @media (max-width: 1180px) {
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .panel { width: 460px; }
+  .panel { width: var(--panel-w, 460px); }
   .search { width: 220px; }
 }
 
@@ -458,7 +463,7 @@ svg.graph.dim .gnode.hl text { font-weight: 600; }
 
 /* ---------- mascotte: il corvo ---------- */
 .mascot { position: fixed; right: 28px; bottom: 18px; width: 120px; height: 112px; z-index: 5; pointer-events: none; transition: right .3s ease, opacity .2s ease; }
-.mascot.panel-open { right: 568px; }
+.mascot.panel-open { right: calc(var(--panel-w, 540px) + 28px); }
 .mascot.away { opacity: 0; }
 .mascot[hidden] { display: none; }
 .mascot-actor { position: absolute; inset: 0; pointer-events: auto; cursor: pointer; transform-origin: 50% 100%; border-radius: 12px; }

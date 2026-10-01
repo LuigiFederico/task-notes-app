@@ -80,7 +80,7 @@ src/
 test/              test con node:test
 ```
 
-Le impostazioni locali (cartella scelta, dimensione della finestra) sono in `%APPDATA%\Taccuino\config.json` e non finiscono nella cartella dati.
+Le impostazioni locali (cartella scelta, dimensione della finestra) sono in `%APPDATA%\Taccuino\config.json` e non finiscono nella cartella dati. Anche raggruppamento, «Mostra completati», sidebar chiusa e larghezza del pannello di dettaglio restano su questo PC, nel `localStorage` dell'interfaccia.
 
 ## Il corvo
 

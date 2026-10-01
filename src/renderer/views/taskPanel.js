@@ -64,6 +64,7 @@ export function taskPanel() {
   const projects = S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto);
   return `
   <section class="panel" aria-label="Dettaglio task">
+    <div class="panel-resize" aria-hidden="true"></div>
     <div class="panel-head">
       <span class="mono muted">${isNew ? 'Nuovo task' : esc(t.id)}</span>
       ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}"><span class="dot sq" style="background:${safeColor(p.colore)}"></span>${esc(p.nome)}</button>` : ''}

@@ -73,6 +73,7 @@ root.addEventListener('mouseover', (e) => {
   if (S.ui.hoverWeek !== i) { S.ui.hoverWeek = i; render(); }
 });
 // Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
+root.addEventListener('pointerdown', layoutHandlers.startPanelResize);
 root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
   // I suggerimenti di @ si chiudono uscendo dal campo.
