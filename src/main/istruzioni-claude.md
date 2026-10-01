@@ -63,7 +63,7 @@ Descrizione in Markdown. Si può citare un altro elemento con @T-012 o @A-007.
 
 Campi del task:
 - `progetto` è il codice di un file in `projects/`.
-- `stato` è l'ID (nome del file senza `.md`) di un tag in `tags/stato/`. `priorita` è l'ID di un tag in `tags/priorita/`, oppure vuoto. Quando l'utente nomina uno stato o una priorità ("Fatto", "Alta"), cerca il tag con quel `nome` e usa il suo ID.
+- `stato` è l'ID (nome del file senza `.md`) di un tag in `tags/stato/`. `priorita` è l'ID di un tag in `tags/priorita/`. Vuota vale come l'ultimo livello (quello con `ordine` più alto, di serie `backlog`), che è anche la priorità da dare a un task nuovo se l'utente non ne indica una. Quando l'utente nomina uno stato o una priorità ("Fatto", "Alta"), cerca il tag con quel `nome` e usa il suo ID.
 - `scadenza` è una data oppure vuoto.
 - Ogni altra categoria in `tags/` (es. `etichette`) è una chiave con il nome della categoria. Il valore è un ID di tag per le categorie `tipo: singola`, una lista di ID per le `multipla` e una lista di testi liberi per le `testo`.
 - `collegamenti` ha una riga `<tipo> <ID>` per collegamento: il tipo è l'ID di un tag in `tags/collegamento/`, e l'ID è di un task (`T-…`) o di un appunto (`A-…`). Il collegamento si scrive **solo in un file**, quello dell'elemento a cui si applica il nome del tipo: "T-042 è bloccato da T-012" si scrive in T-042 come `bloccato-da T-012`. Allo stesso modo "T-012 blocca T-042", che usa il nome `inverso`, si scrive in T-042. L'altro elemento lo mostra da solo e il suo file non cambia (nemmeno `aggiornato`).

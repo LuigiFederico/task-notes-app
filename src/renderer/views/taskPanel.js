@@ -1,10 +1,10 @@
-import { S, cat, project, extraCats, isClosed } from '../state.js';
+import { S, cat, project, extraCats, isClosed, prioOf } from '../state.js';
 import { currentTask } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox, options, select, categoryField, links, description, saveState } from './components.js';
 
-function radioGroup(label, catId, current, allowNone) {
+function radioGroup(label, catId, current) {
   const c = cat(catId);
   const opts = (c ? c.tags : []).map((t) => {
     const on = t.id === current;
@@ -12,8 +12,19 @@ function radioGroup(label, catId, current, allowNone) {
     const style = on ? `border-color:${col};color:${col};background:${tint(col, '14')};font-weight:600` : '';
     return `<button role="radio" aria-checked="${on}" class="radio-pill" style="${style}" data-action="task-set" data-field="${catId}" data-value="${esc(t.id)}">${esc(t.nome)}</button>`;
   });
-  if (allowNone) opts.push(`<button role="radio" aria-checked="${!current}" class="radio-pill${!current ? ' on-neutral' : ''}" data-action="task-set" data-field="${catId}" data-value="">Nessuna</button>`);
   return `<div role="radiogroup" aria-label="${esc(label)}" class="row-6 wrap">${opts.join('')}</div>`;
+}
+
+// Priorità: uno slider nell'ordine dei livelli (il primo a sinistra), con i nomi sotto; anche un clic sul nome la sceglie.
+function prioSlider(t) {
+  const tags = cat('priorita')?.tags || [];
+  const i = tags.findIndex((x) => x.id === prioOf(t));
+  const col = safeColor(tags[i].colore);
+  const names = tags.map((x, k) => `<button class="prio-tick${k === i ? ' on' : ''}" style="${k === i ? `color:${col}` : ''}" data-action="task-set" data-field="priorita" data-value="${esc(x.id)}" tabindex="-1">${esc(x.nome)}</button>`).join('');
+  return `<div class="prio-slider" style="--n:${tags.length};--c:${col}">
+    <input id="task-prio" type="range" min="0" max="${tags.length - 1}" step="1" value="${i}" data-change="task-prio" aria-label="Priorità" aria-valuetext="${esc(tags[i].nome)}">
+    <div class="prio-ticks">${names}</div>
+  </div>`;
 }
 
 // Checklist del task: spunta, testo modificabile con un clic, frecce per l'ordine, x per togliere.
@@ -73,8 +84,8 @@ export function taskPanel() {
       <div class="props">
         <span class="prop-label">Progetto</span>
         ${select('data-change="task-field" data-field="progetto"', options(projects.map((x) => [x.codice, `${x.nome} · ${x.codice}`]), t.progetto), 'Progetto')}
-        <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato, false)}
-        <span class="prop-label">Priorità</span>${radioGroup('Priorità', 'priorita', t.priorita, true)}
+        <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato)}
+        ${cat('priorita')?.tags.length ? `<span class="prop-label">Priorità</span>${prioSlider(t)}` : ''}
         <span class="prop-label">Scadenza</span>
         <div class="row-8">
           <label class="date-wrap">${icon.calendar(15)}<span class="sr">Scadenza</span><input type="date" value="${esc(t.scadenza || '')}" data-change="task-field" data-field="scadenza"></label>

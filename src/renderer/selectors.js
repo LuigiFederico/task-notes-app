@@ -1,5 +1,5 @@
 // Letture che dipendono dallo stato dell'interfaccia (filtri, pannello aperto) o dalla data di oggi.
-import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks } from './state.js';
+import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks, prioOf } from './state.js';
 import { todayISO, addDays, weekStart, dueBucket, mentionsOf } from './lib/util.js';
 
 export function currentTask() {
@@ -49,7 +49,7 @@ export function visibleTasks() {
   return S.data.tasks.filter((t) => {
     if (isClosed(t) && !u.showDone && !u.recentDone[t.id]) return false;
     if (u.fProject && t.progetto !== u.fProject) return false;
-    if (u.fPrio && t.priorita !== u.fPrio) return false;
+    if (u.fPrio && prioOf(t) !== u.fPrio) return false;
     if (u.fTag) {
       const [c, id] = u.fTag.split(':');
       if (!values(t, c).includes(id)) return false;
@@ -84,7 +84,8 @@ export function groupDefs(by) {
     color: tg.colore,
     test: (t) => values(t, by).includes(tg.id)
   }));
-  if (by !== 'stato') {
+  // Stato e priorità hanno sempre un valore (la priorità vuota vale come l'ultimo livello).
+  if (by !== 'stato' && by !== 'priorita') {
     defs.push({
       key: '__none',
       label: 'Senza ' + c.nome.toLowerCase(),

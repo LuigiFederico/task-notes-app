@@ -1,4 +1,4 @@
-import { S, cat, tagOf, project, isClosed, values, ref } from '../state.js';
+import { S, cat, tagOf, project, isClosed, values, ref, prioOf } from '../state.js';
 import { linksOf } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, textLink, md, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
@@ -54,7 +54,7 @@ export function taskRow(t, { showProject = true } = {}) {
       ${subProgress(t)}
     </span>
     ${showProject ? projectLabel(t.progetto) : ''}
-    ${prioIndicator(t.priorita)}
+    ${prioIndicator(prioOf(t))}
     <span class="due ${due.cls}">${esc(due.text)}</span>
     ${statusPill(t.stato)}
   </div>`;
