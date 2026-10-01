@@ -55,9 +55,10 @@ export function render() {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
-    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
+    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
+  applyPanelWidth();
 
   [...document.querySelectorAll('.scroll, .panel-body')].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
   if (focusId) {
@@ -71,6 +72,15 @@ export function render() {
   if (auto && !focusId) auto.focus();
   autosizeTitle();
   updateMascot();
+}
+
+// Larghezza del pannello scelta trascinandone il bordo, fra 380px e il 70% della finestra.
+// Sta su :root perché la usa anche il corvo, che vive fuori da #app.
+export function clampPanel(w) { return Math.round(Math.max(380, Math.min(w, window.innerWidth * 0.7))); }
+export function applyPanelWidth() {
+  const st = document.documentElement.style;
+  if (S.ui.panelWidth) st.setProperty('--panel-w', clampPanel(S.ui.panelWidth) + 'px');
+  else st.removeProperty('--panel-w');
 }
 
 // Posa di base del corvo in funzione di ciò che si vede.

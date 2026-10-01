@@ -7,7 +7,7 @@ import { taskRow, taskHeader, segmented, emptyState, options } from './component
 export function taskList(list, by, { showProject = true } = {}) {
   const groups = groupDefs(by).map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) })).filter((g) => g.items.length);
   if (!groups.length) return emptyState(emptyReason());
-  return `${taskHeader(showProject)}<div class="groups">${groups.map((g) => `
+  return `${taskHeader({ showProject })}<div class="groups">${groups.map((g) => `
     <section class="group">
       <div class="group-head">
         <span class="dot sq lg" style="background:${safeColor(g.color)}"></span>

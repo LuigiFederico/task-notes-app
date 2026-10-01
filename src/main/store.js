@@ -2,7 +2,7 @@
 // Archivio su file: ogni task, progetto, categoria e tag è un file Markdown.
 //
 //   <cartella>/
-//     taccuino.json                 impostazioni della cartella (versione, ultimi ID cancellati, migrazioni)
+//     taccuino.json                 impostazioni della cartella (versione, ultimi ID cancellati, migrazioni, ordine delle colonne)
 //     CLAUDE.md                     istruzioni per Claude sul formato dei dati, riscritte a ogni versione dell'app
 //     note-personali.md             note dell'utente per Claude, importate da CLAUDE.md (l'app non le tocca)
 //     tasks/T-042.md                un file per task
@@ -161,8 +161,18 @@ class Store {
   }
 
   async loadAll() {
-    const [categories, projects, tasks, notes] = await Promise.all([this.loadCategories(), this.loadProjects(), this.loadTasks(), this.loadNotes()]);
-    return { dir: this.dir, categories, projects, tasks, notes, cestino: await this.listTrash() };
+    const [categories, projects, tasks, notes, cfg] = await Promise.all([this.loadCategories(), this.loadProjects(), this.loadTasks(), this.loadNotes(), this.readConfig()]);
+    return { dir: this.dir, categories, projects, tasks, notes, cestino: await this.listTrash(), colonne: Array.isArray(cfg.colonne) ? cfg.colonne : null };
+  }
+
+  // Ordine delle colonne della lista task, scelto nelle Impostazioni: sta in taccuino.json così vale su ogni PC.
+  // null lo toglie (ordine di partenza). L'interfaccia scarta gli ID che non conosce.
+  async saveColumns(list) {
+    const cfg = await this.readConfig();
+    if (Array.isArray(list)) cfg.colonne = list.map(String);
+    else delete cfg.colonne;
+    await this.writeConfig(cfg);
+    return cfg.colonne || null;
   }
 
   // ---------- Task

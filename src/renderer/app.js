@@ -13,9 +13,10 @@ import * as graphHandlers from './handlers/graph.js';
 import * as projectHandlers from './handlers/project.js';
 import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
+import * as layoutHandlers from './handlers/layout.js';
 
 const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
-const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers];
+const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers, layoutHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
 function merge(kind) {
@@ -72,6 +73,7 @@ root.addEventListener('mouseover', (e) => {
   if (S.ui.hoverWeek !== i) { S.ui.hoverWeek = i; render(); }
 });
 // Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
+root.addEventListener('pointerdown', layoutHandlers.startPanelResize);
 root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
   // I suggerimenti di @ si chiudono uscendo dal campo.

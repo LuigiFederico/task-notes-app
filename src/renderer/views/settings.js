@@ -1,4 +1,5 @@
 import { S } from '../state.js';
+import { TASK_COLUMNS, DEFAULT_COLUMNS, columnOrder } from '../selectors.js';
 import { esc, iso, fmtFull, plural } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { mascot } from '../mascot.js';
@@ -23,6 +24,22 @@ function trashSection() {
       ${emptying ? confirmBox(`Eliminare per sempre ${plural(list.length, 'elemento', 'elementi')}? ${list.length === 1 ? 'Non si potrà più recuperare.' : 'Non si potranno più recuperare.'}`, 'data-action="trash-empty"', 'Svuota') : ''}
       ${list.length ? `<div>${rows}</div>` : '<p class="muted small">Il cestino è vuoto.</p>'}
       <p class="muted small">Gli elementi restano qui 30 giorni, poi vengono eliminati per sempre. Ripristinando un tag o una categoria, i task da cui era stato tolto non lo riprendono.</p>
+    </section>`;
+}
+
+// Ordine delle colonne della lista task: frecce come per i sotto-task; si salva nella cartella dati.
+function columnsSection() {
+  const order = columnOrder();
+  const rows = order.map((id, i) => {
+    const label = TASK_COLUMNS.find((c) => c.id === id).label;
+    const arrow = (dir, text, off) => `<button id="col-${id}-${dir < 0 ? 'up' : 'down'}" class="icon-btn sm" data-action="column-move" data-index="${i}" data-dir="${dir}" aria-label="Sposta ${esc(label)} ${dir < 0 ? 'prima' : 'dopo'}" ${off ? 'disabled' : ''}>${text}</button>`;
+    return `<div class="col-item"><span class="grow">${esc(label)}</span>${arrow(-1, '↑', i === 0)}${arrow(1, '↓', i === order.length - 1)}</div>`;
+  }).join('');
+  return `
+    <section class="card pad stack-12">
+      <div class="row-between"><h2 class="h2">Colonne della lista task</h2>${order.join() !== DEFAULT_COLUMNS.join() ? '<button class="btn-link small" data-action="columns-reset">Ripristina ordine</button>' : ''}</div>
+      <div class="col-list">${rows}</div>
+      <p class="muted small">L'ordine vale per la lista dei task e per le pagine di progetti e tag. La casella di completamento resta sempre la prima. È salvato nella cartella dati, quindi è lo stesso su ogni PC.</p>
     </section>`;
 }
 
@@ -66,6 +83,7 @@ export function settingsView() {
       <label class="toggle"><input type="checkbox" data-change="open-at-login" ${cfg.openAtLogin ? 'checked' : ''}>Avvia Taccuino all'accesso a Windows</label>
     </section>
     ${updateSection()}
+    ${columnsSection()}
     <section class="card pad stack-12">
       <h2 class="h2">Il corvo</h2>
       <label class="toggle"><input type="checkbox" data-change="mascot-visible" ${mascot.prefs.visible ? 'checked' : ''}>Mostra il corvo</label>

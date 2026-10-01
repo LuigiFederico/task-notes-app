@@ -168,6 +168,7 @@ handle('shell:openDataFolder', async () => { await shell.openPath(requireStore()
 registerUpdates(handle, () => win, () => { closeOk = true; });
 
 handle('data:load', async () => requireStore().loadAll());
+handle('config:columns', async (list) => requireStore().saveColumns(list));
 handle('task:save', async (t) => requireStore().saveTask(t));
 handle('task:delete', async (id) => requireStore().deleteTask(id));
 handle('note:save', async (n) => requireStore().saveNote(n));

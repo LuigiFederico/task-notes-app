@@ -1,6 +1,6 @@
 // Task: creazione, pannello di dettaglio (salvataggio dei campi, tag, collegamenti) e completamento.
 // Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
-import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, TAG_COLORS } from '../state.js';
+import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, TAG_COLORS } from '../state.js';
 import { currentTask, currentNote, currentItem, visibleTasks, overdueCount, refCandidates } from '../selectors.js';
 import { todayISO } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
@@ -14,10 +14,9 @@ function defaultProject() {
 }
 
 function newDraft(code) {
-  const prio = cat('priorita')?.tags || [];
   return {
     id: null, titolo: '', progetto: code || defaultProject(), stato: (openStates()[0] || {}).id || 'da-fare',
-    priorita: (prio.find((t) => t.id === 'media') || prio[Math.floor(prio.length / 2)] || {}).id || null,
+    priorita: defaultPrio(),
     scadenza: null, tags: {}, sottotask: [], descrizione: '', storico: []
   };
 }
@@ -380,6 +379,7 @@ export const actions = {
 
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
+  'task-prio': (el) => run(() => updateTask({ priorita: (cat('priorita')?.tags[Number(el.value)] || {}).id || null })),
   'link-type': (el) => { S.ui.linkType = el.value; },
   // Un testo vuoto elimina la voce.
   'sub-edit': (el) => run(() => {

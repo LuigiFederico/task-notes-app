@@ -1,12 +1,12 @@
 // Stato dell'interfaccia e funzioni di lettura sui dati caricati.
 
-// Raggruppamento e "Mostra completati" restano uguali tra un avvio e l'altro (solo su questo PC).
+// Raggruppamento, "Mostra completati", sidebar chiusa e larghezza del pannello restano uguali tra un avvio e l'altro (solo su questo PC).
 const VIEW_KEY = 'taccuino.vista';
 function readView() {
   try { return JSON.parse(localStorage.getItem(VIEW_KEY) || '{}'); } catch { return {}; }
 }
 export function saveView() {
-  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ groupBy: S.ui.groupBy, showDone: S.ui.showDone })); } catch { /* preferenza solo locale */ }
+  try { localStorage.setItem(VIEW_KEY, JSON.stringify({ groupBy: S.ui.groupBy, showDone: S.ui.showDone, sideCollapsed: S.ui.sideCollapsed, panelWidth: S.ui.panelWidth })); } catch { /* preferenza solo locale */ }
 }
 const vista = readView();
 
@@ -17,6 +17,8 @@ export const S = {
   ui: {
     groupBy: typeof vista.groupBy === 'string' ? vista.groupBy : 'progetto',
     showDone: vista.showDone === true,
+    sideCollapsed: vista.sideCollapsed === true,
+    panelWidth: Number.isFinite(vista.panelWidth) ? vista.panelWidth : null,   // null = larghezza di partenza del CSS
     search: '',
     fProject: '',
     fPrio: '',
@@ -66,7 +68,7 @@ export function openTasks(list = S.data.tasks) { return list.filter((t) => !isCl
 
 export function values(t, catId) {
   if (catId === 'stato') return t.stato ? [t.stato] : [];
-  if (catId === 'priorita') return t.priorita ? [t.priorita] : [];
+  if (catId === 'priorita') { const id = prioOf(t); return id ? [id] : []; }
   if (catId === 'progetto') return t.progetto ? [t.progetto] : [];
   if (catId === 'collegamento') return Array.from(new Set((t.collegamenti || []).map((l) => l.tipo).filter(Boolean)));
   const v = t.tags[catId];
@@ -74,7 +76,7 @@ export function values(t, catId) {
   return v ? [v] : [];
 }
 
-// Tag "liberi" (tutte le categorie non di sistema) di un task, per i chip.
+// Tag "liberi" (tutte le categorie non di sistema) di un task, per la ricerca.
 export function taskChips(t) {
   const out = [];
   for (const c of tagCats()) {
@@ -86,10 +88,18 @@ export function taskChips(t) {
   return out;
 }
 
+// Priorità di default: l'ultimo livello (di serie Backlog). Un task senza priorità, o con una che non esiste più,
+// vale come lui ovunque (riga, pannello, ordinamento, gruppi e filtri), senza riscrivere il file.
+export function defaultPrio() {
+  const tags = cat('priorita')?.tags || [];
+  return tags.length ? tags[tags.length - 1].id : null;
+}
+export function prioOf(t) { return tagOf('priorita', t.priorita) ? t.priorita : defaultPrio(); }
+
 export function prioRank(id) {
   const tags = cat('priorita')?.tags || [];
   const i = tags.findIndex((t) => t.id === id);
-  return i === -1 ? 99 : i;
+  return i === -1 ? tags.length - 1 : i;
 }
 
 function idNum(id) { const m = String(id).match(/(\d+)/); return m ? parseInt(m[1], 10) : 0; }

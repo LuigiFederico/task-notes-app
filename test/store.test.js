@@ -97,6 +97,22 @@ test('init crea struttura e categorie di base', async () => {
   assert.strictEqual((await s.loadProjects()).length, 1);
 });
 
+test('ordine delle colonne in taccuino.json, senza toccare le altre impostazioni', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  assert.strictEqual((await s.loadAll()).colonne, null);
+  const before = await s.readConfig();
+  await s.saveColumns(['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  assert.deepStrictEqual((await s.loadAll()).colonne, ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  assert.deepStrictEqual({ ...(await s.readConfig()), colonne: undefined }, { ...before, colonne: undefined });
+  await s.saveColumns(null);
+  assert.ok(!('colonne' in (await s.readConfig())));
+  assert.deepStrictEqual(await s.readConfig(), before);
+  // Un valore scritto a mano che non è una lista si ignora.
+  await s.writeConfig({ ...before, colonne: 'id,stato' });
+  assert.strictEqual((await s.loadAll()).colonne, null);
+});
+
 test('migrazione: una cartella con 3 priorità riceve Urgente e Backlog una volta sola', async () => {
   const dir = tmpDir();
   const s = new Store(dir);

@@ -16,6 +16,7 @@ export function notePanel() {
   const projects = S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === n.progetto);
   return `
   <section class="panel" aria-label="Dettaglio appunto">
+    <div class="panel-resize" aria-hidden="true"></div>
     <div class="panel-head">
       <span class="mono muted">${isNew ? 'Nuovo appunto' : esc(n.id)}</span>
       ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}"><span class="dot sq" style="background:${safeColor(p.colore)}"></span>${esc(p.nome)}</button>` : ''}
@@ -40,7 +41,7 @@ export function notePanel() {
       </div>
       <div class="hr"></div>
       ${isNew ? '' : links(n)}
-      ${description(n, isNew, un, 'TESTO')}
+      <div class="note-text">${description(n, isNew, un, 'TESTO')}</div>
     </div>
     ${isNew ? '' : `<div class="panel-foot">${icon.file(14)}<span class="mono grow">appunti/${esc(n.id)}.md</span><span>Aggiornato ${esc(fmtFull(n.aggiornato))}</span></div>`}
   </section>`;

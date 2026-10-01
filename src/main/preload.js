@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('api', {
   installUpdate: () => call('update:install'),
   onUpdateProgress: (fn) => ipcRenderer.on('update:progress', (_e, percent) => fn(percent)),
   load: () => call('data:load'),
+  saveColumns: (list) => call('config:columns', list),
   saveTask: (t) => call('task:save', t),
   deleteTask: (id) => call('task:delete', id),
   saveNote: (n) => call('note:save', n),

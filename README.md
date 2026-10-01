@@ -80,7 +80,7 @@ src/
 test/              test con node:test
 ```
 
-Le impostazioni locali (cartella scelta, dimensione della finestra) sono in `%APPDATA%\Taccuino\config.json` e non finiscono nella cartella dati.
+Le impostazioni locali (cartella scelta, dimensione della finestra) sono in `%APPDATA%\Taccuino\config.json` e non finiscono nella cartella dati. Anche raggruppamento, «Mostra completati», sidebar chiusa e larghezza del pannello di dettaglio restano su questo PC, nel `localStorage` dell'interfaccia.
 
 ## Il corvo
 
@@ -106,7 +106,7 @@ La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte
+  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte, ordine delle colonne
   CLAUDE.md                      istruzioni per Claude sul formato dei dati (scritto dall'app)
   note-personali.md              note tue per Claude, importate da CLAUDE.md (l'app non lo tocca)
   tasks/T-042.md                 un file per task
@@ -116,6 +116,8 @@ La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell
   tags/<categoria>/<tag>.md      un file per tag, con la descrizione nel corpo
   .cestino/<data_ora>/…          elementi eliminati, con voce.json
 ```
+
+L'ordine delle colonne della lista task, scelto nelle Impostazioni, sta in `taccuino.json` come `"colonne": ["id", "stato", "titolo", …]`, così è lo stesso su ogni PC che usa la cartella. Manca finché resta quello di partenza; gli ID che l'app non conosce si ignorano e le colonne che mancano vanno in fondo.
 
 ### Task
 
@@ -204,7 +206,7 @@ Task: T-029
 
 - **Collegamento** è la terza categoria di sistema: i suoi tag sono i tipi di collegamento (di serie Bloccato da / Blocca, Dipende da / Necessario per, Correlato a), ognuno con `inverso:` nel file, il nome letto dal task collegato. Si rinominano, riordinano, uniscono e se ne aggiungono altri dalla sezione Tag; un tipo usato da qualche collegamento non si elimina.
 - **Stato** e **Priorità** sono categorie di sistema: si possono rinominare, ricolorare e riordinare, ma non eliminare. Gli stati con `chiuso: true` (di serie solo "Fatto") nascondono il task dalla lista principale, che resta comunque visibile nello storico e nelle pagine di progetto e tag.
-- Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista, e i task senza priorità vanno dopo l'ultimo livello. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
+- Le priorità di serie sono Urgente, Alta, Media, Bassa e Backlog: l'ordine dei valori decide l'ordinamento della lista. L'ultimo livello è il default: i task nuovi nascono con lui, e un task senza priorità vale come lui ovunque (lista, gruppi, filtri), senza che il suo file cambi. Le cartelle create prima di Urgente e Backlog li ricevono una volta sola all'avvio (la migrazione resta segnata in `migrazioni` di `taccuino.json`), quindi se poi li elimini non tornano.
 - Le altre categorie (di serie "Etichette") si creano, modificano ed eliminano dalla sezione Tag.
 - L'ID di un tag è il nome del file e non cambia se lo rinomini, quindi i task non vanno aggiornati.
 - Una categoria **a testo libero** (`tipo: testo`, es. "Ticket Jira") non ha file per i valori: ogni task scrive i suoi valori a mano, come lista (`ticket-jira: [PROJ-123]`). Con un modello `url: https://jira.example.com/browse/{valore}` in `_categoria.md` ogni valore diventa un link; un valore che è già un indirizzo web lo è comunque. Queste categorie compaiono solo nel pannello del task, non nei filtri, nei raggruppamenti o nella ricerca.

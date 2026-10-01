@@ -40,7 +40,7 @@ test('renderer: sortTasks mette prima gli aperti, poi priorità, scadenza e ID p
   assert.deepStrictEqual(sortTasks(S.data.tasks).map((t) => t.id), ['T-004', 'T-005', 'T-003', 'T-002', 'T-001']);
 });
 
-test('renderer: sortTasks mette Urgente in cima, Backlog dopo Bassa e i task senza priorità in fondo', async () => {
+test('renderer: sortTasks mette Urgente in cima, Backlog dopo Bassa e i task senza priorità insieme a Backlog', async () => {
   const { sortTasks } = await load('state.js');
   const S = await setup([
     { id: 'T-001', titolo: 'senza priorità' },
@@ -50,6 +50,66 @@ test('renderer: sortTasks mette Urgente in cima, Backlog dopo Bassa e i task sen
     { id: 'T-005', titolo: 'alta', priorita: 'alta' }
   ]);
   assert.deepStrictEqual(sortTasks(S.data.tasks).map((t) => t.id), ['T-004', 'T-005', 'T-003', 'T-002', 'T-001']);
+});
+
+test('renderer: la priorità di default è l\'ultimo livello, anche rinominato o dopo averlo eliminato', async () => {
+  const { prioOf, defaultPrio, prioRank } = await load('state.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'senza priorità' },
+    { id: 'T-002', titolo: 'priorità sparita', priorita: 'sparita' },
+    { id: 'T-003', titolo: 'alta', priorita: 'alta' }
+  ]);
+  const prio = S.data.categories.find((c) => c.id === 'priorita');
+  assert.strictEqual(defaultPrio(), 'backlog');
+  assert.deepStrictEqual(S.data.tasks.map(prioOf), ['backlog', 'backlog', 'alta']);
+  assert.strictEqual(prioRank(''), prioRank('backlog'));
+  prio.tags[4].nome = 'Un giorno';
+  assert.strictEqual(prioOf(S.data.tasks[0]), 'backlog');
+  prio.tags.pop();
+  assert.deepStrictEqual(S.data.tasks.map(prioOf), ['bassa', 'bassa', 'alta']);
+  prio.tags = [];
+  assert.strictEqual(prioOf(S.data.tasks[0]), null);
+});
+
+test('renderer: filtro e gruppi per priorità trattano i task senza priorità come Backlog', async () => {
+  const { visibleTasks, groupDefs } = await load('selectors.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'senza priorità' },
+    { id: 'T-002', titolo: 'backlog', priorita: 'backlog' },
+    { id: 'T-003', titolo: 'alta', priorita: 'alta' }
+  ]);
+  S.ui.fPrio = 'backlog';
+  assert.deepStrictEqual(visibleTasks().map((t) => t.id), ['T-001', 'T-002']);
+  const groups = groupDefs('priorita').map((g) => [g.key, S.data.tasks.filter(g.test).map((t) => t.id).join(',')]).filter(([, ids]) => ids);
+  assert.deepStrictEqual(groups, [['alta', 'T-003'], ['backlog', 'T-001,T-002']]);
+  assert.ok(!groupDefs('priorita').some((g) => g.key === '__none'));
+});
+
+test('renderer: ordine delle colonne salvato, ripulito da ID sconosciuti e doppioni', async () => {
+  const { columnOrder, DEFAULT_COLUMNS } = await load('selectors.js');
+  const S = await setup([]);
+  assert.deepStrictEqual(columnOrder(), DEFAULT_COLUMNS);
+  S.data.colonne = ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza'];
+  assert.deepStrictEqual(columnOrder(), ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  // Scritto a mano: un ID che non esiste, un doppione e colonne mancanti (vanno in fondo, nell'ordine di partenza).
+  S.data.colonne = ['stato', 'boh', 'stato', 'id'];
+  assert.deepStrictEqual(columnOrder(), ['stato', 'id', 'titolo', 'progetto', 'priorita', 'scadenza']);
+});
+
+test('renderer: colonne visibili e griglia per pagina e pannello aperto', async () => {
+  const { taskColumns } = await load('selectors.js');
+  const S = await setup([]);
+  S.data.colonne = ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza'];
+  Object.assign(S.ui, { openTask: null, openNote: null });
+  const ids = (opts) => taskColumns(opts).cols.map((c) => c.id);
+  assert.deepStrictEqual(ids(), ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  assert.strictEqual(taskColumns().grid, '36px 64px 100px minmax(0, 1fr) 190px 90px 130px');
+  assert.deepStrictEqual(ids({ showProject: false }), ['id', 'stato', 'titolo', 'priorita', 'scadenza']);
+  assert.deepStrictEqual(ids({ showPrio: false }), ['id', 'stato', 'titolo', 'progetto', 'scadenza']);
+  S.ui.openTask = 'T-001';
+  assert.deepStrictEqual(ids(), ['id', 'stato', 'titolo', 'scadenza']);
+  assert.strictEqual(taskColumns().grid, '30px 56px 92px minmax(0, 1fr) 96px');
+  S.ui.openTask = null;
 });
 
 test('renderer: visibleTasks applica completati, filtri e ricerca', async () => {
