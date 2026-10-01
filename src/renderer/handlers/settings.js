@@ -1,5 +1,6 @@
-// Impostazioni: cartella dati (anche al primo avvio), aggiornamenti, cestino, corvo e avvio con Windows.
+// Impostazioni: cartella dati (anche al primo avvio), aggiornamenti, cestino, colonne della lista, corvo e avvio con Windows.
 import { S } from '../state.js';
+import { DEFAULT_COLUMNS, columnOrder } from '../selectors.js';
 import { mascot } from '../mascot.js';
 import { api, render, reload, run, toast } from '../core.js';
 import { flush } from './task.js';
@@ -60,6 +61,17 @@ export const actions = {
     await reload();
     toast('Eliminato per sempre');
   }),
+  // Scambia due colonne; l'ordine di partenza non si scrive in taccuino.json.
+  'column-move': (el) => run(async () => {
+    const list = columnOrder();
+    const i = Number(el.dataset.index);
+    const j = i + Number(el.dataset.dir);
+    if (j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    await api.saveColumns(list.join() === DEFAULT_COLUMNS.join() ? null : list);
+    await reload();
+  }),
+  'columns-reset': () => run(async () => { await api.saveColumns(null); await reload(); }),
   'trash-empty': () => run(async () => {
     await api.emptyTrash();
     S.ui.confirm = null;

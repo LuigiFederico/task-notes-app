@@ -46,9 +46,9 @@ export function tagView(catId, tagId) {
           </section>
           <section class="stack-12">
             <h2 class="h2">Task con questo tag</h2>
-            ${u.total ? `${taskHeader(true)}<div class="card list">
-              <div class="list-sub">APERTI · ${open.length}</div>${open.map((x) => taskRow(x)).join('')}
-              <div class="list-sub">CHIUSI · ${closed.length}</div>${closed.map((x) => taskRow(x)).join('')}</div>` : emptyState('Nessun task usa ancora questo tag.')}
+            ${u.total ? `${taskHeader({ showPrio: false })}<div class="card list">
+              <div class="list-sub">APERTI · ${open.length}</div>${open.map((x) => taskRow(x, { showPrio: false })).join('')}
+              <div class="list-sub">CHIUSI · ${closed.length}</div>${closed.map((x) => taskRow(x, { showPrio: false })).join('')}</div>` : emptyState('Nessun task usa ancora questo tag.')}
           </section>
         </div>
         <aside class="card pad stack-16 self-start" aria-label="Proprietà del tag">

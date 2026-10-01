@@ -58,6 +58,36 @@ export function visibleTasks() {
   });
 }
 
+// Colonne della lista task che si riordinano dalle Impostazioni; la casella di completamento resta sempre la prima.
+// w è la larghezza normale, wc quella col pannello aperto quando è diversa.
+export const TASK_COLUMNS = [
+  { id: 'id', label: 'ID', w: '64px', wc: '56px' },
+  { id: 'titolo', label: 'TITOLO', w: 'minmax(0, 1fr)' },
+  { id: 'progetto', label: 'PROGETTO', w: '190px' },
+  { id: 'priorita', label: 'PRIORITÀ', w: '90px' },
+  { id: 'scadenza', label: 'SCADENZA', w: '130px', wc: '96px' },
+  { id: 'stato', label: 'STATO', w: '100px', wc: '92px' }
+];
+export const DEFAULT_COLUMNS = TASK_COLUMNS.map((c) => c.id);
+
+// Ordine scelto (colonne in taccuino.json) senza ID sconosciuti né doppioni; quelle che mancano vanno in fondo.
+export function columnOrder(saved = S.data.colonne) {
+  const known = (Array.isArray(saved) ? saved : []).filter((id, i, l) => DEFAULT_COLUMNS.includes(id) && l.indexOf(id) === i);
+  return [...known, ...DEFAULT_COLUMNS.filter((id) => !known.includes(id))];
+}
+
+// Colonne di una lista task nell'ordine scelto, con il grid-template-columns (spunta in testa).
+// Pagina progetto senza Progetto, pagina tag senza Priorità; col pannello aperto mancano tutte e due e sono più strette.
+export function taskColumns({ showProject = true, showPrio = true } = {}) {
+  const compact = !!(S.ui.openTask || S.ui.openNote);
+  const hide = new Set();
+  if (!showProject || compact) hide.add('progetto');
+  if (!showPrio || compact) hide.add('priorita');
+  const cols = columnOrder().filter((id) => !hide.has(id)).map((id) => TASK_COLUMNS.find((c) => c.id === id));
+  const grid = [compact ? '30px' : '36px', ...cols.map((c) => (compact && c.wc) || c.w)].join(' ');
+  return { cols, grid };
+}
+
 // Gruppi della lista per il raggruppamento scelto: ognuno ha etichetta, colore e un test sul task.
 export function groupDefs(by) {
   if (by === 'progetto') {

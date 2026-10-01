@@ -85,6 +85,33 @@ test('renderer: filtro e gruppi per priorità trattano i task senza priorità co
   assert.ok(!groupDefs('priorita').some((g) => g.key === '__none'));
 });
 
+test('renderer: ordine delle colonne salvato, ripulito da ID sconosciuti e doppioni', async () => {
+  const { columnOrder, DEFAULT_COLUMNS } = await load('selectors.js');
+  const S = await setup([]);
+  assert.deepStrictEqual(columnOrder(), DEFAULT_COLUMNS);
+  S.data.colonne = ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza'];
+  assert.deepStrictEqual(columnOrder(), ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  // Scritto a mano: un ID che non esiste, un doppione e colonne mancanti (vanno in fondo, nell'ordine di partenza).
+  S.data.colonne = ['stato', 'boh', 'stato', 'id'];
+  assert.deepStrictEqual(columnOrder(), ['stato', 'id', 'titolo', 'progetto', 'priorita', 'scadenza']);
+});
+
+test('renderer: colonne visibili e griglia per pagina e pannello aperto', async () => {
+  const { taskColumns } = await load('selectors.js');
+  const S = await setup([]);
+  S.data.colonne = ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza'];
+  Object.assign(S.ui, { openTask: null, openNote: null });
+  const ids = (opts) => taskColumns(opts).cols.map((c) => c.id);
+  assert.deepStrictEqual(ids(), ['id', 'stato', 'titolo', 'progetto', 'priorita', 'scadenza']);
+  assert.strictEqual(taskColumns().grid, '36px 64px 100px minmax(0, 1fr) 190px 90px 130px');
+  assert.deepStrictEqual(ids({ showProject: false }), ['id', 'stato', 'titolo', 'priorita', 'scadenza']);
+  assert.deepStrictEqual(ids({ showPrio: false }), ['id', 'stato', 'titolo', 'progetto', 'scadenza']);
+  S.ui.openTask = 'T-001';
+  assert.deepStrictEqual(ids(), ['id', 'stato', 'titolo', 'scadenza']);
+  assert.strictEqual(taskColumns().grid, '30px 56px 92px minmax(0, 1fr) 96px');
+  S.ui.openTask = null;
+});
+
 test('renderer: visibleTasks applica completati, filtri e ricerca', async () => {
   const { visibleTasks } = await load('selectors.js');
   const S = await setup([

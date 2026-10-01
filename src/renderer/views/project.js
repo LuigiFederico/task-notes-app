@@ -106,7 +106,7 @@ export function projectView(code) {
           </section>
           <section class="stack-12">
             <div class="row-between"><h2 class="h2">Task del progetto</h2>${segmented([['open', 'Aperti', open.length], ['done', 'Completati', done], ['all', 'Tutti', all.length]], tab, 'project-tab', 'Filtro task')}</div>
-            ${shown.length ? `${taskHeader(false)}<div class="card list">${shown.map((t) => taskRow(t, { showProject: false })).join('')}</div>` : emptyState(tab === 'done' ? 'Ancora nessun task completato.' : 'Nessun task aperto.')}
+            ${shown.length ? `${taskHeader({ showProject: false })}<div class="card list">${shown.map((t) => taskRow(t, { showProject: false })).join('')}</div>` : emptyState(tab === 'done' ? 'Ancora nessun task completato.' : 'Nessun task aperto.')}
           </section>
           <section class="stack-12">
             <div class="row-between"><h2 class="h2">Appunti del progetto</h2><button class="btn small" data-action="new-note" data-code="${esc(code)}">${icon.plus(14)}Nuovo appunto</button></div>

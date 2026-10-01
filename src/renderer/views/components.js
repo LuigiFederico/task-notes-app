@@ -1,5 +1,5 @@
 import { S, cat, tagOf, project, isClosed, values, ref, prioOf } from '../state.js';
-import { linksOf } from '../selectors.js';
+import { linksOf, taskColumns } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, textLink, md, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 
@@ -41,22 +41,26 @@ export function subProgress(t) {
   return `<span class="sub-progress${done === list.length ? ' all' : ''}" title="Sotto-task completati">${icon.check(10)}${done}/${list.length}</span>`;
 }
 
-// Riga task completa (lista principale).
-export function taskRow(t, { showProject = true } = {}) {
-  const done = isClosed(t);
-  const due = dueLabel(t.scadenza, done);
-  const sel = S.ui.openTask === t.id ? ' selected' : '';
-  return `<div class="task-row${sel}${done ? ' is-done' : ''}${showProject ? '' : ' no-project'}">
-    ${checkbox(t)}
-    <span class="mono muted small">${esc(t.id)}</span>
-    <span class="title-cell">
+// Celle della riga task, una per colonna: l'ordine e le colonne visibili vengono da taskColumns.
+const TASK_CELLS = {
+  id: (t) => `<span class="mono muted small">${esc(t.id)}</span>`,
+  titolo: (t) => `<span class="title-cell">
       <button class="task-title" data-action="open-task" data-id="${esc(t.id)}">${esc(t.titolo)}</button>
       ${subProgress(t)}
-    </span>
-    ${showProject ? projectLabel(t.progetto) : ''}
-    ${prioIndicator(prioOf(t))}
-    <span class="due ${due.cls}">${esc(due.text)}</span>
-    ${statusPill(t.stato)}
+    </span>`,
+  progetto: (t) => projectLabel(t.progetto),
+  priorita: (t) => prioIndicator(prioOf(t)),
+  scadenza: (t) => { const due = dueLabel(t.scadenza, isClosed(t)); return `<span class="due ${due.cls}">${esc(due.text)}</span>`; },
+  stato: (t) => statusPill(t.stato)
+};
+
+// Riga task (lista principale, pagina progetto, pagina tag). opts: { showProject, showPrio }, vedi taskColumns.
+export function taskRow(t, opts = {}) {
+  const { cols, grid } = taskColumns(opts);
+  const sel = S.ui.openTask === t.id ? ' selected' : '';
+  return `<div class="task-row${sel}${isClosed(t) ? ' is-done' : ''}" style="grid-template-columns:${grid}">
+    ${checkbox(t)}
+    ${cols.map((c) => TASK_CELLS[c.id](t)).join('')}
   </div>`;
 }
 
@@ -77,8 +81,9 @@ export function noteHeader({ showProject = true } = {}) {
   return `<div class="note-row head${showProject ? '' : ' no-project'}"><span>ID</span><span>TITOLO</span>${showProject ? '<span class="note-proj">PROGETTO</span>' : ''}<span>MODIFICATO</span></div>`;
 }
 
-export function taskHeader(showProject = true) {
-  return `<div class="task-row head${showProject ? '' : ' no-project'}"><span></span><span>ID</span><span>TITOLO</span>${showProject ? '<span class="h-proj">PROGETTO</span>' : ''}<span class="h-prio">PRIORITÀ</span><span>SCADENZA</span><span>STATO</span></div>`;
+export function taskHeader(opts = {}) {
+  const { cols, grid } = taskColumns(opts);
+  return `<div class="task-row head" style="grid-template-columns:${grid}"><span></span>${cols.map((c) => `<span>${esc(c.label)}</span>`).join('')}</div>`;
 }
 
 // Suggerimenti di @ (collegamenti e menzioni): items da refCandidates, active è quello evidenziato dalle frecce.

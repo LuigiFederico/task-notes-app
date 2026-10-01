@@ -171,13 +171,13 @@ pre { margin: 0; }
 .group { display: flex; flex-direction: column; gap: 8px; }
 .group-head { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
 .group-title { font-size: 14px; font-weight: 600; color: var(--ink); }
-.task-row { display: grid; grid-template-columns: 36px 64px minmax(0, 1fr) 190px 90px 130px 100px; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
+/* Le colonne (ordine e larghezze) sono nello style della riga: vedi taskColumns in selectors.js. */
+.task-row { display: grid; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
 .card.list .task-row:last-child { border-bottom: 0; }
 .task-row:hover { background: var(--surface-2); }
 .task-row.selected { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 .task-row.head { min-height: 0; padding-bottom: 8px; border: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: none; }
 .title-cell { display: flex; align-items: center; gap: 8px; min-width: 0; overflow: hidden; }
-/* varianti di colonne: pagina progetto (senza progetto), pagina tag (senza priorità), pannello aperto (compatta) */
 /* Righe degli appunti: stessa resa delle righe dei task, meno colonne. */
 .note-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 190px 90px; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
 .note-row.no-project { grid-template-columns: 64px minmax(0, 1fr) 90px; }
@@ -189,12 +189,7 @@ pre { margin: 0; }
 .note-proj { min-width: 0; }
 .with-panel .main .note-row > .note-proj { display: none; }
 .note-mark { display: flex; width: 24px; height: 24px; margin-top: 6px; color: var(--muted); }
-.task-row.no-project { grid-template-columns: 36px 64px minmax(0, 1fr) 90px 110px 100px; }
-.tag-grid .task-row { grid-template-columns: 36px 64px minmax(0, 1fr) 170px 110px 100px; }
-.tag-grid .task-row > .prio, .tag-grid .task-row > .h-prio { display: none; }
-.with-panel .main .task-row { grid-template-columns: 30px 56px minmax(0, 1fr) 96px 92px; column-gap: 10px; }
-.with-panel .main .task-row > .proj-link, .with-panel .main .task-row > .prio,
-.with-panel .main .task-row > .h-proj, .with-panel .main .task-row > .h-prio { display: none; }
+.with-panel .main .task-row { column-gap: 10px; }
 .task-title { flex: 0 1 auto; min-width: 80px; font-size: 14px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .is-done .task-title { color: #8C887E; text-decoration: line-through; }
 .proj-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); min-width: 0; }
@@ -434,6 +429,9 @@ svg.graph.dim .gnode.hl text { font-weight: 600; }
 .full-row { flex-basis: 100%; }
 .trash-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line-soft); }
 .trash-row .confirm { flex-basis: 100%; }
+.col-list { display: flex; flex-direction: column; max-width: 320px; }
+.col-item { display: flex; align-items: center; gap: 2px; min-height: 36px; padding: 0 4px 0 10px; border-bottom: 1px solid var(--line-soft); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--ink-2); }
+.col-item:last-child { border-bottom: 0; }
 .path { padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 13px; word-break: break-all; }
 
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 10px 18px; border-radius: 10px; background: var(--ink); color: #fff; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,.18); z-index: 10; }

@@ -106,7 +106,7 @@ La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell
 
 ```
 <cartella dati>/
-  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte
+  taccuino.json                  marcatore della cartella, ultimi ID cancellati, migrazioni già fatte, ordine delle colonne
   CLAUDE.md                      istruzioni per Claude sul formato dei dati (scritto dall'app)
   note-personali.md              note tue per Claude, importate da CLAUDE.md (l'app non lo tocca)
   tasks/T-042.md                 un file per task
@@ -116,6 +116,8 @@ La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell
   tags/<categoria>/<tag>.md      un file per tag, con la descrizione nel corpo
   .cestino/<data_ora>/…          elementi eliminati, con voce.json
 ```
+
+L'ordine delle colonne della lista task, scelto nelle Impostazioni, sta in `taccuino.json` come `"colonne": ["id", "stato", "titolo", …]`, così è lo stesso su ogni PC che usa la cartella. Manca finché resta quello di partenza; gli ID che l'app non conosce si ignorano e le colonne che mancano vanno in fondo.
 
 ### Task
 
