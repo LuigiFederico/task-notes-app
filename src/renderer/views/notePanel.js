@@ -40,7 +40,7 @@ export function notePanel() {
       </div>
       <div class="hr"></div>
       ${isNew ? '' : links(n)}
-      ${description(n, isNew, un, 'TESTO')}
+      <div class="note-text">${description(n, isNew, un, 'TESTO')}</div>
     </div>
     ${isNew ? '' : `<div class="panel-foot">${icon.file(14)}<span class="mono grow">appunti/${esc(n.id)}.md</span><span>Aggiornato ${esc(fmtFull(n.aggiornato))}</span></div>`}
   </section>`;

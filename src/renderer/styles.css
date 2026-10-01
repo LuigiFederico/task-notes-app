@@ -254,6 +254,12 @@ pre { margin: 0; }
 .desc-view a { color: var(--accent); }
 .desc-empty { width: 100%; text-align: left; border: 1px dashed var(--input-line); border-radius: var(--radius); padding: 14px 16px; font-size: 14px; color: var(--muted); }
 .desc-empty:hover { border-color: var(--accent); color: var(--ink-2); }
+/* Testo dell'appunto: riempie l'altezza libera del pannello, in lettura e in modifica. */
+.note-text { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 260px; }
+.note-text > .stack-10, .note-text .mention-wrap { flex: 1 1 auto; display: flex; flex-direction: column; }
+.note-text .desc-input { flex: 1 1 auto; resize: none; }
+.note-text .desc-view { flex: 1 1 auto; }
+.note-text .desc-empty { flex: 1 1 auto; display: flex; align-items: flex-start; }
 .mention { display: inline; padding: 0 3px; border-radius: 4px; font: inherit; font-family: var(--mono); font-size: .9em; color: var(--accent); background: var(--chip); }
 .mention:hover { text-decoration: underline; }
 .mention.missing { color: var(--muted); text-decoration: line-through; }
