@@ -112,6 +112,15 @@ pre { margin: 0; }
 .side-project:hover { background: rgba(255,255,255,.55); }
 .side-project.active { background: #E6E3DB; color: var(--ink); font-weight: 600; }
 .side-project.muted { color: var(--muted); }
+.side-toggle { margin-left: auto; color: var(--muted); }
+/* Sidebar chiusa: una colonna di icone e pallini, i nomi nei tooltip. */
+.side-collapsed .sidebar { width: 56px; padding: 20px 8px; }
+.side-collapsed .brand { padding: 4px 0; justify-content: center; }
+.side-collapsed .brand-mark, .side-collapsed .brand-name, .side-collapsed .side-label,
+.side-collapsed .nav-item > span, .side-collapsed .side-project > span:not(.dot), .side-collapsed .folder-pill > span:not(.sync-dot) { display: none; }
+.side-collapsed .side-toggle { margin-left: 0; }
+.side-collapsed .nav-item, .side-collapsed .side-project, .side-collapsed .folder-pill { justify-content: center; padding-left: 0; padding-right: 0; }
+.side-collapsed .side-project { min-height: 32px; }
 
 /* controlli */
 .btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--input-line); background: var(--surface); font-size: 14px; color: var(--ink); white-space: nowrap; }

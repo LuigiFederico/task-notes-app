@@ -13,9 +13,10 @@ import * as graphHandlers from './handlers/graph.js';
 import * as projectHandlers from './handlers/project.js';
 import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
+import * as layoutHandlers from './handlers/layout.js';
 
 const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
-const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers];
+const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers, layoutHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
 function merge(kind) {

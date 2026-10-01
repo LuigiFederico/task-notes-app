@@ -55,7 +55,7 @@ export function render() {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
-    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
+    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
 
