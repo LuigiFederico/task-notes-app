@@ -1,4 +1,4 @@
-import { S, cat, project, activeProjects, tagCats, sortTasks, openTasks } from '../state.js';
+import { S, cat, tagCats, sortTasks, openTasks } from '../state.js';
 import { visibleTasks, groupDefs, emptyReason } from '../selectors.js';
 import { esc, safeColor, fmtToday } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
@@ -55,10 +55,6 @@ export function tasksView() {
       </div>
       <div class="grow"></div>
       <label class="toggle"><input type="checkbox" data-change="show-done" ${u.showDone ? 'checked' : ''}>Mostra completati</label>
-    </div>
-    <div class="quick-add">
-      ${icon.plus(16)}
-      <input id="quick-add" type="text" placeholder="Aggiungi un task e premi Invio${activeProjects().length ? ' — finirà in ' + esc((project(u.fProject) || activeProjects()[0]).nome) : ''}" data-keydown="quick-add" aria-label="Aggiungi task veloce">
     </div>
     <div id="task-list" class="scroll">${taskList(visibleTasks(), u.groupBy)}</div>
   </div>`;

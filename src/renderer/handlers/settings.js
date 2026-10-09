@@ -49,7 +49,7 @@ export const actions = {
       render();
     } catch (err) { S.ui.update = null; render(); throw err; }
   }),
-  'update-install': () => run(async () => { await flush(); await api.installUpdate(); }),
+  'update-install': () => run(async () => { await flush({ keepDraft: false }); await api.installUpdate(); }),
   'trash-restore': (el) => run(async () => {
     await api.restoreTrash(el.dataset.id);
     await reload();

@@ -7,6 +7,12 @@ export function currentTask() {
   return S.ui.openTask ? task(S.ui.openTask) : null;
 }
 
+// Task nuovo con il titolo ma senza progetto: non si crea finché il progetto non c'è.
+export function missingProject() {
+  const t = S.ui.openTask === 'new' && S.ui.draft;
+  return !!(t && t.titolo && t.titolo.trim() && !t.progetto);
+}
+
 export function currentNote() {
   if (S.ui.openNote === 'new') return S.ui.noteDraft;
   return S.ui.openNote ? note(S.ui.openNote) : null;

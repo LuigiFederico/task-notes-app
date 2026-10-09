@@ -1,5 +1,5 @@
 import { S, cat, project, extraCats, isClosed, prioOf } from '../state.js';
-import { currentTask } from '../selectors.js';
+import { currentTask, missingProject } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { confirmBox, options, select, categoryField, links, description, saveState } from './components.js';
@@ -62,6 +62,11 @@ export function taskPanel() {
   const un = S.ui.unsaved && S.ui.unsaved.id === S.ui.openTask ? S.ui.unsaved : {};
   // I progetti archiviati non si propongono, tranne quello a cui il task appartiene già.
   const projects = S.data.projects.filter((x) => x.stato !== 'archiviato' || x.codice === t.progetto);
+  // Il progetto è obbligatorio: un task nuovo con il titolo e senza progetto non si crea.
+  // L'errore c'è sempre nel task nuovo, nascosto o no, così il salvataggio del titolo lo mostra senza ridisegnare.
+  const noProject = missingProject();
+  const projectOpts = (p ? '' : '<option value="">Scegli un progetto…</option>') + options(projects.map((x) => [x.codice, `${x.nome} · ${x.codice}`]), t.progetto);
+  const projectSelect = select(`id="task-project" data-change="task-field" data-field="progetto"${isNew ? ` aria-invalid="${noProject}" aria-describedby="task-project-err"` : ''}`, projectOpts, 'Progetto');
   return `
   <section class="panel" aria-label="Dettaglio task">
     <div class="panel-resize" aria-hidden="true"></div>
@@ -77,14 +82,16 @@ export function taskPanel() {
       <div class="row-14 start">
         ${isNew ? '<span class="check big ghost"></span>' : `<button class="check big${done ? ' done' : ''}" data-action="toggle-done" data-id="${esc(t.id)}" aria-label="${done ? 'Riapri' : 'Completa'}">${done ? icon.check(14) : ''}</button>`}
         <label class="grow"><span class="sr">Titolo</span>
-          <textarea id="task-title" class="title-input" rows="1" data-change="task-field" data-input="task-dirty" data-field="titolo" data-keydown="title-enter" placeholder="Cosa devi fare?">${esc(un.titolo ?? (isNew ? '' : t.titolo))}</textarea>
+          <textarea id="task-title" class="title-input" rows="1" data-change="task-field" data-input="task-dirty" data-field="titolo" data-keydown="title-enter" placeholder="Cosa devi fare?">${esc(un.titolo ?? t.titolo)}</textarea>
         </label>
         ${saveState('titolo', un)}
       </div>
-      ${isNew ? '<div class="hint">Scrivi il titolo e premi Invio per creare il task.</div>' : ''}
+      ${isNew ? `<div class="hint">${t.progetto ? 'Scrivi il titolo e premi Invio per creare il task.' : 'Scrivi il titolo e scegli il progetto per creare il task.'}</div>` : ''}
       <div class="props">
         <span class="prop-label">Progetto</span>
-        ${select('data-change="task-field" data-field="progetto"', options(projects.map((x) => [x.codice, `${x.nome} · ${x.codice}`]), t.progetto), 'Progetto')}
+        ${isNew
+          ? `<div class="stack-4 project-field${noProject ? ' invalid' : ''}">${projectSelect}<span id="task-project-err" class="field-error small"${noProject ? '' : ' hidden'}>Scegli un progetto per creare il task</span></div>`
+          : projectSelect}
         <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato)}
         ${cat('priorita')?.tags.length ? `<span class="prop-label">Priorità</span>${prioSlider(t)}` : ''}
         <span class="prop-label">Scadenza</span>
