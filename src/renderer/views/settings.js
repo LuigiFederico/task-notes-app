@@ -32,8 +32,8 @@ function columnsSection() {
   const order = columnOrder();
   const rows = order.map((id, i) => {
     const label = TASK_COLUMNS.find((c) => c.id === id).label;
-    const arrow = (dir, text, off) => `<button id="col-${id}-${dir < 0 ? 'up' : 'down'}" class="icon-btn sm" data-action="column-move" data-index="${i}" data-dir="${dir}" aria-label="Sposta ${esc(label)} ${dir < 0 ? 'prima' : 'dopo'}" ${off ? 'disabled' : ''}>${text}</button>`;
-    return `<div class="col-item"><span class="grow">${esc(label)}</span>${arrow(-1, '↑', i === 0)}${arrow(1, '↓', i === order.length - 1)}</div>`;
+    const arrow = (dir, ico, off) => `<button id="col-${id}-${dir < 0 ? 'up' : 'down'}" class="icon-btn sm" data-action="column-move" data-index="${i}" data-dir="${dir}" aria-label="Sposta ${esc(label)} ${dir < 0 ? 'prima' : 'dopo'}" ${off ? 'disabled' : ''}>${ico}</button>`;
+    return `<div class="col-item"><span class="grow">${esc(label)}</span>${arrow(-1, icon.up(14), i === 0)}${arrow(1, icon.down(14), i === order.length - 1)}</div>`;
   }).join('');
   return `
     <section class="card pad stack-12">

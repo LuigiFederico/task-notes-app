@@ -3,6 +3,7 @@
 import { S, task, openTasks, tagCats } from './state.js';
 import { visibleTasks, visibleNotes } from './selectors.js';
 import { esc } from './lib/util.js';
+import { icon } from './lib/icons.js';
 import { sidebar } from './views/sidebar.js';
 import { tasksView, taskList } from './views/tasks.js';
 import { taskPanel } from './views/taskPanel.js';
@@ -39,13 +40,17 @@ function viewHtml() {
 function toastHtml() {
   if (!S.toast) return '';
   if (S.toast.kind === 'error') {
-    return `<div class="toast error" role="alert"><span>${esc(S.toast.text)}</span><button class="toast-close" data-action="toast-close" aria-label="Chiudi">×</button></div>`;
+    return `<div class="toast error" role="alert"><span>${esc(S.toast.text)}</span><button class="toast-close" data-action="toast-close" aria-label="Chiudi">${icon.close(14)}</button></div>`;
   }
   return `<div class="toast ${S.toast.kind}" role="status">${esc(S.toast.text)}</div>`;
 }
 
+// Elementi con un'animazione d'ingresso: la fanno solo nel render in cui compaiono.
+const ENTERING = ['.panel', '.toast'];
+
 // Ridisegna tutto, poi rimette focus, selezione del testo e posizioni di scorrimento.
 export function render() {
+  const present = ENTERING.filter((s) => root.querySelector(s));
   const active = document.activeElement;
   const focusId = active && active.id;
   const sel = focusId && 'selectionStart' in active ? [active.selectionStart, active.selectionEnd] : null;
@@ -58,6 +63,8 @@ export function render() {
     root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
+  ENTERING.forEach((s) => { if (!present.includes(s)) playOnce(s); });
+  settle();
   applyPanelWidth();
 
   [...document.querySelectorAll('.scroll, .panel-body')].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
@@ -100,6 +107,7 @@ export function renderList() {
   const el = document.getElementById('task-list');
   if (el) {
     el.innerHTML = taskList(visibleTasks(), S.ui.groupBy);
+    settle();
     updateMascot();
   } else render();
 }
@@ -107,7 +115,7 @@ export function renderList() {
 // Ridisegna solo la lista degli appunti (durante la ricerca).
 export function renderNotes() {
   const el = document.getElementById('note-list');
-  if (el) el.innerHTML = noteList(visibleNotes());
+  if (el) { el.innerHTML = noteList(visibleNotes()); settle(); }
   else render();
 }
 
@@ -116,11 +124,31 @@ export function autosizeTitle() {
   if (t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 'px'; }
 }
 
+// Aggiunge una classe d'ingresso agli elementi appena disegnati: il render successivo li ricrea senza,
+// così l'animazione (in animations.css) non si ripete a ogni render.
+export function playOnce(selector, cls = 'enter') {
+  root.querySelectorAll(selector).forEach((el) => el.classList.add(cls));
+}
+
+// Il controllo sotto il mouse, appena ricreato, ripeterebbe l'animazione di hover (animations.css):
+// .settled la spegne finché il mouse non esce.
+let pointer = null;   // ultima posizione del mouse nella finestra
+document.addEventListener('pointermove', (e) => { pointer = [e.clientX, e.clientY]; });
+document.documentElement.addEventListener('mouseleave', () => { pointer = null; });
+
+function settle() {
+  const el = pointer && document.elementFromPoint(...pointer)?.closest('button, a, label, .select-wrap');
+  if (!el || !root.contains(el)) return;
+  el.classList.add('settled');
+  el.addEventListener('pointerleave', () => el.classList.remove('settled'), { once: true });
+}
+
 // ---------------------------------------------------------------- avvisi
 let toastTimer = null;
 
 export function toast(text, kind = 'info') {
   S.toast = { text, kind };
+  root.querySelector('.toast')?.remove();   // così l'avviso nuovo rifà l'ingresso
   render();
   clearTimeout(toastTimer);
   // Gli errori restano finché non si chiudono, così si fa in tempo a leggerli.

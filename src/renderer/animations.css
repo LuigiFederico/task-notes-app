@@ -1,0 +1,109 @@
+/* Animazioni di icone e controlli, portate in CSS da Animate UI
+   (https://animate-ui.com, MIT + Commons Clause, © 2025 Elliot Sutton): stesse durate e curve delle varianti Motion.
+   Le icone si animano al passaggio sul controllo che le contiene (animateOnHover); le classi p1, p2… sono in lib/icons.js.
+   Le animazioni d'ingresso usano la classe .enter, che playOnce() in core.js mette solo sul render in cui l'elemento compare. */
+
+/* ---------------------------------------------------------------- icone */
+.ic { overflow: visible; }
+.ic * { transform-box: fill-box; transform-origin: center; }
+
+/* Ritorno allo stato iniziale quando il mouse esce: le transizioni valgono in entrambe le direzioni. */
+.ic-plus :is(.p1, .p2), .ic-close :is(.p1, .p2) { transition: transform .4s ease-in-out; }
+.ic-plus .p1, .ic-close .p2 { transition-delay: .1s; }
+.ic-chevron .p1, .ic-arrow .p1, .ic-up .p1, .ic-down .p1, .ic-external .p1 { transition: transform .3s ease-in-out; }
+.ic-trash :is(.p1, .p2, .p3) { transition: transform .3s ease-in-out, d .3s ease-in-out; }
+.ic-settings path { transition: d .4s ease-in-out; }
+.ic-sidebar :is(.p1, .p2), .ic-sidebar-open :is(.p1, .p2) { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
+.ic-search { transform-origin: right bottom; }
+
+:is(button:not(:disabled), a, label, .select-wrap):is(:hover, :focus-visible) {
+  & > .ic-plus :is(.p1, .p2), & > .ic-close :is(.p1, .p2) { transform: rotate(90deg); }
+  & > .ic-chevron .p1 { transform: translateY(4px); }
+  & > .ic-arrow .p1 { transform: translateX(25%); }
+  & > .ic-up .p1 { transform: translateY(-25%); }
+  & > .ic-down .p1 { transform: translateY(25%); }
+  & > .ic-external .p1 { transform: translate(2px, -2px); }
+  & > .ic-trash .p1 { transform: translateY(-1px); }
+  & > .ic-trash .p2 { transform: translateY(1px); d: path('M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8'); }
+  & > .ic-trash .p3 { transform: translateY(1px); }
+  & > .ic-settings {
+    .p1 { d: path('M3 5H4'); }
+    .p2 { d: path('M8 3V7'); }
+    .p3 { d: path('M8 5H21'); }
+    .p4 { d: path('M3 12H16'); }
+    .p5 { d: path('M16 10V14'); }
+    .p6 { d: path('M20 12H21'); }
+    .p7 { d: path('M3 19H7'); }
+    .p8 { d: path('M11 17V21'); }
+    .p9 { d: path('M11 19H21'); }
+  }
+  & > .ic-sidebar :is(.p1, .p2) { transform: translateX(-2px); }
+  & > .ic-sidebar-open :is(.p1, .p2) { transform: translateX(2px); }
+  & > .ic-search { animation: ic-search .8s ease-in-out; }
+  & > .ic-graph { animation: ic-spin 2s linear infinite; }
+  & > .ic-check path, & > .ic-tasks .p1 { animation: ic-check .6s ease-in-out; }
+  & > .ic-note :is(.p1, .p2, .p3, .p4) { animation: ic-draw-in .4s ease-in-out backwards; }
+  & > .ic-note .p2 { animation-delay: .2s; }
+  & > .ic-note .p3 { animation-delay: .5s; }
+  & > .ic-note .p4 { animation-delay: .7s; }
+  /* Icone senza animazione propria: l'animazione generica "path" di Animate UI. */
+  & > .ic-draw > * { animation: ic-path .8s ease-in-out; }
+}
+
+@keyframes ic-search { 20% { transform: rotate(17deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(5deg); } 80% { transform: rotate(-1deg); } }
+@keyframes ic-spin { to { transform: rotate(360deg); } }
+@keyframes ic-check {
+  from { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+  50% { transform: scale(1.1); }
+  to { stroke-dasharray: 1 1; stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes ic-draw-in {
+  from { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; transform: scale(1.1); }
+  to { stroke-dasharray: 1 1; stroke-dashoffset: 0; opacity: 1; transform: scale(1); }
+}
+@keyframes ic-path {
+  from { stroke-dasharray: 1 1; stroke-dashoffset: .95; }
+  to { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+}
+
+/* Il controllo sotto il mouse appena ricreato da render() prende .settled (core.js): è già in hover,
+   quindi niente animazioni o transizioni da ripetere finché il mouse non esce. Le animazioni d'ingresso (.enter) restano. */
+.settled, .settled .ic:not(.enter), .settled .ic:not(.enter) * { animation: none !important; transition: none !important; }
+
+/* ---------------------------------------------------------------- controlli */
+/* Pulsanti (Animate UI Button): si allargano appena al passaggio e si schiacciano alla pressione. */
+.btn, .icon-btn { transition: transform .15s ease-out, background-color .15s, border-color .15s; }
+:is(.btn, .icon-btn):not(:disabled):hover { transform: scale(1.02); }
+:is(.btn, .icon-btn):not(:disabled):active { transform: scale(.97); }
+
+/* Checkbox (Animate UI Checkbox): la spunta si disegna quando il task viene completato. */
+button.check { transition: transform .15s ease-out, background-color .2s, border-color .2s; }
+button.check:hover { transform: scale(1.05); }
+button.check:active { transform: scale(.95); }
+/* .ic-check in più: deve prevalere sull'animazione di hover della stessa icona, perché la spunta compare sotto il mouse. */
+.check .ic.ic-check.enter path { animation: ic-tick .2s ease-in-out; }
+@keyframes ic-tick { from { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; } to { stroke-dasharray: 1 1; stroke-dashoffset: 0; opacity: 1; } }
+
+/* Switch (Animate UI Switch): il pallino scorre con una molla e si allarga mentre è premuto. */
+.toggle input { transition: background-color .2s; }
+.toggle input::before { transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), width .15s ease-out; }
+.toggle input:active::before { width: 18px; }
+.toggle input:checked:active::before { transform: translateX(8px); }
+/* Se il cambio ridisegna la pagina, l'interruttore nuovo parte dalla posizione di prima (playOnce). */
+.toggle input.enter { animation: switch-track .2s; }
+.toggle input.enter::before { animation: switch-thumb .35s cubic-bezier(.34, 1.56, .64, 1); }
+.toggle input:not(:checked).enter { animation-direction: reverse; }
+.toggle input:not(:checked).enter::before { animation-name: switch-thumb-off; }
+@keyframes switch-track { from { background: var(--faint); } to { background: var(--ink); } }
+@keyframes switch-thumb { from { transform: translateX(0); } }
+@keyframes switch-thumb-off { from { transform: translateX(12px); } }
+
+/* Pannello laterale (Animate UI Sheet) e avvisi (Animate UI Popover). */
+.panel.enter { animation: panel-in .25s cubic-bezier(.2, .8, .2, 1); }
+@keyframes panel-in { from { opacity: 0; transform: translateX(24px); } }
+.toast.enter { animation: toast-in .2s ease-out; }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px) scale(.95); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #app *, #app *::before { animation: none !important; transition: none !important; }
+}

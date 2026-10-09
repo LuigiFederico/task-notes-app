@@ -5,7 +5,7 @@ import { currentTask, currentNote, currentItem, missingProject, overdueCount, re
 import { todayISO } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
-import { api, root, render, reload, run, toast } from '../core.js';
+import { api, root, render, reload, run, toast, playOnce } from '../core.js';
 
 // Un task nuovo nasce nel progetto solo dalla sua pagina; altrove il progetto si sceglie a mano.
 function defaultProject() {
@@ -100,6 +100,7 @@ async function toggleDone(id) {
     S.ui.recentDone[id] = true;
     await saveTask({ ...t, stato: (closedState() || {}).id || 'fatto' });
     mascot.react(openTasks().length === 0 ? 'allDone' : 'completed');
+    playOnce(`.check[data-id="${CSS.escape(id)}"] .ic`);
   }
 }
 
@@ -362,7 +363,10 @@ export const actions = {
     const t = currentItem();
     return updateItem({ tags: { ...t.tags, [el.dataset.cat]: values(t, el.dataset.cat).filter((x) => x !== el.dataset.value) } });
   }),
-  'sub-toggle': (el) => run(() => saveSubtasks((l) => { const x = l[Number(el.dataset.index)]; x.fatto = !x.fatto; })),
+  'sub-toggle': (el) => run(async () => {
+    await saveSubtasks((l) => { const x = l[Number(el.dataset.index)]; x.fatto = !x.fatto; });
+    playOnce(`[data-action="sub-toggle"][data-index="${el.dataset.index}"] .ic`);
+  }),
   'sub-delete': (el) => run(() => saveSubtasks((l) => l.splice(Number(el.dataset.index), 1))),
   'sub-move': (el) => run(() => saveSubtasks((l) => {
     const i = Number(el.dataset.index);

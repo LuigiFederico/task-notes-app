@@ -5,7 +5,7 @@ import { overdueCount } from './selectors.js';
 import { esc } from './lib/util.js';
 import { updateStatus } from './views/settings.js';
 import { mascot } from './mascot.js';
-import { api, root, render, autosizeTitle, reload, run, toast, checkGroupBy, stopEditing } from './core.js';
+import { api, root, render, autosizeTitle, reload, run, toast, checkGroupBy, stopEditing, playOnce } from './core.js';
 import * as common from './handlers/common.js';
 import * as taskHandlers from './handlers/task.js';
 import * as noteHandlers from './handlers/note.js';
@@ -48,6 +48,8 @@ root.addEventListener('click', (e) => {
 root.addEventListener('change', (e) => {
   const el = e.target.closest('[data-change]');
   if (el && changes[el.dataset.change]) changes[el.dataset.change](el, e);
+  // Un interruttore ridisegnato dal suo handler ripartirebbe già nella posizione nuova: playOnce lo fa scorrere.
+  if (el?.matches('.toggle input') && !el.isConnected) playOnce(`.toggle [data-change="${CSS.escape(el.dataset.change)}"]`);
 });
 root.addEventListener('input', (e) => {
   const el = e.target.closest('[data-input]');

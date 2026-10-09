@@ -42,8 +42,8 @@ export function tagsView() {
           <span class="ellipsis small">${esc((p.descrizione || '').split('\n')[0])}</span>
           <span>${openTasks(pt).length}</span><span class="muted">${pt.length}</span>
           <span class="row-2">
-            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="-1" aria-label="Sposta su ${esc(p.nome)}" ${i === 0 ? 'disabled' : ''}>↑</button>
-            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="1" aria-label="Sposta giù ${esc(p.nome)}" ${i === S.data.projects.length - 1 ? 'disabled' : ''}>↓</button>
+            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="-1" aria-label="Sposta su ${esc(p.nome)}" ${i === 0 ? 'disabled' : ''}>${icon.up(14)}</button>
+            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="1" aria-label="Sposta giù ${esc(p.nome)}" ${i === S.data.projects.length - 1 ? 'disabled' : ''}>${icon.down(14)}</button>
           </span></div>`; }).join('')}
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">projects/*.md</span></div>`;
   } else {
@@ -70,8 +70,8 @@ export function tagsView() {
         <span class="ellipsis small">${c.id === 'collegamento' ? `<span class="muted">Dall'altro lato: </span>${esc(t.inverso || t.nome)}` : esc((t.descrizione || '').split('\n')[0])}</span>
         <span>${u.open}</span><span class="muted">${u.total}</span>
         <span class="row-2">
-          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>↑</button>
-          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === c.tags.length - 1 ? 'disabled' : ''}>↓</button>
+          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>${icon.up(14)}</button>
+          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === c.tags.length - 1 ? 'disabled' : ''}>${icon.down(14)}</button>
           <button class="icon-btn sm" data-action="edit" data-key="tag:${esc(t.id)}" aria-label="Modifica ${esc(t.nome)}">${icon.edit(15)}</button>
         </span>
       </div>`;
