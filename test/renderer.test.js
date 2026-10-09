@@ -323,3 +323,18 @@ test('renderer: dati del grafo con filtri, menzioni e colori degli archi', async
   assert.deepStrictEqual(d.groups.flatMap((g) => g.nodes.map((n) => n.id)), ['T-001']);
   assert.strictEqual(d.edges.length, 0);
 });
+
+test('renderer: ogni icona è un svg con la sua classe, e i tratti disegnati con stroke-dasharray hanno pathLength', async () => {
+  const { icon } = await load('lib/icons.js');
+  // Oltre alle icone "draw", i tratti animati da ic-check, ic-tick e ic-draw-in in animations.css.
+  const dashed = { check: /<path\b/, tasks: /class="p\d/, note: /class="p\d/ };
+  for (const [key, fn] of Object.entries(icon)) {
+    const html = fn(20);
+    const name = key.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
+    assert.match(html, new RegExp(`^<svg class="ic ic-${name}( ic-draw)?" width="20" height="20" `), key);
+    const shapes = html.match(/<(path|rect|circle|line)\b[^>]*>/g);
+    const drawn = html.includes('ic-draw') ? shapes : shapes.filter((s) => dashed[key]?.test(s));
+    assert.ok(drawn.every((s) => s.includes('pathLength="1"')), key);
+  }
+  assert.ok(Object.keys(dashed).every((k) => icon[k]), 'icone in dashed');
+});

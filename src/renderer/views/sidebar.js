@@ -29,7 +29,7 @@ export function sidebar() {
   return `
   <aside class="sidebar">
     <div class="brand"><div class="brand-mark">${icon.book(18)}</div><span class="brand-name">Taccuino</span>
-      <button id="side-toggle" class="icon-btn sm side-toggle" data-action="toggle-sidebar" aria-expanded="${!closed}" aria-label="${closed ? 'Apri il menu' : 'Chiudi il menu'}" title="${closed ? 'Apri il menu' : 'Chiudi il menu'}">${icon.sidebar(16)}</button></div>
+      <button id="side-toggle" class="icon-btn sm side-toggle" data-action="toggle-sidebar" aria-expanded="${!closed}" aria-label="${closed ? 'Apri il menu' : 'Chiudi il menu'}" title="${closed ? 'Apri il menu' : 'Chiudi il menu'}">${closed ? icon.sidebarOpen(16) : icon.sidebar(16)}</button></div>
     <button class="folder-pill" data-action="go" data-view="settings" title="${esc(S.data.dir)}">
       ${icon.folder(14)}<span class="grow ellipsis mono">${esc(shortPath(S.data.dir))}</span><span class="sync-dot" aria-label="Cartella collegata"></span>
     </button>
