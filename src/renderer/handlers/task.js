@@ -1,16 +1,15 @@
 // Task: creazione, pannello di dettaglio (salvataggio dei campi, tag, collegamenti) e completamento.
 // Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
 import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, TAG_COLORS } from '../state.js';
-import { currentTask, currentNote, currentItem, visibleTasks, overdueCount, refCandidates } from '../selectors.js';
+import { currentTask, currentNote, currentItem, missingProject, overdueCount, refCandidates } from '../selectors.js';
 import { todayISO } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
 import { api, root, render, reload, run, toast } from '../core.js';
 
+// Un task nuovo nasce nel progetto solo dalla sua pagina; altrove il progetto si sceglie a mano.
 function defaultProject() {
-  if (S.view.name === 'project' && project(S.view.code)) return S.view.code;
-  if (S.ui.fProject) return S.ui.fProject;
-  return (activeProjects()[0] || S.data.projects[0] || {}).codice || '';
+  return S.view.name === 'project' && project(S.view.code) ? S.view.code : '';
 }
 
 function newDraft(code) {
@@ -27,19 +26,31 @@ async function saveTask(t) {
   return saved;
 }
 
+// Mostra o toglie l'errore sul progetto senza ridisegnare: un render mentre si clicca la tendina la chiuderebbe.
+function markProject() {
+  const bad = missingProject();
+  const sel = document.getElementById('task-project');
+  if (!sel) return;
+  sel.closest('.project-field')?.classList.toggle('invalid', bad);
+  sel.setAttribute('aria-invalid', String(bad));
+  const err = document.getElementById('task-project-err');
+  if (err) err.hidden = !bad;
+}
+
 async function updateTask(patch) {
   const t = currentTask();
   if (!t) return;
   if (S.ui.openTask === 'new') {
     Object.assign(t, patch);
-    if (t.titolo && t.titolo.trim()) {
+    if (t.titolo && t.titolo.trim() && t.progetto) {
       const saved = await api.saveTask(t);
       S.ui.openTask = saved.id;
       S.ui.draft = null;
       await reload();
       mascot.react('created');
       toast(`Creato ${saved.id}`);
-    } else render();
+    } else if (Object.keys(patch).join() === 'titolo') markProject();
+    else render();
     return;
   }
   const wasClosed = isClosed(t);
@@ -150,18 +161,24 @@ async function saveField(el) {
   // Se nel frattempo si è ripreso a scrivere, il testo nuovo resta "Non salvato".
   if (S.ui.unsaved && S.ui.unsaved[f] !== typed) return;
   clearUnsaved(f);
-  if (f === 'titolo' || f === 'descrizione') { S.ui.saved[f] = true; setSaveState(f, 'Salvato'); }
+  if (f !== 'titolo' && f !== 'descrizione') return;
+  // Un task nuovo senza progetto non è ancora su disco: niente "Salvato".
+  if (openId() === 'new') setSaveState(f, '');
+  else { S.ui.saved[f] = true; setSaveState(f, 'Salvato'); }
 }
 
 // Prima di cambiare ciò che si vede (o di chiudere la finestra): salva quello che si sta scrivendo.
-export async function flush() {
+// Un task nuovo senza progetto blocca il cambio; con keepDraft: false (chiusura dell'app) la bozza si perde.
+export async function flush({ keepDraft = true } = {}) {
   if (saving) await saving;
   const un = S.ui.unsaved;
-  if (!un || un.id !== openId()) return;
-  for (const f of ['titolo', 'descrizione']) {
-    const el = root.querySelector(`[data-change="task-field"][data-field="${f}"]`);
-    if (el && f in un) await saveField(el);
+  if (un && un.id === openId()) {
+    for (const f of ['titolo', 'descrizione']) {
+      const el = root.querySelector(`[data-change="task-field"][data-field="${f}"]`);
+      if (el && f in un) await saveField(el);
+    }
   }
+  if (keepDraft && missingProject()) throw new Error('Scegli un progetto per creare il task, oppure cancella il titolo.');
 }
 
 // Un'azione che cambia contesto parte solo se il salvataggio riesce.
@@ -316,8 +333,10 @@ async function closeDescription() {
 // ---------------------------------------------------------------- handler
 export const actions = {
   'new-task': afterFlush((el) => {
+    const draft = newDraft(el.dataset.code);
+    if (!draft.progetto && !activeProjects().length) throw new Error('Crea prima un progetto.');
     resetPanelState();
-    S.ui.draft = newDraft(el.dataset.code);
+    S.ui.draft = draft;
     S.ui.openTask = 'new';
     S.ui.openNote = null;
     S.ui.noteDraft = null;
@@ -411,22 +430,6 @@ export const inputs = {
 };
 
 export const keydowns = {
-  'quick-add': (el, e) => {
-    if (e.key !== 'Enter' || !el.value.trim()) return;
-    e.preventDefault();
-    const titolo = el.value.trim();
-    run(async () => {
-      if (!defaultProject()) throw new Error('Crea prima un progetto.');
-      const saved = await api.saveTask({ ...newDraft(), titolo });
-      el.value = '';
-      await reload();
-      mascot.react('created');
-      const p = project(saved.progetto);
-      const hidden = !visibleTasks().some((t) => t.id === saved.id);
-      toast(`Creato ${saved.id}${p ? ' in ' + p.nome : ''}${hidden ? ' (nascosto dai filtri attivi)' : ''}`);
-      document.getElementById('quick-add')?.focus();
-    });
-  },
   // Valore di una categoria a testo libero: si aggiunge con Invio, senza creare file.
   'task-text-add': (el, e) => {
     if (e.key !== 'Enter' || !el.value.trim()) return;
@@ -472,7 +475,13 @@ export const keydowns = {
       render();
     }
   },
-  'title-enter': (el, e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } },
+  // Su un task nuovo senza progetto, dopo Invio il focus passa al progetto da scegliere.
+  'title-enter': (el, e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    el.blur();
+    if (missingProject()) document.getElementById('task-project')?.focus();
+  },
   'task-tag-add': (el, e) => {
     if (e.key !== 'Enter' || !el.value.trim()) return;
     e.preventDefault();

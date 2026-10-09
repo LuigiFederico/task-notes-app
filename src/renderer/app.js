@@ -113,7 +113,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Chiusura della finestra: prima si salva il campo in modifica. Se non riesce, la finestra resta aperta.
-api.onBeforeClose(() => flush().then(() => api.closeOk(), (err) => {
+api.onBeforeClose(() => flush({ keepDraft: false }).then(() => api.closeOk(), (err) => {
   mascot.react('error');
   toast(err.message || String(err), 'error');
   api.closeFail();

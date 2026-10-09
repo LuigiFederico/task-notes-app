@@ -112,6 +112,24 @@ test('renderer: colonne visibili e griglia per pagina e pannello aperto', async 
   S.ui.openTask = null;
 });
 
+test('renderer: un task nuovo con il titolo e senza progetto non si crea', async () => {
+  const { missingProject } = await load('selectors.js');
+  const S = await setup([{ id: 'T-001', titolo: 'Esistente', progetto: null }]);
+  S.ui.openTask = 'T-001';
+  assert.strictEqual(missingProject(), false);
+  S.ui.openTask = 'new';
+  S.ui.draft = { titolo: '', progetto: '' };
+  assert.strictEqual(missingProject(), false);
+  S.ui.draft.titolo = '   ';
+  assert.strictEqual(missingProject(), false);
+  S.ui.draft.titolo = 'Nuovo';
+  assert.strictEqual(missingProject(), true);
+  S.ui.draft.progetto = 'VEND';
+  assert.strictEqual(missingProject(), false);
+  S.ui.openTask = null;
+  S.ui.draft = null;
+});
+
 test('renderer: visibleTasks applica completati, filtri e ricerca', async () => {
   const { visibleTasks } = await load('selectors.js');
   const S = await setup([
