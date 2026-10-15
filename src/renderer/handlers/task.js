@@ -1,8 +1,8 @@
 // Task: creazione, pannello di dettaglio (salvataggio dei campi, tag, collegamenti) e completamento.
 // Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
-import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, TAG_COLORS } from '../state.js';
+import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, prioOf, TAG_COLORS } from '../state.js';
 import { currentTask, currentNote, currentItem, missingProject, overdueCount, refCandidates } from '../selectors.js';
-import { todayISO } from '../lib/util.js';
+import { todayISO, moveItem, dropIndex } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
 import { api, root, render, reload, run, toast, playOnce } from '../core.js';
@@ -133,7 +133,7 @@ function clearUnsaved(field) {
   if (Object.keys(S.ui.unsaved).length === 1) S.ui.unsaved = null;
 }
 
-export function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; S.ui.descEdit = false; }
+export function resetPanelState() { S.ui.unsaved = null; S.ui.saved = {}; S.ui.pendingTag = null; S.ui.subEdit = null; S.ui.mention = null; S.ui.descEdit = false; S.ui.menu = null; }
 
 export function closePanel() {
   resetPanelState();
@@ -228,6 +228,63 @@ function saveSubtasks(fn) {
   const list = (t.sottotask || []).map((x) => ({ ...x }));
   fn(list);
   return updateTask({ sottotask: list });
+}
+
+// Trascinando la maniglia la voce segue il mouse e le altre scorrono per farle posto; si salva al rilascio.
+// Niente render durante il trascinamento, come per la larghezza del pannello (startPanelResize in layout.js).
+export function startSubDrag(e) {
+  const grip = e.target.closest('.sub-grip');
+  if (!grip || grip.disabled || e.button !== 0) return;
+  e.preventDefault();
+  const items = [...grip.closest('.sub-list').children];
+  const from = Number(grip.dataset.index);
+  // Le voci possono andare a capo: lo slot si calcola dai rettangoli reali, non da un'altezza fissa.
+  const rects = items.map((el) => el.getBoundingClientRect());
+  const mids = rects.map((r) => r.top + r.height / 2);
+  const step = rects[from].height + 2;   // altezza della voce + gap della lista
+  const min = rects[0].top - rects[from].top;
+  const max = rects.at(-1).bottom - rects[from].bottom;
+  let to = from;
+  grip.setPointerCapture(e.pointerId);
+  document.body.classList.add('dragging');
+  items[from].classList.add('lifted');
+  const move = (ev) => {
+    const dy = Math.max(min, Math.min(max, ev.clientY - e.clientY));
+    items[from].style.transform = `translateY(${dy}px) scale(1.02)`;
+    to = dropIndex(mids, mids[from] + dy, from);
+    items.forEach((el, k) => {
+      if (k === from) return;
+      const shift = from < k && k <= to ? -step : to <= k && k < from ? step : 0;
+      el.style.transform = shift ? `translateY(${shift}px)` : '';
+    });
+  };
+  grip.addEventListener('pointermove', move);
+  grip.addEventListener('lostpointercapture', () => {
+    grip.removeEventListener('pointermove', move);
+    document.body.classList.remove('dragging');
+    // La voce si posa nel posto nuovo (.18s), poi il salvataggio ridisegna la lista nell'ordine giusto.
+    const land = to > from ? rects[to].bottom - rects[from].bottom : rects[to].top - rects[from].top;
+    items[from].style.transform = `translateY(${land}px)`;
+    setTimeout(() => {
+      if (to === from) { items[from].classList.remove('lifted'); items[from].style.transform = ''; return; }
+      run(() => saveSubtasks((l) => moveItem(l, from, to)));
+    }, 180);
+  }, { once: true });
+}
+
+// ---------------------------------------------------------------- tendine di stato e priorità
+// Il focus va sul bottone o sull'opzione per id, così il render() del salvataggio lo rimette lì.
+export function closeMenu() {
+  const id = S.ui.menu && 'task-' + S.ui.menu;
+  S.ui.menu = null;
+  render();
+  if (id) document.getElementById(id)?.focus();
+}
+
+// Valore mostrato dalla tendina: per la priorità quello di default se il task non ne ha una valida.
+function menuValue(catId) {
+  const t = currentTask();
+  return catId === 'priorita' ? prioOf(t) : t.stato;
 }
 
 // ---------------------------------------------------------------- collegamenti e suggerimenti di @
@@ -368,11 +425,19 @@ export const actions = {
     playOnce(`[data-action="sub-toggle"][data-index="${el.dataset.index}"] .ic`);
   }),
   'sub-delete': (el) => run(() => saveSubtasks((l) => l.splice(Number(el.dataset.index), 1))),
-  'sub-move': (el) => run(() => saveSubtasks((l) => {
-    const i = Number(el.dataset.index);
-    const j = i + Number(el.dataset.dir);
-    if (j >= 0 && j < l.length) [l[i], l[j]] = [l[j], l[i]];
-  })),
+  'menu-toggle': (el) => {
+    if (S.ui.menu === el.dataset.cat) return closeMenu();
+    S.ui.menu = el.dataset.cat;
+    render();
+    document.querySelector('.dd-opt[aria-selected="true"]')?.focus();
+  },
+  'menu-close': closeMenu,
+  'menu-pick': (el) => {
+    if (el.dataset.value === menuValue(el.dataset.cat)) return closeMenu();
+    S.ui.menu = null;
+    document.getElementById('task-' + el.dataset.cat)?.focus();
+    run(() => updateTask({ [el.dataset.cat]: el.dataset.value }));
+  },
   'sub-edit-start': (el) => {
     S.ui.subEdit = Number(el.dataset.index);
     render();
@@ -402,7 +467,6 @@ export const actions = {
 
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
-  'task-prio': (el) => run(() => updateTask({ priorita: (cat('priorita')?.tags[Number(el.value)] || {}).id || null })),
   'link-type': (el) => { S.ui.linkType = el.value; },
   // Un testo vuoto elimina la voce.
   'sub-edit': (el) => run(() => {
@@ -434,6 +498,38 @@ export const inputs = {
 };
 
 export const keydowns = {
+  // Alt+↑ ↓ sulla maniglia sposta la voce di un posto; il focus la segue.
+  'sub-grip-key': (el, e) => {
+    if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    e.preventDefault();
+    const i = Number(el.dataset.index);
+    const j = i + (e.key === 'ArrowUp' ? -1 : 1);
+    if (j < 0 || j >= (currentTask()?.sottotask || []).length) return;
+    run(async () => {
+      await saveSubtasks((l) => moveItem(l, i, j));
+      document.getElementById('sub-grip-' + j)?.focus();
+    });
+  },
+  // Tendina chiusa: ↑ ↓ cambiano valore senza aprirla (fermandosi agli estremi), Alt+↓ la apre.
+  // Elenco aperto: ↑ ↓ Home Fine spostano il focus, Invio sceglie (è un clic), Tab chiude.
+  'menu-key': (el, e) => {
+    const tags = cat(el.dataset.cat)?.tags || [];
+    if (el.classList.contains('dd')) {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+      e.preventDefault();
+      if (S.ui.menu) return document.querySelector('.dd-opt[aria-selected="true"]')?.focus();
+      if (e.altKey && e.key === 'ArrowDown') return actions['menu-toggle'](el);
+      const i = tags.findIndex((x) => x.id === menuValue(el.dataset.cat));
+      const j = Math.max(0, Math.min(tags.length - 1, i + (e.key === 'ArrowUp' ? -1 : 1)));
+      if (j !== i) run(() => updateTask({ [el.dataset.cat]: tags[j].id }));
+      return;
+    }
+    const opts = [...el.parentElement.children];
+    const k = opts.indexOf(el);
+    const next = { ArrowUp: k - 1, ArrowDown: k + 1, Home: 0, End: opts.length - 1 }[e.key];
+    if (next != null) { e.preventDefault(); opts[Math.max(0, Math.min(opts.length - 1, next))].focus(); }
+    else if (e.key === 'Tab') { e.preventDefault(); closeMenu(); }
+  },
   // Valore di una categoria a testo libero: si aggiunge con Invio, senza creare file.
   'task-text-add': (el, e) => {
     if (e.key !== 'Enter' || !el.value.trim()) return;

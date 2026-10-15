@@ -1,0 +1,872 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="440" viewBox="0 0 300 440">
+<!-- Fogliame della sidebar (stile Sottobosco): generato una volta con seme fisso, 868 foglie. -->
+<defs><path id="f" d="M0 7Q11-1.5 40 7Q11 15.5 0 7Z"/><path id="v" d="M1 7Q18 6 35 7" fill="none" stroke-width=".9"/><filter id="b14" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter><filter id="b07" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.7"/></filter><filter id="b09" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.9"/></filter></defs>
+<g filter="url(#b14)"><g transform="translate(-34 24.5)rotate(-148)scale(0.5 0.5)translate(0 -7)" opacity="0.29"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(-83 53)rotate(-137)scale(0.6 0.57)translate(0 -7)" opacity="0.33"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(68 64)rotate(-39)scale(0.35 0.29)translate(0 -7)" opacity="0.35"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(31 66.5)rotate(-143)scale(0.72 0.93)translate(0 -7)" opacity="0.49"><use href="#f" fill="#86AA8F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(11 71.5)rotate(-145)scale(0.65 0.93)translate(0 -7)" opacity="0.51"><use href="#f" fill="#86AA8F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(206 77)rotate(-112)scale(0.45 0.43)translate(0 -7)" opacity="0.37"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(-52 79.5)rotate(-56)scale(0.35 0.36)translate(0 -7)" opacity="0.38"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(-42 80)rotate(-84)scale(0.75 0.86)translate(0 -7)" opacity="0.53"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-41 82)rotate(-162)scale(0.47 0.57)translate(0 -7)" opacity="0.54"><use href="#f" fill="#86AA8F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(45 84.5)rotate(-25)scale(0.5 0.5)translate(0 -7)" opacity="0.39"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(77 96)rotate(-42)scale(0.42 0.43)translate(0 -7)" opacity="0.41"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(35 98)rotate(-61)scale(0.6 0.86)translate(0 -7)" opacity="0.58"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(39 98)rotate(-91)scale(0.8 1.14)translate(0 -7)" opacity="0.58"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(18 98.5)rotate(-47)scale(0.7 0.79)translate(0 -7)" opacity="0.59"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-1 100)rotate(-54)scale(0.8 1.14)translate(0 -7)" opacity="0.59"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(12 101.5)rotate(-52)scale(0.53 0.64)translate(0 -7)" opacity="0.60"><use href="#f" fill="#86AA8F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(36 107.5)rotate(-143)scale(0.8 1.07)translate(0 -7)" opacity="0.61"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(12 111)rotate(-120)scale(0.68 0.86)translate(0 -7)" opacity="0.62"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(25 111.5)rotate(-93)scale(0.82 1.07)translate(0 -7)" opacity="0.62"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-23 112)rotate(-70)scale(0.72 1)translate(0 -7)" opacity="0.63"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(121 112)rotate(-54)scale(0.6 0.57)translate(0 -7)" opacity="0.43"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(49 113.5)rotate(-168)scale(0.6 0.79)translate(0 -7)" opacity="0.63"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(126 114)rotate(-35)scale(0.6 0.86)translate(0 -7)" opacity="0.46"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-20 116.5)rotate(-165)scale(0.68 0.79)translate(0 -7)" opacity="0.64"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(125 116.5)rotate(-47)scale(0.42 0.36)translate(0 -7)" opacity="0.44"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(39 125.5)rotate(-46)scale(0.82 0.93)translate(0 -7)" opacity="0.67"><use href="#f" fill="#86AA8F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(17 127.5)rotate(-123)scale(0.8 1.07)translate(0 -7)" opacity="0.67"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(-212 128.5)rotate(-80)scale(0.4 0.36)translate(0 -7)" opacity="0.46"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(12 129.5)rotate(-39)scale(0.82 1.07)translate(0 -7)" opacity="0.68"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-4 130.5)rotate(-137)scale(0.75 0.93)translate(0 -7)" opacity="0.68"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(63 133)rotate(-72)scale(0.65 0.86)translate(0 -7)" opacity="0.69"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-10 133.5)rotate(-87)scale(0.72 0.93)translate(0 -7)" opacity="0.69"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(70 134)rotate(-108)scale(0.82 1)translate(0 -7)" opacity="0.52"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(125 136.5)rotate(-140)scale(0.53 0.64)translate(0 -7)" opacity="0.53"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(8 139.5)rotate(-137)scale(0.47 0.5)translate(0 -7)" opacity="0.48"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(104 140)rotate(-142)scale(0.5 0.57)translate(0 -7)" opacity="0.54"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(-162 140.5)rotate(-177)scale(0.38 0.36)translate(0 -7)" opacity="0.48"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(-5 141)rotate(-33)scale(0.53 0.71)translate(0 -7)" opacity="0.71"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(70 143)rotate(-159)scale(0.68 0.86)translate(0 -7)" opacity="0.71"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(122 143)rotate(-41)scale(0.68 0.86)translate(0 -7)" opacity="0.72"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(128 144)rotate(-67)scale(0.7 0.86)translate(0 -7)" opacity="0.72"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(41 144.5)rotate(-128)scale(0.85 1.07)translate(0 -7)" opacity="0.72"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(17 145)rotate(-54)scale(0.78 1)translate(0 -7)" opacity="0.72"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(0 146)rotate(-57)scale(0.53 0.57)translate(0 -7)" opacity="0.49"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(49 147)rotate(-173)scale(0.88 1.14)translate(0 -7)" opacity="0.73"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(50 148.5)rotate(-86)scale(0.6 0.79)translate(0 -7)" opacity="0.73"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-1 149)rotate(-156)scale(0.82 1.14)translate(0 -7)" opacity="0.73"><use href="#f" fill="#3F7155"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(13 149.5)rotate(-140)scale(0.65 0.93)translate(0 -7)" opacity="0.73"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(205 149)rotate(-50)scale(0.33 0.29)translate(0 -7)" opacity="0.49"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(130 151)rotate(-139)scale(0.6 0.71)translate(0 -7)" opacity="0.74"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(252 151)rotate(-2)scale(0.4 0.43)translate(0 -7)" opacity="0.50"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(64 152.5)rotate(-32)scale(0.53 0.64)translate(0 -7)" opacity="0.57"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(125 157.5)rotate(-59)scale(0.9 1.21)translate(0 -7)" opacity="0.59"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-7 159)rotate(-123)scale(0.6 0.86)translate(0 -7)" opacity="0.76"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(82 160.5)rotate(-79)scale(0.57 0.79)translate(0 -7)" opacity="0.77"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(85 161.5)rotate(-83)scale(0.88 1.21)translate(0 -7)" opacity="0.77"><use href="#f" fill="#5E8C6E"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(169 162.5)rotate(-101)scale(0.4 0.36)translate(0 -7)" opacity="0.51"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(122 167)rotate(-129)scale(0.72 1)translate(0 -7)" opacity="0.78"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(123 167)rotate(-41)scale(0.68 0.86)translate(0 -7)" opacity="0.78"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(105 167)rotate(-60)scale(0.82 1)translate(0 -7)" opacity="0.62"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b07)"><g transform="translate(84 167.5)rotate(-40)scale(0.63 0.64)translate(0 -7)" opacity="0.52"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(214 168)rotate(-152)scale(0.65 0.86)translate(0 -7)" opacity="0.79"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(59 168.5)rotate(-106)scale(0.6 0.79)translate(0 -7)" opacity="0.62"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(136 168.5)rotate(-62)scale(0.85 1.07)translate(0 -7)" opacity="0.79"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(163 168.5)rotate(-127)scale(0.88 1.21)translate(0 -7)" opacity="0.79"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(16 169.5)rotate(-127)scale(0.6 0.79)translate(0 -7)" opacity="0.79"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b07)"><g transform="translate(22 169)rotate(-139)scale(0.55 0.57)translate(0 -7)" opacity="0.53"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g></g>
+<g transform="translate(66 171)rotate(-174)scale(0.88 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(90 173)rotate(-145)scale(0.75 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(91 174)rotate(-170)scale(0.85 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(124 175)rotate(-125)scale(0.68 0.86)translate(0 -7)" opacity="0.64"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(106 175.5)rotate(-136)scale(0.78 0.93)translate(0 -7)" opacity="0.64"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(163 176)rotate(-45)scale(0.82 1)translate(0 -7)" opacity="0.81"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-8 176.5)rotate(-42)scale(0.55 0.64)translate(0 -7)" opacity="0.81"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(71 177.5)rotate(-90)scale(0.63 0.79)translate(0 -7)" opacity="0.82"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(165 180)rotate(-108)scale(0.88 1.14)translate(0 -7)" opacity="0.82"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(14 181)rotate(-161)scale(0.45 0.43)translate(0 -7)" opacity="0.55"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(223 181.5)rotate(-108)scale(0.53 0.5)translate(0 -7)" opacity="0.55"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(-24 186)rotate(-150)scale(0.85 1.14)translate(0 -7)" opacity="0.84"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-40 185.5)rotate(-158)scale(0.9 1.21)translate(0 -7)" opacity="0.84"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(96 186)rotate(-61)scale(0.7 1)translate(0 -7)" opacity="0.84"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(121 186.5)rotate(-58)scale(0.93 1.21)translate(0 -7)" opacity="0.84"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-130 187.5)rotate(-87)scale(0.4 0.36)translate(0 -7)" opacity="0.55"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(141 187.5)rotate(-146)scale(0.78 1.07)translate(0 -7)" opacity="0.84"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(16 188)rotate(-45)scale(0.6 0.86)translate(0 -7)" opacity="0.84"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(125 188.5)rotate(-137)scale(0.65 0.93)translate(0 -7)" opacity="0.85"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(109 191)rotate(-34)scale(0.78 1)translate(0 -7)" opacity="0.85"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(222 191.5)rotate(-61)scale(0.65 0.93)translate(0 -7)" opacity="0.86"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(2 192.5)rotate(-133)scale(0.65 0.64)translate(0 -7)" opacity="0.56"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(109 192.5)rotate(-49)scale(0.38 0.36)translate(0 -7)" opacity="0.56"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-28 193.5)rotate(-76)scale(0.6 0.79)translate(0 -7)" opacity="0.86"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(199 194)rotate(-67)scale(0.82 1)translate(0 -7)" opacity="0.86"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(82 194)rotate(-161)scale(0.55 0.71)translate(0 -7)" opacity="0.86"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-21 194.5)rotate(-174)scale(0.75 1.07)translate(0 -7)" opacity="0.86"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-21 195)rotate(-59)scale(0.65 0.86)translate(0 -7)" opacity="0.86"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(136 195)rotate(-123)scale(0.72 0.86)translate(0 -7)" opacity="0.87"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(182 195.5)rotate(-148)scale(0.75 0.93)translate(0 -7)" opacity="0.87"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(108 196)rotate(-49)scale(0.88 1)translate(0 -7)" opacity="0.70"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(203 196.5)rotate(-134)scale(0.95 1.21)translate(0 -7)" opacity="0.87"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-10 197.5)rotate(-125)scale(0.75 0.93)translate(0 -7)" opacity="0.87"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(157 198)rotate(-34)scale(0.78 1)translate(0 -7)" opacity="0.88"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(76 199)rotate(-141)scale(0.47 0.43)translate(0 -7)" opacity="0.57"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(-33 199)rotate(-89)scale(0.9 1.14)translate(0 -7)" opacity="0.88"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(61 200.5)rotate(-37)scale(0.78 0.93)translate(0 -7)" opacity="0.88"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(106 201.5)rotate(-101)scale(0.57 0.79)translate(0 -7)" opacity="0.88"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(103 202)rotate(-153)scale(0.93 1.29)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(120 202.5)rotate(-136)scale(0.85 1.21)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(164 202)rotate(-141)scale(0.6 0.71)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-3 203)rotate(-35)scale(0.68 0.86)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(163 203.5)rotate(-33)scale(0.68 0.64)translate(0 -7)" opacity="0.58"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(15 204)rotate(-134)scale(0.63 0.71)translate(0 -7)" opacity="0.89"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(226 204)rotate(-147)scale(0.63 0.86)translate(0 -7)" opacity="0.89"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(32 204.5)rotate(-37)scale(0.35 0.36)translate(0 -7)" opacity="0.58"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-17 204.5)rotate(-70)scale(0.75 0.93)translate(0 -7)" opacity="0.89"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-4 205)rotate(-129)scale(0.8 1.14)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(189 206)rotate(-119)scale(0.47 0.43)translate(0 -7)" opacity="0.59"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(218 206.5)rotate(-80)scale(0.57 0.64)translate(0 -7)" opacity="0.73"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(52 206.5)rotate(-9)scale(0.65 0.79)translate(0 -7)" opacity="0.90"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(126 207)rotate(-45)scale(0.63 0.86)translate(0 -7)" opacity="0.90"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(201 209.5)rotate(-29)scale(0.85 1.07)translate(0 -7)" opacity="0.91"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(190 210.5)rotate(-70)scale(0.82 1.07)translate(0 -7)" opacity="0.91"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(109 211)rotate(-126)scale(0.65 0.86)translate(0 -7)" opacity="0.74"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(110 211.5)rotate(-121)scale(0.57 0.64)translate(0 -7)" opacity="0.59"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(44 216)rotate(-137)scale(0.57 0.71)translate(0 -7)" opacity="0.93"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(79 216.5)rotate(-142)scale(0.5 0.5)translate(0 -7)" opacity="0.60"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(70 216.5)rotate(-170)scale(0.88 1.21)translate(0 -7)" opacity="0.93"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(150 217.5)rotate(-103)scale(0.88 1.21)translate(0 -7)" opacity="0.93"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(131 218.5)rotate(-37)scale(0.7 0.93)translate(0 -7)" opacity="0.93"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(229 218.5)rotate(-103)scale(0.7 0.93)translate(0 -7)" opacity="0.93"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(64 219.5)rotate(-47)scale(0.53 0.5)translate(0 -7)" opacity="0.61"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-10 221)rotate(-159)scale(0.65 0.86)translate(0 -7)" opacity="0.94"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(211 221)rotate(-147)scale(0.6 0.71)translate(0 -7)" opacity="0.94"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-15 221)rotate(-145)scale(0.78 1)translate(0 -7)" opacity="0.94"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-10 221.5)rotate(-159)scale(0.6 0.79)translate(0 -7)" opacity="0.94"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(99 221.5)rotate(-42)scale(0.6 0.79)translate(0 -7)" opacity="0.94"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(212 221.5)rotate(-78)scale(0.78 0.93)translate(0 -7)" opacity="0.94"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-15 222.5)rotate(-66)scale(0.82 1.07)translate(0 -7)" opacity="0.94"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-2 222.5)rotate(-74)scale(0.95 1.21)translate(0 -7)" opacity="0.95"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(164 223)rotate(-38)scale(0.57 0.71)translate(0 -7)" opacity="0.95"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(127 223.5)rotate(-140)scale(0.55 0.64)translate(0 -7)" opacity="0.95"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-19 223.5)rotate(-150)scale(0.95 1.21)translate(0 -7)" opacity="0.95"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(44 225)rotate(-33)scale(0.6 0.71)translate(0 -7)" opacity="0.95"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-7 225)rotate(-83)scale(0.9 1.29)translate(0 -7)" opacity="0.95"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(89 225.5)rotate(-162)scale(0.75 1.07)translate(0 -7)" opacity="0.78"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(42 225.5)rotate(-93)scale(0.8 1.07)translate(0 -7)" opacity="0.95"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(200 226)rotate(-131)scale(0.55 0.57)translate(0 -7)" opacity="0.62"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(198 226.5)rotate(-169)scale(0.82 1.07)translate(0 -7)" opacity="0.96"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(16 226.5)rotate(-67)scale(0.57 0.64)translate(0 -7)" opacity="0.62"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(76 227)rotate(-90)scale(0.63 0.86)translate(0 -7)" opacity="0.96"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(90 227)rotate(-75)scale(0.55 0.71)translate(0 -7)" opacity="0.79"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-111 226.5)rotate(-152)scale(0.42 0.36)translate(0 -7)" opacity="0.62"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(226 227)rotate(-146)scale(0.78 1)translate(0 -7)" opacity="0.79"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(198 227)rotate(-111)scale(0.57 0.71)translate(0 -7)" opacity="0.96"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(230 227.5)rotate(-169)scale(0.85 1.07)translate(0 -7)" opacity="0.79"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(270 228.5)rotate(-105)scale(0.97 1.21)translate(0 -7)" opacity="0.79"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(186 229)rotate(-144)scale(0.95 1.29)translate(0 -7)" opacity="0.96"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(223 230)rotate(-16)scale(0.57 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(3 230.5)rotate(-165)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(234 230.5)rotate(-54)scale(0.57 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-4 231.5)rotate(-58)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(171 232)rotate(-112)scale(0.57 0.57)translate(0 -7)" opacity="0.63"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(228 232.5)rotate(-60)scale(0.65 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(272 232.5)rotate(-14)scale(0.6 0.64)translate(0 -7)" opacity="0.63"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(127 234.5)rotate(-125)scale(0.57 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(65 235.5)rotate(-66)scale(0.42 0.36)translate(0 -7)" opacity="0.63"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(146 236)rotate(-126)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(81 236)rotate(-39)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(52 236)rotate(-26)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(207 236.5)rotate(-32)scale(0.53 0.5)translate(0 -7)" opacity="0.64"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(235 236.5)rotate(-78)scale(0.95 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(14 236)rotate(-35)scale(0.35 0.29)translate(0 -7)" opacity="0.64"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(60 236.5)rotate(-123)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(94 237.5)rotate(-101)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-11 237.5)rotate(-81)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(-7 238)rotate(-124)scale(0.57 0.71)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(224 238.5)rotate(-104)scale(0.35 0.36)translate(0 -7)" opacity="0.64"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(198 238.5)rotate(-16)scale(0.55 0.5)translate(0 -7)" opacity="0.64"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(164 239)rotate(-121)scale(0.6 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(144 239)rotate(-72)scale(0.88 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(43 240.5)rotate(-123)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(85 242)rotate(-154)scale(0.95 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#2C5E42"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(82 242)rotate(-35)scale(0.9 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(215 243.5)rotate(-106)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(222 244)rotate(-167)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(239 244)rotate(-138)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(115 244)rotate(-24)scale(0.5 0.57)translate(0 -7)" opacity="0.65"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(12 244.5)rotate(-71)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(180 244.5)rotate(-9)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(11 245)rotate(-58)scale(0.63 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-29 245)rotate(-147)scale(0.65 0.57)translate(0 -7)" opacity="0.65"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g filter="url(#b09)"><g transform="translate(234 245.5)rotate(-80)scale(0.6 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-4 245.5)rotate(-141)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(177 246)rotate(-20)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(148 245.5)rotate(-175)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(60 246.5)rotate(-49)scale(0.93 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-9 247.5)rotate(-153)scale(0.82 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(194 248.5)rotate(-47)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(132 249)rotate(-115)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(0 249.5)rotate(-122)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(190 249.5)rotate(-55)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(97 250)rotate(-144)scale(0.8 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(264 250)rotate(-25)scale(0.93 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(11 251)rotate(-176)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-2 252.5)rotate(-162)scale(0.85 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(244 252.5)rotate(-167)scale(0.9 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(-5 254.5)rotate(-57)scale(0.82 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(83 254.5)rotate(-52)scale(0.42 0.36)translate(0 -7)" opacity="0.67"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(174 255)rotate(-122)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(227 256)rotate(-68)scale(0.63 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(114 256.5)rotate(-38)scale(0.63 0.64)translate(0 -7)" opacity="0.67"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(149 256)rotate(-69)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(25 257.5)rotate(-27)scale(0.82 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(43 258)rotate(-99)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(97 258.5)rotate(-97)scale(0.75 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(22 259)rotate(-162)scale(0.88 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(42 259.5)rotate(-47)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(59 260)rotate(-128)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(0 260.5)rotate(-49)scale(0.65 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(122 260)rotate(-150)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(159 261.5)rotate(-72)scale(0.68 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(17 261)rotate(-153)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(174 262)rotate(-62)scale(0.95 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(86 263)rotate(-33)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(96 263)rotate(-28)scale(0.82 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(20 264)rotate(-80)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(210 263.5)rotate(-26)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-5 265.5)rotate(-54)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(210 265.5)rotate(-118)scale(0.97 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 266.5)rotate(-107)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(259 266)rotate(-118)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(77 266)rotate(-114)scale(0.93 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(259 267)rotate(-115)scale(0.8 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(191 266.5)rotate(-122)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(129 268)rotate(-41)scale(0.6 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(193 268.5)rotate(-144)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(211 268.5)rotate(-12)scale(0.6 0.64)translate(0 -7)" opacity="0.69"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(14 269.5)rotate(-136)scale(0.38 0.36)translate(0 -7)" opacity="0.69"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(89 269)rotate(-150)scale(0.47 0.43)translate(0 -7)" opacity="0.69"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g filter="url(#b09)"><g transform="translate(104 270)rotate(-74)scale(0.78 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(68 270)rotate(-116)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(228 270.5)rotate(-129)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(33 272)rotate(-132)scale(0.55 0.57)translate(0 -7)" opacity="0.69"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(99 271.5)rotate(-25)scale(0.82 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(154 272)rotate(-42)scale(0.65 0.71)translate(0 -7)" opacity="0.69"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(17 272)rotate(-97)scale(0.88 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(245 272.5)rotate(-160)scale(0.78 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(235 272.5)rotate(-148)scale(0.97 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(162 273.5)rotate(-25)scale(0.6 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 274)rotate(-23)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(41 274.5)rotate(-135)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-66 274.5)rotate(-63)scale(0.53 0.5)translate(0 -7)" opacity="0.70"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(59 275)rotate(-41)scale(0.75 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(186 274.5)rotate(-63)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(-4 274.5)rotate(-144)scale(0.65 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(151 275)rotate(-141)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(81 276)rotate(-103)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(28 276.5)rotate(-160)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(35 276.5)rotate(-37)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(170 277)rotate(-164)scale(0.72 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(146 277.5)rotate(-11)scale(0.6 0.64)translate(0 -7)" opacity="0.70"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(131 278)rotate(-77)scale(0.88 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-1 278.5)rotate(-136)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-9 278)rotate(-132)scale(0.5 0.43)translate(0 -7)" opacity="0.70"><use href="#f" fill="#B9D0BA"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(75 279)rotate(-33)scale(0.8 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(227 280)rotate(-124)scale(0.35 0.29)translate(0 -7)" opacity="0.71"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(105 281)rotate(-60)scale(0.8 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(173 280.5)rotate(-152)scale(0.95 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(258 281)rotate(-120)scale(0.53 0.43)translate(0 -7)" opacity="0.71"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-1 282)rotate(-134)scale(0.9 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(176 282.5)rotate(-142)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(109 282)rotate(-124)scale(0.6 0.57)translate(0 -7)" opacity="0.71"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(62 283)rotate(-19)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(190 283.5)rotate(-156)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 283)rotate(-127)scale(0.35 0.29)translate(0 -7)" opacity="0.71"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(11 283.5)rotate(-23)scale(0.93 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(52 284.5)rotate(-152)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(284 284.5)rotate(-106)scale(0.78 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(25 284.5)rotate(-77)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(109 285)rotate(-137)scale(0.75 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(251 285)rotate(-60)scale(0.82 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(251 286)rotate(-33)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(126 286.5)rotate(-115)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(114 288)rotate(-140)scale(1 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 288.5)rotate(-146)scale(0.78 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(211 288.5)rotate(-127)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(85 288.5)rotate(-14)scale(0.75 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(197 288)rotate(-48)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#235036"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(162 288.5)rotate(-108)scale(1.05 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(211 288.5)rotate(-57)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(177 289.5)rotate(-63)scale(0.65 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(281 289.5)rotate(-15)scale(0.75 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(240 290)rotate(-89)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(33 291)rotate(-110)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(178 291)rotate(-92)scale(1 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(137 291)rotate(-158)scale(0.93 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(320 291.5)rotate(-8)scale(0.7 0.64)translate(0 -7)" opacity="0.73"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(49 291.5)rotate(-126)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(49 292.5)rotate(-44)scale(0.75 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(231 293)rotate(-69)scale(0.9 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(14 293)rotate(-85)scale(0.63 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(88 293.5)rotate(-113)scale(0.68 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(57 294)rotate(-77)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(200 294)rotate(-17)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(28 294.5)rotate(-97)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(73 295)rotate(-133)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(149 295)rotate(-105)scale(1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(58 295.5)rotate(-135)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(182 295.5)rotate(-95)scale(0.65 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(280 296)rotate(-105)scale(0.42 0.43)translate(0 -7)" opacity="0.73"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(235 297.5)rotate(-1)scale(0.95 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(55 298)rotate(-100)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(3 298)rotate(-97)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(275 299.5)rotate(-101)scale(1 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(257 299.5)rotate(-154)scale(0.85 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(113 299.5)rotate(-45)scale(0.95 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(123 300)rotate(-16)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(262 300.5)rotate(-137)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(244 300.5)rotate(-110)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(184 300.5)rotate(-172)scale(0.85 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(182 301)rotate(-115)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(198 302)rotate(-67)scale(0.6 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(84 302.5)rotate(-11)scale(0.95 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(92 302.5)rotate(-147)scale(0.65 0.64)translate(0 -7)" opacity="0.74"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(177 303)rotate(-124)scale(0.93 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(79 303)rotate(-106)scale(0.88 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(244 303)rotate(-121)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(175 303.5)rotate(-140)scale(0.82 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(143 304.5)rotate(-23)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(26 305.5)rotate(-23)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(77 305.5)rotate(-51)scale(0.38 0.36)translate(0 -7)" opacity="0.75"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(195 305.5)rotate(-108)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(236 305.5)rotate(-52)scale(0.68 0.64)translate(0 -7)" opacity="0.75"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(156 305.5)rotate(-20)scale(0.78 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(108 306)rotate(-149)scale(1 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(20 307.5)rotate(-147)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(8 307.5)rotate(-126)scale(0.63 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(45 308)rotate(-40)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(191 307.5)rotate(-165)scale(0.9 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(233 308.5)rotate(-137)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(210 308)rotate(-138)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(188 308)rotate(-83)scale(0.82 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(178 308)rotate(-130)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(140 308.5)rotate(-32)scale(0.63 0.64)translate(0 -7)" opacity="0.75"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(98 309)rotate(-19)scale(0.4 0.43)translate(0 -7)" opacity="0.75"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(201 308.5)rotate(-130)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(207 308.5)rotate(-32)scale(0.55 0.5)translate(0 -7)" opacity="0.75"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(81 309)rotate(-73)scale(0.53 0.43)translate(0 -7)" opacity="0.75"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(34 309.5)rotate(-61)scale(0.5 0.5)translate(0 -7)" opacity="0.76"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(34 310)rotate(-149)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(65 310)rotate(-145)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-22 311.5)rotate(-66)scale(0.65 0.64)translate(0 -7)" opacity="0.76"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(201 311)rotate(-34)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(25 312)rotate(-132)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(224 312.5)rotate(-19)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(248 313)rotate(-57)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(173 313)rotate(-113)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(174 313.5)rotate(-44)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(113 313.5)rotate(-77)scale(0.85 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(192 314.5)rotate(-75)scale(0.9 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(115 314)rotate(-14)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(96 314.5)rotate(-45)scale(0.82 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(221 316.5)rotate(-122)scale(0.82 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(113 316.5)rotate(-126)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(175 317.5)rotate(-51)scale(0.75 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(75 318)rotate(-136)scale(0.5 0.57)translate(0 -7)" opacity="0.77"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(200 317.5)rotate(-114)scale(0.4 0.36)translate(0 -7)" opacity="0.77"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(20 318)rotate(-95)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(113 318.5)rotate(-110)scale(0.65 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(155 319)rotate(-147)scale(0.63 0.57)translate(0 -7)" opacity="0.77"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g filter="url(#b09)"><g transform="translate(72 319)rotate(-17)scale(0.72 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(86 319)rotate(-9)scale(0.7 0.71)translate(0 -7)" opacity="0.77"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(264 319.5)rotate(-22)scale(0.75 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(151 319.5)rotate(-111)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(194 319.5)rotate(-161)scale(0.95 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(262 320.5)rotate(-40)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(38 320.5)rotate(-78)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(133 321)rotate(-101)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(75 321)rotate(-117)scale(0.72 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(119 321)rotate(-14)scale(0.82 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(207 321)rotate(-153)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(232 321.5)rotate(-122)scale(0.82 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(282 321.5)rotate(-7)scale(0.4 0.36)translate(0 -7)" opacity="0.78"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(179 322)rotate(-60)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(75 323)rotate(-167)scale(0.63 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(240 324)rotate(-40)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(209 324.5)rotate(-49)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(117 324.5)rotate(-102)scale(1.05 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(216 324.5)rotate(-100)scale(1.07 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(171 325)rotate(-32)scale(0.95 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(88 324.5)rotate(-137)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(64 325)rotate(-166)scale(0.63 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(27 325)rotate(-72)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-42 325)rotate(-164)scale(0.4 0.43)translate(0 -7)" opacity="0.78"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(188 325.5)rotate(-42)scale(1.05 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(176 326)rotate(-38)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(81 326.5)rotate(-67)scale(0.75 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(156 327)rotate(-70)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(220 328)rotate(-40)scale(0.82 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(250 328)rotate(-141)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(74 328.5)rotate(-73)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(1 328.5)rotate(-21)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-1 329)rotate(-82)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(208 329.5)rotate(-115)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(83 330)rotate(-158)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(202 330.5)rotate(-152)scale(0.65 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(197 331.5)rotate(-34)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(173 332.5)rotate(-126)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(100 332.5)rotate(-172)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(194 332)rotate(-131)scale(1.05 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(66 333)rotate(-105)scale(1.05 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(31 332.5)rotate(-143)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(256 333.5)rotate(-100)scale(0.85 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(39 333.5)rotate(-107)scale(0.65 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(174 333.5)rotate(-142)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(104 333.5)rotate(-104)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(99 334)rotate(-50)scale(0.57 0.57)translate(0 -7)" opacity="0.80"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(26 335)rotate(-43)scale(0.65 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(203 336.5)rotate(-79)scale(0.75 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(113 337)rotate(-45)scale(0.82 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(138 336.5)rotate(-124)scale(0.38 0.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(121 337.5)rotate(-155)scale(0.97 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(102 337.5)rotate(-157)scale(0.47 0.5)translate(0 -7)" opacity="0.80"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(28 338)rotate(-61)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(84 338)rotate(-69)scale(0.95 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-19 338.5)rotate(-149)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(113 338)rotate(-147)scale(1.02 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-7 339)rotate(-35)scale(0.45 0.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-18 339.5)rotate(-42)scale(0.53 0.5)translate(0 -7)" opacity="0.80"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(45 339)rotate(-154)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(94 339.5)rotate(-127)scale(1.05 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(181 340)rotate(-138)scale(0.93 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(72 340)rotate(-69)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(183 340)rotate(-102)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(166 340)rotate(-122)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(73 340.5)rotate(-159)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(228 341)rotate(-30)scale(1.05 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(261 341)rotate(-118)scale(0.8 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(237 341)rotate(-125)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(99 341)rotate(-159)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(204 341)rotate(-16)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(269 342.5)rotate(-104)scale(0.53 0.5)translate(0 -7)" opacity="0.81"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(48 342)rotate(-165)scale(0.65 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(92 343)rotate(-123)scale(0.4 0.43)translate(0 -7)" opacity="0.81"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(86 342.5)rotate(-50)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(61 343)rotate(-153)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-3 343)rotate(-122)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(184 344)rotate(-24)scale(0.47 0.43)translate(0 -7)" opacity="0.81"><use href="#f" fill="#93B59B"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(61 344)rotate(-75)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(105 344)rotate(-27)scale(1.1 1.57)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(239 344.5)rotate(-69)scale(0.63 0.64)translate(0 -7)" opacity="0.81"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(208 345.5)rotate(-125)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(160 345.5)rotate(-155)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(196 345.5)rotate(-47)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(203 346)rotate(-124)scale(0.47 0.43)translate(0 -7)" opacity="0.82"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(77 346.5)rotate(-71)scale(1.02 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(36 346.5)rotate(-40)scale(1.07 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(83 346.5)rotate(-166)scale(1.07 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(21 347)rotate(-19)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-2 346.5)rotate(-125)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(11 347)rotate(-166)scale(0.9 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(147 347.5)rotate(-67)scale(0.93 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(202 347.5)rotate(-37)scale(0.65 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(121 347.5)rotate(-139)scale(0.8 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(201 347.5)rotate(-15)scale(0.78 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(192 348)rotate(-48)scale(0.7 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(217 348)rotate(-121)scale(0.9 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(74 348.5)rotate(-172)scale(0.8 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-15 348.5)rotate(-62)scale(1.05 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 349)rotate(-35)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(255 350.5)rotate(-33)scale(0.6 0.64)translate(0 -7)" opacity="0.82"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(30 351)rotate(-152)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(27 350.5)rotate(-121)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(126 351)rotate(-61)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(39 351.5)rotate(-63)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 352)rotate(-117)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-14 352)rotate(-161)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(187 351.5)rotate(-70)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(94 353)rotate(-9)scale(1.07 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 353)rotate(-23)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(31 353)rotate(-142)scale(0.45 0.43)translate(0 -7)" opacity="0.83"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(170 353.5)rotate(-107)scale(0.88 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(249 353.5)rotate(-101)scale(0.4 0.36)translate(0 -7)" opacity="0.83"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(189 354)rotate(-113)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(15 354.5)rotate(-72)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(212 354.5)rotate(-171)scale(1 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(174 355)rotate(-51)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(92 355.5)rotate(-35)scale(1.02 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(95 356)rotate(-159)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(174 356)rotate(-142)scale(1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(72 356)rotate(-107)scale(0.6 0.57)translate(0 -7)" opacity="0.83"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(95 355.5)rotate(-148)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(82 357)rotate(-42)scale(0.45 0.43)translate(0 -7)" opacity="0.83"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(166 356.5)rotate(-105)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(193 356.5)rotate(-99)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(196 357)rotate(-127)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(8 357)rotate(-106)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(101 358)rotate(-26)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(20 358.5)rotate(-127)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(85 359)rotate(-165)scale(1.1 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(187 359)rotate(-36)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(96 358.5)rotate(-97)scale(0.7 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(59 359.5)rotate(-86)scale(0.97 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(84 359.5)rotate(-126)scale(0.97 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-31 359.5)rotate(-73)scale(0.65 0.64)translate(0 -7)" opacity="0.84"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(225 360)rotate(-129)scale(0.7 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(96 360.5)rotate(-51)scale(1.07 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(110 361.5)rotate(-77)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(155 361.5)rotate(-73)scale(0.68 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(83 361.5)rotate(-73)scale(0.95 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(15 362)rotate(-97)scale(1.07 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(116 362)rotate(-75)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(159 362.5)rotate(-42)scale(0.57 0.64)translate(0 -7)" opacity="0.84"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(164 362.5)rotate(-56)scale(0.82 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(136 362.5)rotate(-49)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(154 363)rotate(-165)scale(0.95 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(116 362.5)rotate(-49)scale(0.7 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(168 363)rotate(-32)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-5 363.5)rotate(-159)scale(0.65 0.64)translate(0 -7)" opacity="0.84"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(-1 363.5)rotate(-63)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-8 364.5)rotate(-145)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-25 364)rotate(-95)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(113 364.5)rotate(-35)scale(1.07 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(120 365)rotate(-57)scale(0.95 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(31 365)rotate(-114)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(111 365.5)rotate(-66)scale(0.72 0.64)translate(0 -7)" opacity="0.85"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(76 365)rotate(-82)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-7 366)rotate(-62)scale(0.95 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(157 365.5)rotate(-164)scale(1.13 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(260 366)rotate(-44)scale(0.88 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(195 366)rotate(-53)scale(0.8 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(2 366.5)rotate(-26)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(182 367)rotate(-130)scale(0.7 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(101 367.5)rotate(-77)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(234 367.5)rotate(-148)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(45 367.5)rotate(-163)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(143 367.5)rotate(-84)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(190 368.5)rotate(-117)scale(1.07 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(291 369)rotate(-31)scale(0.72 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(78 369)rotate(-171)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 368.5)rotate(-148)scale(0.65 0.64)translate(0 -7)" opacity="0.85"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(143 369)rotate(-147)scale(0.93 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(85 369)rotate(-108)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(132 369)rotate(-162)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(231 369)rotate(-17)scale(0.72 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(34 369.5)rotate(-62)scale(0.97 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(155 370)rotate(-26)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(121 371.5)rotate(-152)scale(0.82 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(242 371)rotate(-120)scale(0.63 0.57)translate(0 -7)" opacity="0.86"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(26 372)rotate(-168)scale(1.13 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(183 372)rotate(-116)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(95 371.5)rotate(-110)scale(1.13 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(198 372.5)rotate(-168)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(90 372.5)rotate(-85)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(91 373.5)rotate(-130)scale(0.75 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(221 373.5)rotate(-42)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(164 373.5)rotate(-28)scale(0.85 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(69 374)rotate(-165)scale(0.75 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 374.5)rotate(-135)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(287 375)rotate(-34)scale(1.1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(194 375.5)rotate(-106)scale(0.82 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(108 375.5)rotate(-92)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(263 376.5)rotate(-114)scale(0.88 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(117 376)rotate(-160)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(139 376.5)rotate(-129)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(266 377)rotate(-26)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(205 377)rotate(-104)scale(1.07 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(189 377.5)rotate(-118)scale(1.13 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-4 377.5)rotate(-78)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(238 378)rotate(-58)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(52 378.5)rotate(-136)scale(0.7 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(184 378.5)rotate(-72)scale(0.9 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(95 378.5)rotate(-165)scale(1.13 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(191 379)rotate(-35)scale(0.42 0.43)translate(0 -7)" opacity="0.87"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(159 379.5)rotate(-37)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(92 380)rotate(-36)scale(1.07 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(119 379.5)rotate(-130)scale(1.05 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(7 379.5)rotate(-37)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(13 380.5)rotate(-22)scale(0.68 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-14 380.5)rotate(-163)scale(0.88 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 380)rotate(-49)scale(0.8 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(159 380.5)rotate(-19)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(168 381)rotate(-133)scale(1.13 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(164 380.5)rotate(-117)scale(0.78 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(133 381)rotate(-27)scale(0.4 0.43)translate(0 -7)" opacity="0.87"><use href="#f" fill="#2A5C41"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(187 381)rotate(-119)scale(0.72 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(164 382.5)rotate(-76)scale(0.78 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(108 382.5)rotate(-169)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(166 383)rotate(-166)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(0 383)rotate(-145)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(95 383.5)rotate(-160)scale(0.85 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(106 383.5)rotate(-105)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(158 384.5)rotate(-103)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-7 384)rotate(-115)scale(1.13 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(118 384)rotate(-127)scale(0.8 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(284 384.5)rotate(-99)scale(0.88 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-32 385.5)rotate(-173)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(151 385.5)rotate(-169)scale(0.68 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(253 385)rotate(-29)scale(0.88 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(102 385.5)rotate(-134)scale(0.75 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(137 386)rotate(-13)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#1A3D29"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(282 386.5)rotate(-105)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(224 387)rotate(-116)scale(1.07 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(141 387)rotate(-66)scale(1.15 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(205 388)rotate(-82)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(249 388)rotate(-45)scale(0.42 0.43)translate(0 -7)" opacity="0.88"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(194 388.5)rotate(-115)scale(0.9 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(226 388)rotate(-34)scale(0.7 0.71)translate(0 -7)" opacity="0.88"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(91 388.5)rotate(-84)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(38 388)rotate(-137)scale(0.93 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(173 389)rotate(-131)scale(0.95 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(148 389)rotate(-108)scale(0.9 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(109 388.5)rotate(-85)scale(0.9 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(130 389)rotate(-68)scale(0.85 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(189 389.5)rotate(-40)scale(0.78 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(178 390)rotate(-37)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(117 390.5)rotate(-155)scale(0.93 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(279 390.5)rotate(-21)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(194 391)rotate(-127)scale(1.1 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(1 391)rotate(-149)scale(1.13 1.57)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(52 391.5)rotate(-19)scale(0.53 0.5)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(186 391)rotate(-50)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(236 391.5)rotate(-13)scale(0.68 0.64)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(161 392)rotate(-131)scale(0.9 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(102 393)rotate(-57)scale(0.63 0.57)translate(0 -7)" opacity="0.89"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(260 393)rotate(-40)scale(0.93 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(248 392.5)rotate(-87)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(187 393.5)rotate(-151)scale(0.93 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(201 393)rotate(-28)scale(0.68 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(80 393)rotate(-31)scale(0.72 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(21 394)rotate(-84)scale(0.45 0.43)translate(0 -7)" opacity="0.89"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(0 394)rotate(-156)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-5 394)rotate(-77)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(154 393.5)rotate(-112)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(263 394)rotate(-117)scale(0.82 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(223 395)rotate(-148)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(64 395)rotate(-153)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(177 395)rotate(-84)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(10 395.5)rotate(-98)scale(1.15 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(218 395.5)rotate(-120)scale(0.88 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(171 396.5)rotate(-171)scale(0.7 0.79)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(130 396)rotate(-170)scale(1.15 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(77 396)rotate(-104)scale(1 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(185 396.5)rotate(-112)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(0 396)rotate(-114)scale(1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(219 396.5)rotate(-30)scale(1 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-13 397)rotate(-137)scale(0.4 0.43)translate(0 -7)" opacity="0.90"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(14 397)rotate(-42)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(65 397)rotate(-85)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(211 397)rotate(-105)scale(0.93 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(224 397.5)rotate(-67)scale(1.05 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(128 397.5)rotate(-86)scale(1.13 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(78 398)rotate(-146)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(103 398)rotate(-64)scale(1.15 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(117 398)rotate(-128)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(214 398.5)rotate(-115)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(8 398.5)rotate(-110)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(84 398.5)rotate(-107)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(118 399.5)rotate(-100)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(253 399.5)rotate(-21)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(253 399)rotate(-132)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(244 399.5)rotate(-158)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(200 399.5)rotate(-98)scale(0.78 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(83 400)rotate(-136)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(122 400)rotate(-162)scale(0.45 0.43)translate(0 -7)" opacity="0.90"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(173 400.5)rotate(-53)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(277 401)rotate(-31)scale(0.72 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(179 401.5)rotate(-20)scale(0.78 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(195 402)rotate(-60)scale(0.85 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(160 402)rotate(-63)scale(0.75 1)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(55 402.5)rotate(-65)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(175 402.5)rotate(-87)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(70 403)rotate(-139)scale(0.78 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-22 402.5)rotate(-77)scale(1.1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(81 403)rotate(-74)scale(0.95 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(213 403)rotate(-167)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(101 403)rotate(-153)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(151 403.5)rotate(-29)scale(1.13 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(261 404.5)rotate(-42)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(139 405)rotate(-150)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(89 405)rotate(-53)scale(1.02 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(4 404.5)rotate(-67)scale(1.05 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(74 405)rotate(-157)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(140 405)rotate(-6)scale(0.72 0.71)translate(0 -7)" opacity="0.91"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(245 406)rotate(-53)scale(1.1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(240 406.5)rotate(-12)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(144 406)rotate(-129)scale(1.1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(184 407)rotate(-113)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(41 407)rotate(-38)scale(1.13 1.57)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(88 407)rotate(-91)scale(1.18 1.57)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(140 406.5)rotate(-34)scale(0.85 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(193 406.5)rotate(-52)scale(0.95 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(272 407.5)rotate(-104)scale(0.93 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(189 407.5)rotate(-56)scale(0.82 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(127 407)rotate(-117)scale(0.82 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(158 407)rotate(-133)scale(0.55 0.57)translate(0 -7)" opacity="0.92"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(251 407.5)rotate(-50)scale(0.75 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(119 408)rotate(-160)scale(0.7 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(183 408)rotate(-152)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(70 408.5)rotate(-125)scale(0.65 0.64)translate(0 -7)" opacity="0.92"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(213 408)rotate(-38)scale(1.02 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(176 408.5)rotate(-105)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(-5 409)rotate(-172)scale(0.72 0.71)translate(0 -7)" opacity="0.92"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(5 409)rotate(-166)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(44 408.5)rotate(-58)scale(0.6 0.64)translate(0 -7)" opacity="0.92"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(251 409)rotate(-134)scale(0.5 0.43)translate(0 -7)" opacity="0.92"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(196 409.5)rotate(-111)scale(0.68 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(89 410)rotate(-125)scale(0.68 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(172 410)rotate(-119)scale(1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-18 410)rotate(-152)scale(1.1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(217 410)rotate(-30)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(12 410.5)rotate(-120)scale(1.05 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(75 410.5)rotate(-110)scale(0.68 0.79)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(226 410.5)rotate(-96)scale(0.5 0.5)translate(0 -7)" opacity="0.92"><use href="#f" fill="#679879"/><use href="#v" stroke="rgba(20,37,27,.16)"/></g>
+<g transform="translate(245 410.5)rotate(-97)scale(1.15 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(248 411.5)rotate(-64)scale(1.13 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(129 411.5)rotate(-114)scale(0.72 0.64)translate(0 -7)" opacity="0.92"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(236 412.5)rotate(-98)scale(1.18 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(139 413)rotate(-81)scale(0.97 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(115 412.5)rotate(-28)scale(0.75 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(191 412.5)rotate(-20)scale(0.9 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(2 412.5)rotate(-20)scale(1.18 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(111 413.5)rotate(-148)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(137 414)rotate(-168)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(95 413.5)rotate(-17)scale(1.05 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(160 414)rotate(-146)scale(1 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(84 414.5)rotate(-17)scale(0.9 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(66 415)rotate(-12)scale(0.97 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(182 415.5)rotate(-47)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(147 415)rotate(-123)scale(1.1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(57 416)rotate(-138)scale(0.95 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(166 416.5)rotate(-66)scale(0.82 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(123 416.5)rotate(-71)scale(1.15 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(111 416.5)rotate(-15)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(204 417)rotate(-27)scale(0.82 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(241 416.5)rotate(-111)scale(0.95 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(109 417.5)rotate(-56)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(256 417.5)rotate(-129)scale(0.8 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(76 417.5)rotate(-161)scale(1.18 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 417)rotate(-129)scale(0.9 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(93 417.5)rotate(-112)scale(1.1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(172 418)rotate(-139)scale(0.95 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(122 418)rotate(-14)scale(0.93 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(183 417.5)rotate(-146)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-19 418)rotate(-121)scale(0.6 0.57)translate(0 -7)" opacity="0.93"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(85 418)rotate(-64)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(121 419.5)rotate(-49)scale(0.85 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(168 419.5)rotate(-147)scale(0.75 0.93)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(149 419.5)rotate(-171)scale(1.15 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(190 420)rotate(-79)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(88 420.5)rotate(-143)scale(1.1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(112 420)rotate(-111)scale(1.15 1.57)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(229 420.5)rotate(-141)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(238 421)rotate(-19)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(134 420.5)rotate(-119)scale(0.9 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(141 421.5)rotate(-159)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(192 421)rotate(-130)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(73 421.5)rotate(-23)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(196 421.5)rotate(-142)scale(1.15 1.64)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(81 422)rotate(-162)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(184 421.5)rotate(-132)scale(0.7 0.64)translate(0 -7)" opacity="0.94"><use href="#f" fill="#1A412D"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(8 422)rotate(-153)scale(0.8 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(62 422)rotate(-90)scale(1.02 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(208 422.5)rotate(-103)scale(0.88 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(265 423)rotate(-28)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(258 422.5)rotate(-128)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(268 423)rotate(-103)scale(1.05 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(192 423.5)rotate(-143)scale(0.95 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(80 424.5)rotate(-60)scale(1.13 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(71 424.5)rotate(-48)scale(0.88 1.07)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(78 425.5)rotate(-105)scale(1.07 1.5)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(119 426)rotate(-157)scale(1.1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(147 426.5)rotate(-163)scale(1.07 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(210 426.5)rotate(-126)scale(0.85 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(40 427)rotate(-139)scale(0.88 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(247 426.5)rotate(-112)scale(1.13 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(253 427)rotate(-158)scale(0.82 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(106 427)rotate(-117)scale(1.2 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(88 427.5)rotate(-147)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(209 428)rotate(-109)scale(0.65 0.71)translate(0 -7)" opacity="0.95"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(105 428.5)rotate(-126)scale(1.18 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(27 428.5)rotate(-117)scale(0.63 0.64)translate(0 -7)" opacity="0.95"><use href="#f" fill="#437A5A"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(112 428.5)rotate(-150)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(235 428.5)rotate(-21)scale(0.88 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(168 428.5)rotate(-24)scale(1.02 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(254 429.5)rotate(-36)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(226 429.5)rotate(-14)scale(1.15 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(-6 429.5)rotate(-69)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(-5 430)rotate(-120)scale(1 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(179 430)rotate(-90)scale(1.18 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(167 430.5)rotate(-127)scale(0.97 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(215 430.5)rotate(-113)scale(1.15 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(87 431)rotate(-95)scale(0.85 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(167 431.5)rotate(-62)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(88 432)rotate(-51)scale(0.93 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(156 432.5)rotate(-91)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#13301F"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(198 432)rotate(-100)scale(1.07 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(132 433)rotate(-169)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(107 433)rotate(-157)scale(0.42 0.43)translate(0 -7)" opacity="0.96"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g filter="url(#b09)"><g transform="translate(203 433.5)rotate(-25)scale(1.05 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(229 434)rotate(-107)scale(1 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(87 434)rotate(-79)scale(0.93 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0E2518"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(87 434)rotate(-146)scale(1.07 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(263 434.5)rotate(-33)scale(0.97 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(178 435)rotate(-110)scale(1.2 1.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(10 435)rotate(-32)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(113 435.5)rotate(-113)scale(1.05 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(86 436)rotate(-36)scale(1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(90 436)rotate(-58)scale(1.15 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 436.5)rotate(-61)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(126 437)rotate(-93)scale(1.07 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(121 437.5)rotate(-111)scale(0.55 0.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(200 438.5)rotate(-151)scale(1.15 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(114 438.5)rotate(-73)scale(1 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(258 439)rotate(-116)scale(1.1 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(106 438.5)rotate(-22)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(124 439.5)rotate(-138)scale(1 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(46 439.5)rotate(-153)scale(0.55 0.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(139 440)rotate(-31)scale(1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(255 439.5)rotate(-31)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(97 439.5)rotate(-78)scale(1.1 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(209 440.5)rotate(-34)scale(1.18 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(68 440)rotate(-111)scale(1.2 1.57)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(168 440)rotate(-62)scale(1.13 1.57)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(70 440)rotate(-12)scale(1.1 1.43)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(61 440.5)rotate(-47)scale(1.13 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(47 441)rotate(-151)scale(0.68 0.71)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0F291C"/><use href="#v" stroke="rgba(255,255,255,.2)"/></g>
+<g transform="translate(148 441.5)rotate(-79)scale(1.15 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(51 442)rotate(-15)scale(0.8 1.14)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(234 441.5)rotate(-66)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(39 442)rotate(-40)scale(0.7 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(162 442.5)rotate(-108)scale(0.88 1.21)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(86 442)rotate(-156)scale(0.8 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(106 442)rotate(-50)scale(0.78 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(1 443)rotate(-166)scale(1.15 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(228 444)rotate(-111)scale(1.05 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(72 444)rotate(-136)scale(0.78 0.86)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(99 444)rotate(-34)scale(0.75 1)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(173 445.5)rotate(-164)scale(1.07 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(221 445.5)rotate(-9)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(165 447)rotate(-171)scale(0.72 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(97 446.5)rotate(-162)scale(1.07 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(216 447)rotate(-108)scale(1.18 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(97 447.5)rotate(-167)scale(1.13 1.5)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(251 448.5)rotate(-125)scale(0.7 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(8 449.5)rotate(-133)scale(0.75 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(257 450.5)rotate(-98)scale(1.07 1.5)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g filter="url(#b09)"><g transform="translate(196 451)rotate(-105)scale(1.13 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(136 451)rotate(-163)scale(1.13 1.57)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(87 452)rotate(-130)scale(1.13 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(103 453.5)rotate(-167)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(80 454.5)rotate(-119)scale(0.78 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(135 455)rotate(-121)scale(1.02 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(245 455.5)rotate(-143)scale(1.05 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(63 456.5)rotate(-138)scale(0.95 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(95 456.5)rotate(-143)scale(0.8 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(42 457)rotate(-98)scale(1.05 1.29)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(100 456.5)rotate(-111)scale(1.02 1.36)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(108 457.5)rotate(-149)scale(1.02 1.21)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(238 458)rotate(-157)scale(0.97 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(119 458)rotate(-150)scale(0.9 1.14)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(212 458.5)rotate(-107)scale(0.72 0.93)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(93 458)rotate(-119)scale(0.75 0.86)translate(0 -7)" opacity="0.97"><use href="#f" fill="#0A1C12"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(60 458.5)rotate(-94)scale(1.1 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(38 459)rotate(-131)scale(1.07 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(155 459)rotate(-144)scale(1.05 1.29)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g filter="url(#b09)"><g transform="translate(170 459.5)rotate(-124)scale(1.18 1.36)translate(0 -7)" opacity="0.80"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g></g>
+<g transform="translate(206 459.5)rotate(-123)scale(0.78 1.07)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+<g transform="translate(251 460)rotate(-126)scale(1.1 1.43)translate(0 -7)" opacity="0.97"><use href="#f" fill="#06130C"/><use href="#v" stroke="rgba(255,255,255,.1)"/></g>
+</svg>

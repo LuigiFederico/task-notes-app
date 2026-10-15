@@ -15,7 +15,7 @@ import * as tagHandlers from './handlers/tag.js';
 import * as settingsHandlers from './handlers/settings.js';
 import * as layoutHandlers from './handlers/layout.js';
 
-const { flush, closePanel, setTagHint, hideMentions } = taskHandlers;
+const { flush, closePanel, setTagHint, hideMentions, closeMenu } = taskHandlers;
 const HANDLERS = [common, taskHandlers, noteHandlers, graphHandlers, projectHandlers, tagHandlers, settingsHandlers, layoutHandlers];
 
 // Unisce le tabelle di un tipo di evento; lo stesso nome in due file sarebbe un errore.
@@ -74,8 +74,9 @@ root.addEventListener('mouseover', (e) => {
   const i = Number(el.dataset.index);
   if (S.ui.hoverWeek !== i) { S.ui.hoverWeek = i; render(); }
 });
-// Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
 root.addEventListener('pointerdown', layoutHandlers.startPanelResize);
+root.addEventListener('pointerdown', taskHandlers.startSubDrag);
+// Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
 root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
   // I suggerimenti di @ si chiudono uscendo dal campo.
@@ -93,8 +94,10 @@ root.addEventListener('focusout', () => {
   }, 50);
 });
 
+// Anche il trascinamento di un sotto-task conta: un ridisegno lo interromperebbe.
 function isTyping() {
   const a = document.activeElement;
+  if (document.body.classList.contains('dragging')) return true;
   return a && (a.tagName === 'TEXTAREA' || (a.tagName === 'INPUT' && a.type !== 'checkbox' && a.id !== 'search'));
 }
 
@@ -109,7 +112,8 @@ document.addEventListener('keydown', (e) => {
       document.getElementById('search')?.focus();
     });
   } else if (e.key === 'Escape') {
-    if (S.ui.confirm || S.ui.editing) { stopEditing(); render(); }
+    if (S.ui.menu) closeMenu();
+    else if (S.ui.confirm || S.ui.editing) { stopEditing(); render(); }
     else if (S.ui.openTask || S.ui.openNote) run(async () => { await flush(); document.activeElement?.blur(); closePanel(); });
   }
 });

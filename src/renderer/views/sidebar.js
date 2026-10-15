@@ -1,6 +1,7 @@
 import { S, activeProjects, openCount, openTasks } from '../state.js';
-import { esc, safeColor } from '../lib/util.js';
+import { esc } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
+import { projectMark } from './components.js';
 
 function shortPath(p) {
   if (!p) return '';
@@ -23,7 +24,7 @@ export function sidebar() {
   const projects = activeProjects().map((p) => {
     const active = v === 'project' && S.view.code === p.codice;
     return `<button class="side-project${active ? ' active' : ''}" data-action="go" data-view="project" data-code="${esc(p.codice)}"${tip(p.nome)}>
-      <span class="dot" style="background:${safeColor(p.colore)}"></span><span class="grow ellipsis">${esc(p.nome)}</span><span class="count">${openCount(p.codice)}</span>
+      ${projectMark(p.colore, 14)}<span class="grow ellipsis">${esc(p.nome)}</span><span class="count">${openCount(p.codice)}</span>
     </button>`;
   }).join('');
   return `

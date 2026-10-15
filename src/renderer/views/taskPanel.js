@@ -2,32 +2,31 @@ import { S, cat, project, extraCats, isClosed, prioOf } from '../state.js';
 import { currentTask, missingProject } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox, options, select, categoryField, links, description, saveState } from './components.js';
+import { confirmBox, options, select, categoryField, links, description, saveState, projectMark, prioBars } from './components.js';
 
-function radioGroup(label, catId, current) {
-  const c = cat(catId);
-  const opts = (c ? c.tags : []).map((t) => {
+// Stato e Priorità: una tendina che mostra il valore scelto col suo colore, con un pallino per lo stato e le barre per la priorità.
+// L'elenco è nostro e non una <select>, così anche da aperto mostra pallini e barre; S.ui.menu dice quale è aperto.
+function dropdown(catId, current) {
+  const tags = cat(catId)?.tags || [];
+  const mark = (t) => (catId === 'priorita' ? prioBars(t.id) : `<span class="dot round" style="background:${safeColor(t.colore)}"></span>`);
+  const cur = tags.find((t) => t.id === current);
+  const open = S.ui.menu === catId;
+  const opts = tags.map((t, k) => {
     const on = t.id === current;
     const col = safeColor(t.colore);
-    const style = on ? `border-color:${col};color:${col};background:${tint(col, '14')};font-weight:600` : '';
-    return `<button role="radio" aria-checked="${on}" class="radio-pill" style="${style}" data-action="task-set" data-field="${catId}" data-value="${esc(t.id)}">${esc(t.nome)}</button>`;
-  });
-  return `<div role="radiogroup" aria-label="${esc(label)}" class="row-6 wrap">${opts.join('')}</div>`;
-}
-
-// Priorità: uno slider nell'ordine dei livelli (il primo a sinistra), con i nomi sotto; anche un clic sul nome la sceglie.
-function prioSlider(t) {
-  const tags = cat('priorita')?.tags || [];
-  const i = tags.findIndex((x) => x.id === prioOf(t));
-  const col = safeColor(tags[i].colore);
-  const names = tags.map((x, k) => `<button class="prio-tick${k === i ? ' on' : ''}" style="${k === i ? `color:${col}` : ''}" data-action="task-set" data-field="priorita" data-value="${esc(x.id)}" tabindex="-1">${esc(x.nome)}</button>`).join('');
-  return `<div class="prio-slider" style="--n:${tags.length};--c:${col}">
-    <input id="task-prio" type="range" min="0" max="${tags.length - 1}" step="1" value="${i}" data-change="task-prio" aria-label="Priorità" aria-valuetext="${esc(tags[i].nome)}">
-    <div class="prio-ticks">${names}</div>
+    return `<button id="task-${catId}-opt-${k}" class="dd-opt" role="option" aria-selected="${on}" tabindex="-1" style="${on ? `background:${tint(col, '14')}` : ''}" data-action="menu-pick" data-keydown="menu-key" data-cat="${catId}" data-value="${esc(t.id)}">
+      ${mark(t)}<span class="grow" style="${on ? `color:${col};font-weight:600` : ''}">${esc(t.nome)}</span>${on ? `<span class="dd-check" style="color:${col}">${icon.check(14)}</span>` : ''}</button>`;
+  }).join('');
+  return `<div class="dd-wrap">
+    <button id="task-${catId}" class="dd" aria-haspopup="listbox" aria-expanded="${open}" aria-labelledby="lbl-${catId} task-${catId}" title="↑ ↓ per cambiare senza aprire" data-action="menu-toggle" data-keydown="menu-key" data-cat="${catId}">
+      ${cur ? `${mark(cur)}<span style="color:${safeColor(cur.colore)}">${esc(cur.nome)}</span>` : '<span class="muted">—</span>'}${icon.chevron(12)}
+    </button>
+    ${open ? `<div class="menu-backdrop" data-action="menu-close"></div><div class="dd-list" role="listbox" aria-labelledby="lbl-${catId}">${opts}</div>` : ''}
   </div>`;
 }
 
-// Checklist del task: spunta, testo modificabile con un clic, frecce per l'ordine, x per togliere.
+// Checklist del task: maniglia per riordinare (trascinando o con Alt+↑ ↓), spunta, testo modificabile con un clic, x per togliere.
+// La maniglia c'è da due voci in su, ed è spenta mentre una voce è in modifica.
 function subtasks(t) {
   const list = t.sottotask || [];
   const done = list.filter((x) => x.fatto).length;
@@ -35,12 +34,13 @@ function subtasks(t) {
     const text = S.ui.subEdit === i
       ? `<input id="sub-edit" class="sub-input grow" value="${esc(x.testo)}" data-change="sub-edit" data-keydown="sub-edit-key" data-index="${i}" aria-label="Testo del sotto-task">`
       : `<button class="sub-text grow${x.fatto ? ' done' : ''}" data-action="sub-edit-start" data-index="${i}" title="Modifica">${esc(x.testo)}</button>`;
+    const grip = list.length > 1
+      ? `<button id="sub-grip-${i}" class="sub-grip" data-index="${i}" data-keydown="sub-grip-key" aria-label="Riordina ${esc(x.testo)} (Alt+↑ ↓)" title="Trascina per riordinare"${S.ui.subEdit != null ? ' disabled' : ''}>${icon.grip(14)}</button>`
+      : '';
     return `<div class="sub-item">
-      <button class="check sm${x.fatto ? ' done' : ''}" data-action="sub-toggle" data-index="${i}" aria-label="${x.fatto ? 'Riapri' : 'Completa'} ${esc(x.testo)}">${x.fatto ? icon.check(10) : ''}</button>
+      ${grip}<button class="check sm${x.fatto ? ' done' : ''}" data-action="sub-toggle" data-index="${i}" aria-label="${x.fatto ? 'Riapri' : 'Completa'} ${esc(x.testo)}">${x.fatto ? icon.check(10) : ''}</button>
       ${text}
       <span class="row-2 sub-tools">
-        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>${icon.up(14)}</button>
-        <button class="icon-btn sm" data-action="sub-move" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === list.length - 1 ? 'disabled' : ''}>${icon.down(14)}</button>
         <button class="icon-btn sm" data-action="sub-delete" data-index="${i}" aria-label="Elimina ${esc(x.testo)}">${icon.close(12)}</button>
       </span></div>`;
   }).join('');
@@ -70,12 +70,12 @@ export function taskPanel() {
   return `
   <section class="panel" aria-label="Dettaglio task">
     <div class="panel-resize" aria-hidden="true"></div>
+    <button class="panel-close" data-action="close-task" aria-label="Chiudi dettaglio" title="Chiudi (Esc)">${icon.chevronRight(15)}</button>
     <div class="panel-head">
       <span class="mono muted">${isNew ? 'Nuovo task' : esc(t.id)}</span>
-      ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}"><span class="dot sq" style="background:${safeColor(p.colore)}"></span>${esc(p.nome)}</button>` : ''}
+      ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}">${projectMark(p.colore)}${esc(p.nome)}</button>` : ''}
       <span class="grow"></span>
       ${isNew || confirmDel ? '' : `<button class="icon-btn" data-action="ask-confirm" data-key="task:${esc(t.id)}" aria-label="Elimina task" title="Elimina">${icon.trash(17)}</button>`}
-      <button class="icon-btn" data-action="close-task" aria-label="Chiudi dettaglio" title="Chiudi (Esc)">${icon.close(18)}</button>
     </div>
     ${confirmDel ? `<div class="panel-confirm">${confirmBox(`Eliminare ${t.id}? Potrai ripristinarlo dal Cestino.`, `data-action="task-delete" data-id="${esc(t.id)}"`)}</div>` : ''}
     <div class="panel-body">
@@ -92,8 +92,8 @@ export function taskPanel() {
         ${isNew
           ? `<div class="stack-4 project-field${noProject ? ' invalid' : ''}">${projectSelect}<span id="task-project-err" class="field-error small"${noProject ? '' : ' hidden'}>Scegli un progetto per creare il task</span></div>`
           : projectSelect}
-        <span class="prop-label">Stato</span>${radioGroup('Stato', 'stato', t.stato)}
-        ${cat('priorita')?.tags.length ? `<span class="prop-label">Priorità</span>${prioSlider(t)}` : ''}
+        <span class="prop-label" id="lbl-stato">Stato</span>${dropdown('stato', t.stato)}
+        ${cat('priorita')?.tags.length ? `<span class="prop-label" id="lbl-priorita">Priorità</span>${dropdown('priorita', prioOf(t))}` : ''}
         <span class="prop-label">Scadenza</span>
         <div class="row-8">
           <label class="date-wrap">${icon.calendar(15)}<span class="sr">Scadenza</span><input type="date" value="${esc(t.scadenza || '')}" data-change="task-field" data-field="scadenza"></label>
