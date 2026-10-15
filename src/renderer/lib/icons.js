@@ -17,6 +17,8 @@ export const icon = {
   check: (s) => svg('check', '<path pathLength="1" d="m4 12 5 5L20 6"/>', s, 3),
   close: (s) => svg('close', '<path class="p1" d="M6 18 18 6"/><path class="p2" d="m6 6 12 12"/>', s),
   chevron: (s) => svg('chevron', '<path class="p1" d="m6 9 6 6 6-6"/>', s, 2),
+  chevronRight: (s) => svg('chevron-right', '<path class="p1" d="m9 18 6-6-6-6"/>', s, 2),
+  grip: (s) => svg('grip', '<circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/>', s),
   calendar: (s) => draw('calendar', '<path d="M8 2v3"/><path d="M16 2v3"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/>', s),
   file: (s) => draw('file', '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>', s),
   edit: (s) => draw('edit', '<path d="M13 21h8"/><path d="m15 5 4 4"/><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>', s),

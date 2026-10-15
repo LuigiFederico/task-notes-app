@@ -7,3 +7,4 @@ Thumbs.db
 # cartelle dati di prova: i tuoi dati veri vivono in OneDrive, non nel repository
 Taccuino/
 test-data/
+local/

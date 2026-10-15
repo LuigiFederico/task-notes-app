@@ -338,3 +338,17 @@ test('renderer: ogni icona è un svg con la sua classe, e i tratti disegnati con
   }
   assert.ok(Object.keys(dashed).every((k) => icon[k]), 'icone in dashed');
 });
+
+test('renderer: moveItem e dropIndex riordinano i sotto-task trascinati', async () => {
+  const { moveItem, dropIndex } = await load('lib/util.js');
+  assert.deepStrictEqual(moveItem(['a', 'b', 'c', 'd'], 3, 1), ['a', 'd', 'b', 'c']);
+  assert.deepStrictEqual(moveItem(['a', 'b', 'c', 'd'], 0, 3), ['b', 'c', 'd', 'a']);
+  assert.deepStrictEqual(moveItem(['a', 'b', 'c'], 1, 1), ['a', 'b', 'c']);
+  // Centri delle voci a 10, 30, 50, 70; la terza (indice 2) viene trascinata.
+  const mids = [10, 30, 50, 70];
+  assert.strictEqual(dropIndex(mids, 50, 2), 2, 'ferma');
+  assert.strictEqual(dropIndex(mids, 25, 2), 1, 'un posto su');
+  assert.strictEqual(dropIndex(mids, -5, 2), 0, 'in cima');
+  assert.strictEqual(dropIndex(mids, 75, 2), 3, 'in fondo');
+  assert.strictEqual(dropIndex(mids, 65, 2), 2, 'non ha ancora superato il centro della quarta');
+});

@@ -9,23 +9,34 @@ export function statusPill(stateId) {
   return `<span class="pill" style="color:${c};background:${tint(c, '1A')}">${esc(t ? t.nome : stateId || '—')}</span>`;
 }
 
-export function prioIndicator(prioId) {
+// Barre della priorità: da 3 a 5 secondo quanti livelli ci sono; il primo livello le accende tutte, l'ultimo una sola.
+export function prioBars(prioId) {
   const tags = cat('priorita')?.tags || [];
   const i = tags.findIndex((t) => t.id === prioId);
-  if (i === -1) return '<span class="prio muted small">—</span>';
-  const t = tags[i];
-  const c = safeColor(t.colore);
-  // Da 3 a 5 barre secondo quanti livelli ci sono; il primo livello le accende tutte, l'ultimo una sola.
+  if (i === -1) return '';
+  const c = safeColor(tags[i].colore);
   const n = Math.min(5, Math.max(3, tags.length));
   const lvl = n - Math.round((i / Math.max(1, tags.length - 1)) * (n - 1));
   const bars = Array.from({ length: n }, (_, k) => k + 1).map((b) => `<span style="height:${3 + b * 3}px;background:${b <= lvl ? c : 'var(--line-strong)'}"></span>`).join('');
-  return `<span class="prio"><span class="bars" aria-hidden="true">${bars}</span><span style="color:${c}">${esc(t.nome)}</span></span>`;
+  return `<span class="bars" aria-hidden="true">${bars}</span>`;
+}
+
+export function prioIndicator(prioId) {
+  const t = (cat('priorita')?.tags || []).find((x) => x.id === prioId);
+  if (!t) return '<span class="prio muted small">—</span>';
+  return `<span class="prio">${prioBars(prioId)}<span style="color:${safeColor(t.colore)}">${esc(t.nome)}</span></span>`;
+}
+
+// Segno di un progetto: una fogliolina del suo colore, con la nervatura chiara.
+export function projectMark(colore, size = 13) {
+  const c = safeColor(colore);
+  return `<svg class="leaf" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20 C 4 11 9 4 21 3 C 20 15 13 20 4 20 Z" style="fill:${c}"/><path d="M2.5 21.5 L 13.5 10.5" style="stroke:${c}" stroke-width="1.6" stroke-linecap="round" fill="none"/><path class="leaf-vein" d="M7 17 L 15 9" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>`;
 }
 
 export function projectLabel(code) {
   const p = project(code);
   return `<button class="proj-link" data-action="go" data-view="project" data-code="${esc(code)}">
-    <span class="dot sq" style="background:${safeColor(p ? p.colore : '#6B675E')}"></span><span class="ellipsis">${esc(p ? p.nome : code || 'Senza progetto')}</span></button>`;
+    ${projectMark(p ? p.colore : '#6B675E')}<span class="ellipsis">${esc(p ? p.nome : code || 'Senza progetto')}</span></button>`;
 }
 
 export function checkbox(t) {

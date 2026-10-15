@@ -114,3 +114,14 @@ export function textLink(template, value) {
 }
 
 export function plural(n, one, many) { return `${n} ${n === 1 ? one : many}`; }
+
+// Sposta la voce in posizione from alla posizione to, nella lista stessa.
+export function moveItem(list, from, to) {
+  list.splice(to, 0, list.splice(from, 1)[0]);
+  return list;
+}
+
+// Posizione in cui cade la voce trascinata: quante delle altre voci hanno il centro sopra y.
+export function dropIndex(mids, y, from) {
+  return mids.filter((m, k) => k !== from && m < y).length;
+}

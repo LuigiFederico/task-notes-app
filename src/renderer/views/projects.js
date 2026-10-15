@@ -2,7 +2,7 @@ import { S, projectTasks, openTasks } from '../state.js';
 import { WEEKS, weekStarts, weeklyDone, isHot } from '../selectors.js';
 import { esc, safeColor, tint, todayISO, fmtShort, daysBetween, monthName } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { segmented, kpiTile } from './components.js';
+import { segmented, kpiTile, projectMark } from './components.js';
 
 export function projectsView() {
   const t0 = todayISO();
@@ -98,7 +98,7 @@ export function projectsView() {
         <section class="card pad chart" aria-label="Task completati per settimana">
           <div class="row-between start">
             <div class="stack-4"><h2 class="h2">Task completati per settimana</h2><span class="small">${esc(readout)}</span></div>
-            <div class="legend">${perProject.map((x) => `<span><span class="dot sq" style="background:${safeColor(x.p.colore)}"></span>${esc(x.p.codice)}</span>`).join('')}</div>
+            <div class="legend">${perProject.map((x) => `<span>${projectMark(x.p.colore)}${esc(x.p.codice)}</span>`).join('')}</div>
           </div>
           <div class="chart-body">
             <div class="y-axis" style="height:${H}px">${ticks.map((v) => `<span>${v}</span>`).join('')}</div>

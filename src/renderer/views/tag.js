@@ -2,7 +2,7 @@ import { S, cat, project, isClosed, sortTasks, openTasks, TAG_COLORS } from '../
 import { esc, safeColor, tint, md, fmtFull } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { tagUsage } from '../selectors.js';
-import { taskRow, taskHeader, emptyState, confirmBox, colorPicker, options } from './components.js';
+import { taskRow, taskHeader, emptyState, confirmBox, colorPicker, options, projectMark } from './components.js';
 
 export function tagView(catId, tagId) {
   const c = cat(catId);
@@ -57,7 +57,7 @@ export function tagView(catId, tagId) {
           ${catId === 'collegamento' ? `<label class="field"><span>Nome inverso</span><input value="${esc(t.inverso || '')}" placeholder="${esc(t.nome)}" data-change="tag-inverse" ${attrs}></label>` : ''}
           <div class="field"><span>Colore</span>${colorPicker(TAG_COLORS, t.colore, 'tag-page-color', { small: true, attrs })}</div>
           <div class="kv small"><span class="muted">Categoria</span><span>${esc(c.nome)}</span><span class="muted">Creato</span><span>${esc(fmtFull(t.creato))}</span><span class="muted">File</span><span class="mono">tags/${esc(catId)}/${esc(tagId)}.md</span></div>
-          ${Object.keys(byProject).length ? `<div class="hr"></div><div class="stack-10"><span class="muted small">Per progetto</span>${Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([code, n]) => { const p = project(code); return `<button class="row-8 link" data-action="go" data-view="project" data-code="${esc(code)}"><span class="dot sq" style="background:${safeColor(p ? p.colore : '')}"></span><span class="grow">${esc(p ? p.nome : code)}</span><span class="muted">${n}</span></button>`; }).join('')}</div>` : ''}
+          ${Object.keys(byProject).length ? `<div class="hr"></div><div class="stack-10"><span class="muted small">Per progetto</span>${Object.entries(byProject).sort((a, b) => b[1] - a[1]).map(([code, n]) => { const p = project(code); return `<button class="row-8 link" data-action="go" data-view="project" data-code="${esc(code)}">${projectMark(p ? p.colore : '')}<span class="grow">${esc(p ? p.nome : code)}</span><span class="muted">${n}</span></button>`; }).join('')}</div>` : ''}
           ${del}
         </aside>
       </div>
