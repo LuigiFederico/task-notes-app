@@ -81,9 +81,11 @@ MD.use({
       return /^https?:\/\//i.test(href) ? `<a href="${esc(href)}" target="_blank" rel="noreferrer">${esc(text || href)}</a>` : esc(text);
     },
     heading({ tokens }) { return `<h4>${this.parser.parseInline(tokens)}</h4>`; },
+    // Il testo si escapa sempre: marked lo segna "escaped" dopo un <code> o un <pre> scritto a mano, che qui resta testo,
+    // e i caratteri preceduti da \ (es. \<) arrivano senza escaping.
     text(token) {
       if (token.tokens) return this.parser.parseInline(token.tokens);
-      return mentions(token.escaped ? token.text : esc(token.text));
+      return mentions(esc(token.text));
     },
     // La casella n del testo: con ctx.check è cliccabile (data-change) e il clic la riscrive con toggleCheck.
     checkbox({ checked }) {
@@ -125,7 +127,7 @@ export function toggleCheck(src, n) {
     pos += block.raw.length;
     MD.walkTokens([block], (t) => {
       if (out != null || t.type !== 'list_item' || !t.task) return;
-      const line = t.raw.split('\n')[0];
+      const line = t.raw.split('\n')[0].trimStart();   // marked converte in spazi i tab del rientro
       const at = text.indexOf(line, cur);
       const box = at === -1 ? -1 : at + line.search(/\[[ xX]\]/);
       if (box >= at && at !== -1) cur = box + 3;

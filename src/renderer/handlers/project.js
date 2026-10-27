@@ -1,7 +1,7 @@
 // Progetti: creazione, modifica, eliminazione e decisioni.
 import { S, project, activeProjects } from '../state.js';
 import { moveItem, toggleCheck } from '../lib/util.js';
-import { api, render, reload, run, toast, stopEditing, dragList } from '../core.js';
+import { api, render, reload, run, toast, stopEditing, dragList, serial } from '../core.js';
 import { pickSwatch, pickCustomColor } from './common.js';
 
 export const actions = {
@@ -33,18 +33,18 @@ export const actions = {
 
 export const changes = {
   // Caselle delle checklist nella descrizione del progetto e nel testo di una decisione: [ ] ↔ [x], poi si salva.
-  'md-check-project': (el) => run(async () => {
+  'md-check-project': (el) => run(() => serial(async () => {
     const p = project(S.view.code);
     await api.saveProject({ ...p, descrizione: toggleCheck(p.descrizione, Number(el.dataset.index)) });
     await reload();
-  }),
-  'md-check-decision': (el) => run(async () => {
+  })),
+  'md-check-decision': (el) => run(() => serial(async () => {
     const p = project(S.view.code);
     const i = Number(el.closest('.md').dataset.index);
     const decisioni = p.decisioni.map((d, k) => (k === i ? { ...d, testo: toggleCheck(d.testo, Number(el.dataset.index)) } : d));
     await api.saveProject({ ...p, decisioni });
     await reload();
-  }),
+  })),
   'draft-color-custom': (el) => { S.ui.projectDraft.colore = pickCustomColor(el); },
   'project-color-custom': (el) => { S.ui.projectColor = pickCustomColor(el); }
 };

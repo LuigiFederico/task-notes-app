@@ -5,7 +5,7 @@ import { currentTask, currentNote, currentItem, missingProject, overdueCount, re
 import { todayISO, moveItem, toggleCheck } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
-import { api, root, render, reload, run, toast, playOnce, dragList } from '../core.js';
+import { api, root, render, reload, run, toast, playOnce, dragList, serial } from '../core.js';
 
 // Un task nuovo nasce nel progetto solo dalla sua pagina; altrove il progetto si sceglie a mano.
 function defaultProject() {
@@ -433,7 +433,7 @@ export const actions = {
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
   // Casella di una checklist nella descrizione del task o nel testo dell'appunto: si riscrive [ ] ↔ [x] e si salva.
-  'md-check-item': (el) => run(() => updateItem({ descrizione: toggleCheck(currentItem().descrizione, Number(el.dataset.index)) })),
+  'md-check-item': (el) => run(() => serial(() => updateItem({ descrizione: toggleCheck(currentItem().descrizione, Number(el.dataset.index)) }))),
   'link-type': (el) => { S.ui.linkType = el.value; },
   // Un testo vuoto elimina la voce.
   'sub-edit': (el) => run(() => {

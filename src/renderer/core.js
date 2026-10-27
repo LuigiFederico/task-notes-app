@@ -54,6 +54,8 @@ const SCROLLERS = '.scroll, .panel-body, .scroll-box';
 // Elementi con un'animazione d'ingresso: la fanno solo nel render in cui compaiono.
 const ENTERING = ['.panel', '.toast'];
 
+let shownView = '';   // la pagina dell'ultimo render, per accorgersi di quando cambia
+
 // Ridisegna tutto, poi rimette focus, selezione del testo e posizioni di scorrimento.
 export function render() {
   const present = ENTERING.filter((s) => root.querySelector(s));
@@ -66,8 +68,11 @@ export function render() {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
-    // Un pannello chiuso da qualsiasi parte (Esc, eliminazione, task sparito al reload) si riapre sempre di lato.
-    if (!panel) S.ui.panelFull = false;
+    // Il pannello a tutta area torna di lato quando si chiude, da qualsiasi parte (Esc, eliminazione, task sparito
+    // al reload), e quando cambia la pagina sotto (Ctrl+K, Nuovo progetto…), che altrimenti resterebbe nascosta.
+    const viewKey = JSON.stringify(S.view);
+    if (!panel || viewKey !== shownView) S.ui.panelFull = false;
+    shownView = viewKey;
     root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${panel && S.ui.panelFull ? ' panel-full' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
@@ -218,6 +223,15 @@ export function gripMove(el, e, length) {
   e.preventDefault();
   const j = Number(el.dataset.index) + (e.key === 'ArrowUp' ? -1 : 1);
   return j < 0 || j >= length ? null : j;
+}
+
+// Esegue fn dopo quelle già in coda: un secondo clic su una casella di una checklist legge il testo già salvato
+// e ricaricato dal primo, invece di riscrivere quello vecchio.
+let queue = Promise.resolve();
+export function serial(fn) {
+  const p = queue.then(fn);
+  queue = p.catch(() => {});
+  return p;
 }
 
 // ---------------------------------------------------------------- avvisi

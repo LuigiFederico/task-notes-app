@@ -236,6 +236,9 @@ test('renderer: md fa l\'escaping e rende il Markdown GFM', async () => {
   assert.strictEqual(flat('# Titolo'), '<h4>Titolo</h4>');
   assert.match(flat('| a | b |\n|---|---|\n| 1 | 2 |'), /^<table><thead><tr><th>a<\/th><th>b<\/th><\/tr><\/thead><tbody><tr><td>1<\/td><td>2<\/td><\/tr><\/tbody><\/table>$/);
   assert.strictEqual(flat('> citato\n\n```\n<b>codice</b>\n```'), '<blockquote><p>citato</p></blockquote><pre><code>&lt;b&gt;codice&lt;/b&gt;</code></pre>');
+  // Dopo un <code> scritto a mano marked segna il testo come già escapato: resta comunque testo.
+  assert.strictEqual(flat('a <code> b <img src=x onerror=alert(1)'), '<p>a &lt;code&gt; b &lt;img src=x onerror=alert(1)</p>');
+  assert.strictEqual(flat('\\* non è corsivo \\& \\<b>'), '<p>* non è corsivo &amp; &lt;b&gt;</p>');
 });
 
 test('renderer: le checklist del Markdown, cliccabili solo con check, e toggleCheck', async () => {
@@ -258,6 +261,7 @@ test('renderer: le checklist del Markdown, cliccabili solo con check, e toggleCh
   assert.strictEqual(toggleCheck(src, 4), src.replace('- [ ] dopo', '- [x] dopo'), 'il codice non conta e non cambia');
   assert.strictEqual(toggleCheck(src, 5), src, 'casella inesistente: testo invariato');
   assert.strictEqual(toggleCheck('- [ ] a\r\n- [ ] b', 1), '- [ ] a\n- [x] b');
+  assert.strictEqual(toggleCheck('- x\n\t- [ ] a\n\t- [ ] b', 1), '- x\n\t- [ ] a\n\t- [x] b', 'rientro con i tab');
 });
 
 test('renderer: link dei valori di una categoria a testo', async () => {

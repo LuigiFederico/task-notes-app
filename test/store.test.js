@@ -215,6 +215,30 @@ test('progetto: riordino dalla pagina Priorità progetti, gli altri in coda e so
   assert.ok(fs.readFileSync(file, 'utf8').includes('Scritta da un altro PC.'), 'riscritto dal disco, non da una copia vecchia');
 });
 
+test('tag e categorie: riordino dalla pagina Tag, solo "ordine" riscritto dal disco', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveTag('etichette', { nome: 'Uno', ordine: 1 });
+  await s.saveTag('etichette', { nome: 'Due', ordine: 2 });
+  await s.saveTag('etichette', { nome: 'Tre', ordine: 3, descrizione: 'Vecchia.' });
+  fs.mkdirSync(path.join(s.dir, 'tags', 'contesto'));   // categoria senza _categoria.md
+  // Una descrizione arrivata da fuori (OneDrive) dopo l'ultimo caricamento dell'app.
+  const file = path.join(s.dir, 'tags', 'etichette', 'tre.md');
+  fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Vecchia.', 'Scritta da un altro PC.'));
+  await s.reorderTags('etichette', ['tre', 'uno', 'nessuno']);
+  let cats = await s.loadCategories();
+  const tags = cats.find((c) => c.id === 'etichette').tags;
+  assert.deepStrictEqual(tags.map((t) => `${t.id}:${t.ordine}`), ['tre:1', 'uno:2', 'due:3']);
+  assert.strictEqual(tags[0].descrizione, 'Scritta da un altro PC.');
+  await assert.rejects(() => s.reorderTags('boh', []));
+
+  await s.reorderCategories(['contesto', 'stato']);
+  cats = await s.loadCategories();
+  assert.deepStrictEqual(cats.map((c) => c.id), ['contesto', 'stato', 'priorita', 'etichette', 'collegamento']);
+  assert.ok(fs.existsSync(path.join(s.dir, 'tags', 'contesto', '_categoria.md')));
+  assert.strictEqual(cats.find((c) => c.id === 'priorita').tags.length, 5, 'i tag non si toccano');
+});
+
 test('tag: creazione, unione ed eliminazione aggiornano i task', async () => {
   const s = new Store(tmpDir());
   await s.init();

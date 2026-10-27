@@ -310,6 +310,21 @@ class Store {
     return id;
   }
 
+  // Pagina Tag: come reorderProjects, gli ID dati vanno prima, nell'ordine dato, poi gli altri nell'ordine attuale.
+  // Si rilegge dal disco e cambia solo "ordine". Una categoria senza _categoria.md riceve il file.
+  async reorderCategories(ids) {
+    const all = await this.loadCategories();
+    const list = [...new Set([...ids.map((id) => all.find((c) => c.id === id)).filter(Boolean), ...all])];
+    await Promise.all(list.map((c, k) => c.ordine === k + 1 ? null : this.write(this.p('tags', c.id, '_categoria.md'), serializeCategory({ ...c, ordine: k + 1 }, c.id))));
+  }
+
+  async reorderTags(catId, ids) {
+    const cat = (await this.loadCategories()).find((c) => c.id === catId);
+    if (!cat) throw new Error('Categoria non trovata.');
+    const list = [...new Set([...ids.map((id) => cat.tags.find((t) => t.id === id)).filter(Boolean), ...cat.tags])];
+    await Promise.all(list.map((t, k) => t.ordine === k + 1 ? null : this.write(this.p('tags', catId, t.id + '.md'), serializeTag({ ...t, ordine: k + 1 }, t.id, catId))));
+  }
+
   async deleteCategory(id) {
     if (SYSTEM_CATEGORIES.includes(id)) throw new Error('Stato, Priorità e Collegamento non si possono eliminare.');
     await this.trash('categoria', await this.displayName(this.p('tags', id, '_categoria.md'), id), 'tags', id);

@@ -1,7 +1,7 @@
 // Tag e categorie: creazione, modifica, ordine (anche dei progetti), unione ed eliminazione.
 import { S, cat, TAG_COLORS } from '../state.js';
 import { moveItem, toggleCheck } from '../lib/util.js';
-import { api, render, reload, run, toast, stopEditing, dragList, gripMove } from '../core.js';
+import { api, render, reload, run, toast, stopEditing, dragList, gripMove, serial } from '../core.js';
 import { pickSwatch } from './common.js';
 
 // Tag indicato da data-cat e data-tag. Se la categoria non esiste più l'errore sale, e non si salva un tag nuovo.
@@ -39,29 +39,15 @@ export const actions = {
 };
 
 // ---------------------------------------------------------------- ordine
-// Le tre liste della pagina Tag che si riordinano, come erano quando la voce è stata presa:
-// la voce in posizione from va in to e si riscrive "ordine" (1..n) dove cambia.
+// Le tre liste della pagina Tag che si riordinano, come erano quando la voce è stata presa: la voce in posizione
+// from va in to. Lo Store rilegge i file e riscrive solo "ordine", come per la pagina Priorità progetti.
 function reorderer(grip) {
-  const list = grip.dataset.list;
-  if (list === 'proj') {
-    // Lo stesso ordine unico della pagina Priorità progetti, archiviati compresi.
-    const codes = S.data.projects.map((p) => p.codice);
-    return { length: codes.length, move: (from, to) => api.reorderProjects(moveItem(codes, from, to)) };
-  }
-  if (list === 'cat') {
-    // Le categorie senza _categoria.md (ordine 99) ricevono il file con il loro posto.
-    const cats = S.data.categories.slice();
-    return { length: cats.length, move: async (from, to) => {
-      const l = moveItem(cats, from, to);
-      for (let k = 0; k < l.length; k++) if (l[k].ordine !== k + 1) await api.saveCategory({ ...l[k], ordine: k + 1 });
-    } };
-  }
-  const c = cat(grip.dataset.cat);
-  const tags = c.tags.slice();
-  return { length: tags.length, move: async (from, to) => {
-    const l = moveItem(tags, from, to);
-    for (let k = 0; k < l.length; k++) if (l[k].ordine !== k + 1) await api.saveTag(c.id, { ...l[k], ordine: k + 1 });
-  } };
+  const { list, cat: catId } = grip.dataset;
+  const ids = list === 'proj' ? S.data.projects.map((p) => p.codice)   // archiviati compresi
+    : list === 'cat' ? S.data.categories.map((c) => c.id)
+    : cat(catId).tags.map((t) => t.id);
+  const save = list === 'proj' ? api.reorderProjects : list === 'cat' ? api.reorderCategories : (l) => api.reorderTags(catId, l);
+  return { length: ids.length, move: (from, to) => save(moveItem(ids, from, to)) };
 }
 
 // Trascinando la maniglia la voce segue il mouse e le altre scorrono; si salva al rilascio.
@@ -89,12 +75,12 @@ export const keydowns = {
 
 export const changes = {
   // Casella di una checklist nella descrizione del tag: [ ] ↔ [x], poi si salva.
-  'md-check-tag': (el) => run(async () => {
+  'md-check-tag': (el) => run(() => serial(async () => {
     const box = el.closest('.md');
     const t = targetTag(box);
     await api.saveTag(box.dataset.cat, { ...t, descrizione: toggleCheck(t.descrizione, Number(el.dataset.index)) });
     await reload();
-  }),
+  })),
   'tag-inverse': (el) => run(async () => {
     await api.saveTag(el.dataset.cat, { ...targetTag(el), inverso: el.value.trim() });
     await reload();
