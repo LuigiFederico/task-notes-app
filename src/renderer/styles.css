@@ -203,6 +203,7 @@ pre { margin: 0; }
 /* Le colonne (ordine e larghezze) sono nello style della riga: vedi taskColumns in selectors.js. */
 .task-row { display: grid; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
 .card.list .task-row:last-child { border-bottom: 0; }
+.group-empty { display: flex; align-items: center; min-height: 48px; padding: 0 16px; }
 .task-row:hover { background: var(--surface-2); }
 .task-row.selected { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 .task-row.head { min-height: 0; padding-bottom: 8px; border: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: none; }

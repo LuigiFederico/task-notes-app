@@ -177,6 +177,24 @@ test('renderer: groupDefs divide la lista per progetto, scadenza e categoria', a
   assert.deepStrictEqual(groupDefs('inesistente'), []);
 });
 
+test('renderer: i progetti attivi restano nella lista anche senza task da mostrare, ma non con filtri o ricerca', async () => {
+  const { listGroups, visibleTasks } = await load('selectors.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'aperto' },
+    { id: 'T-002', titolo: 'chiuso', progetto: 'ECOM', stato: 'fatto' }
+  ]);
+  S.data.projects.push({ codice: 'OLD', nome: 'Vecchio', colore: '#6B675E', stato: 'archiviato', decisioni: [] });
+  const keys = () => listGroups(visibleTasks(), 'progetto').map((g) => `${g.key}:${g.items.length}`);
+  assert.deepStrictEqual(keys(), ['VEND:1', 'ECOM:0'], 'ECOM ha solo completati nascosti; OLD è archiviato');
+  S.ui.search = 'aperto';
+  assert.deepStrictEqual(keys(), ['VEND:1']);
+  S.ui.search = '';
+  S.ui.fPrio = 'alta';
+  assert.deepStrictEqual(keys(), []);
+  S.ui.fPrio = '';
+  assert.deepStrictEqual(listGroups(visibleTasks(), 'stato').map((g) => g.key), ['da-fare'], 'solo raggruppando per progetto');
+});
+
 test('renderer: tagUsage conta i task aperti e totali di un tag', async () => {
   const { tagUsage } = await load('selectors.js');
   await setup([
