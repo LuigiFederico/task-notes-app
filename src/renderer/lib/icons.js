@@ -33,6 +33,4 @@ export const icon = {
   listOrdered: (s) => draw('list-ordered', '<path d="M11 5h10"/><path d="M11 12h10"/><path d="M11 19h10"/><path d="M4 4h1v5"/><path d="M4 9h2"/><path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02"/>', s),
   graph: (s) => svg('graph', '<path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/><path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/>', s),
   arrow: (s) => svg('arrow', '<g class="p1"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></g>', s, 2),
-  up: (s) => svg('up', '<g class="p1"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></g>', s, 2),
-  down: (s) => svg('down', '<g class="p1"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></g>', s, 2)
 };

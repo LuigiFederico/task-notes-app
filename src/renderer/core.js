@@ -47,6 +47,10 @@ function toastHtml() {
   return `<div class="toast ${S.toast.kind}" role="status">${esc(S.toast.text)}</div>`;
 }
 
+// Contenitori che scorrono: render() ne rimette la posizione e dragList() li fa scorrere vicino ai bordi.
+// .scroll-box è per quelli che non hanno lo stile di .scroll (colonne della pagina Tag, Impostazioni).
+const SCROLLERS = '.scroll, .panel-body, .scroll-box';
+
 // Elementi con un'animazione d'ingresso: la fanno solo nel render in cui compaiono.
 const ENTERING = ['.panel', '.toast'];
 
@@ -56,7 +60,7 @@ export function render() {
   const active = document.activeElement;
   const focusId = active && active.id;
   const sel = focusId && 'selectionStart' in active ? [active.selectionStart, active.selectionEnd] : null;
-  const scrolls = [...document.querySelectorAll('.scroll, .panel-body')].map((el) => el.scrollTop);
+  const scrolls = [...document.querySelectorAll(SCROLLERS)].map((el) => el.scrollTop);
 
   if (!S.config || !S.config.ready || S.view.name === 'setup') {
     root.innerHTML = setupView();
@@ -69,7 +73,7 @@ export function render() {
   settle();
   applyPanelWidth();
 
-  [...document.querySelectorAll('.scroll, .panel-body')].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
+  [...document.querySelectorAll(SCROLLERS)].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
   if (focusId) {
     const el = document.getElementById(focusId);
     if (el) {
@@ -149,7 +153,8 @@ function settle() {
 // ---------------------------------------------------------------- trascinamento
 // Trascinando, la voce segue il mouse e le altre della lista scorrono per farle posto; al rilascio onDrop(from, to).
 // Niente render durante il trascinamento, come per la larghezza del pannello (startPanelResize in layout.js).
-// La usano i sotto-task (startSubDrag) e le schede della pagina Priorità progetti (startPrioDrag).
+// La usano i sotto-task (startSubDrag), le schede della pagina Priorità progetti (startPrioDrag), le liste della
+// pagina Tag (startTagDrag) e le colonne nelle Impostazioni (startColDrag).
 export function dragList(e, handle, item, onDrop) {
   e.preventDefault();
   const items = [...item.parentElement.children];
@@ -161,7 +166,7 @@ export function dragList(e, handle, item, onDrop) {
   const min = rects[0].top - rects[from].top;
   const max = rects.at(-1).bottom - rects[from].bottom;
   // Il contenitore che scorre: lo spostamento conta anche quanto è scorso (rotellina o bordi) dalla presa.
-  const box = item.closest('.scroll, .panel-body');
+  const box = item.closest(SCROLLERS);
   const scroll0 = box ? box.scrollTop : 0;
   let y = e.clientY;
   let to = from;
@@ -202,6 +207,15 @@ export function dragList(e, handle, item, onDrop) {
       onDrop(from, to);
     }, 180);
   }, { once: true });
+}
+
+// Alt+↑ ↓ su una maniglia di trascinamento (data-index): la posizione in cui va la voce, oppure null
+// se il tasto è un altro o la voce è già in cima/in fondo a una lista di length voci.
+export function gripMove(el, e, length) {
+  if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return null;
+  e.preventDefault();
+  const j = Number(el.dataset.index) + (e.key === 'ArrowUp' ? -1 : 1);
+  return j < 0 || j >= length ? null : j;
 }
 
 // ---------------------------------------------------------------- avvisi

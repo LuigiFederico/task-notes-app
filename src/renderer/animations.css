@@ -10,7 +10,7 @@
 /* Ritorno allo stato iniziale quando il mouse esce: le transizioni valgono in entrambe le direzioni. */
 .ic-plus :is(.p1, .p2), .ic-close :is(.p1, .p2) { transition: transform .4s ease-in-out; }
 .ic-plus .p1, .ic-close .p2 { transition-delay: .1s; }
-.ic-chevron .p1, .ic-chevron-right .p1, .ic-arrow .p1, .ic-up .p1, .ic-down .p1, .ic-external .p1 { transition: transform .3s ease-in-out; }
+.ic-chevron .p1, .ic-chevron-right .p1, .ic-arrow .p1, .ic-external .p1 { transition: transform .3s ease-in-out; }
 .ic-trash :is(.p1, .p2, .p3) { transition: transform .3s ease-in-out, d .3s ease-in-out; }
 .ic-settings path { transition: d .4s ease-in-out; }
 .ic-sidebar :is(.p1, .p2), .ic-sidebar-open :is(.p1, .p2) { transition: transform .4s cubic-bezier(.34, 1.56, .64, 1); }
@@ -21,8 +21,6 @@
   & > .ic-chevron .p1 { transform: translateY(4px); }
   & > .ic-chevron-right .p1 { transform: translateX(2px); }
   & > .ic-arrow .p1 { transform: translateX(25%); }
-  & > .ic-up .p1 { transform: translateY(-25%); }
-  & > .ic-down .p1 { transform: translateY(25%); }
   & > .ic-external .p1 { transform: translate(2px, -2px); }
   & > .ic-trash .p1 { transform: translateY(-1px); }
   & > .ic-trash .p2 { transform: translateY(1px); d: path('M19 8v12c0 1-1 2-2 2H7c-1 0-2-1-2-2V8'); }

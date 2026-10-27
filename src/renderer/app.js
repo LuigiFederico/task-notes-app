@@ -77,6 +77,8 @@ root.addEventListener('mouseover', (e) => {
 root.addEventListener('pointerdown', layoutHandlers.startPanelResize);
 root.addEventListener('pointerdown', taskHandlers.startSubDrag);
 root.addEventListener('pointerdown', projectHandlers.startPrioDrag);
+root.addEventListener('pointerdown', tagHandlers.startTagDrag);
+root.addEventListener('pointerdown', settingsHandlers.startColDrag);
 // Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
 root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
