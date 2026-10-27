@@ -2,7 +2,7 @@ import { S, cat, project, extraCats, isClosed, prioOf } from '../state.js';
 import { currentTask, missingProject } from '../selectors.js';
 import { esc, safeColor, tint, dueLabel, fmtFull, fmtShort } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox, options, select, categoryField, links, description, saveState, projectMark, prioBars } from './components.js';
+import { confirmBox, options, select, categoryField, links, description, saveState, projectMark, panelFullButton, prioBars } from './components.js';
 
 // Stato e Priorità: una tendina che mostra il valore scelto col suo colore, con un pallino per lo stato e le barre per la priorità.
 // L'elenco è nostro e non una <select>, così anche da aperto mostra pallini e barre; S.ui.menu dice quale è aperto.
@@ -75,6 +75,7 @@ export function taskPanel() {
       <span class="mono muted">${isNew ? 'Nuovo task' : esc(t.id)}</span>
       ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}">${projectMark(p.colore)}${esc(p.nome)}</button>` : ''}
       <span class="grow"></span>
+      ${panelFullButton()}
       ${isNew || confirmDel ? '' : `<button class="icon-btn" data-action="ask-confirm" data-key="task:${esc(t.id)}" aria-label="Elimina task" title="Elimina">${icon.trash(17)}</button>`}
     </div>
     ${confirmDel ? `<div class="panel-confirm">${confirmBox(`Eliminare ${t.id}? Potrai ripristinarlo dal Cestino.`, `data-action="task-delete" data-id="${esc(t.id)}"`)}</div>` : ''}

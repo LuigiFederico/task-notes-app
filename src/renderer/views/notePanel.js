@@ -2,7 +2,7 @@ import { S, project, extraCats } from '../state.js';
 import { currentNote } from '../selectors.js';
 import { esc, fmtFull } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
-import { confirmBox, options, select, categoryField, links, description, saveState, projectMark } from './components.js';
+import { confirmBox, options, select, categoryField, links, description, saveState, projectMark, panelFullButton } from './components.js';
 
 // Pannello di dettaglio di un appunto: come quello del task, senza stato, priorità, scadenza, sotto-task e storico.
 // Titolo e testo usano gli stessi id e handler del pannello del task (task-title, task-desc).
@@ -22,6 +22,7 @@ export function notePanel() {
       <span class="mono muted">${isNew ? 'Nuovo appunto' : esc(n.id)}</span>
       ${p ? `<span class="faint">/</span><button class="proj-link" data-action="go" data-view="project" data-code="${esc(p.codice)}">${projectMark(p.colore)}${esc(p.nome)}</button>` : ''}
       <span class="grow"></span>
+      ${panelFullButton()}
       ${isNew || confirmDel ? '' : `<button class="icon-btn" data-action="ask-confirm" data-key="note:${esc(n.id)}" aria-label="Elimina appunto" title="Elimina">${icon.trash(17)}</button>`}
     </div>
     ${confirmDel ? `<div class="panel-confirm">${confirmBox(`Eliminare ${n.id}? Potrai ripristinarlo dal Cestino.`, `data-action="note-delete" data-id="${esc(n.id)}"`)}</div>` : ''}

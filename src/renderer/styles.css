@@ -266,6 +266,10 @@ pre { margin: 0; }
 /* pannello dettaglio */
 .panel { position: relative; width: var(--panel-w, 540px); flex-shrink: 0; height: 100vh; background: var(--surface); border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(20,37,27,.06); display: flex; flex-direction: column; }
 /* Maniglia sul bordo sinistro del pannello: si trascina per allargarlo o stringerlo. */
+/* Pannello a tutta area: prende il posto della pagina, la sidebar resta. */
+.panel-full .main { display: none; }
+.panel-full .panel { flex: 1 1 auto; width: auto; }
+.panel-full .panel-resize { display: none; }
 .panel-resize { position: absolute; top: 0; bottom: 0; left: -4px; width: 8px; z-index: 2; cursor: col-resize; }
 .panel-resize:hover, .resizing .panel-resize { background: linear-gradient(to right, transparent 3px, var(--accent) 3px, var(--accent) 5px, transparent 5px); }
 /* Linguetta sul bordo sinistro del pannello: lo chiude come Esc. Sta sopra la maniglia, che resta trascinabile sopra e sotto. */

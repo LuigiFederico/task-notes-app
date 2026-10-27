@@ -10,6 +10,7 @@ function go(el) {
   stopEditing();
   S.ui.hoverWeek = null;
   S.ui.recentDone = {};
+  S.ui.panelFull = false;   // il pannello a tutta area coprirebbe la pagina appena aperta
   if (d.view === 'project') S.ui.projectTab = 'open';
   render();
   const main = root.querySelector('.scroll');

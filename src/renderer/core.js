@@ -62,7 +62,7 @@ export function render() {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
-    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
+    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${panel && S.ui.panelFull ? ' panel-full' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
   ENTERING.forEach((s) => { if (!present.includes(s)) playOnce(s); });
@@ -95,7 +95,8 @@ export function applyPanelWidth() {
 // Posa di base del corvo in funzione di ciò che si vede.
 function updateMascot() {
   const ready = S.config && S.config.ready && S.data && S.view.name !== 'setup';
-  mascot.setLayout({ panelOpen: !!(S.ui.openTask || S.ui.openNote), hidden: !ready });
+  // Col pannello a tutta area il corvo torna al suo posto, a destra.
+  mascot.setLayout({ panelOpen: !!(S.ui.openTask || S.ui.openNote) && !S.ui.panelFull, hidden: !ready });
   if (!ready) return;
   const open = openTasks().length;
   let base = 'riposo';

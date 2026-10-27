@@ -26,6 +26,8 @@ export const icon = {
   clock: (s) => svg('clock', '<circle cx="12" cy="12" r="10"/><path d="m12 12 4 2"/><path d="M12 6v6"/>', s, 2),
   external: (s) => svg('external', '<g class="p1"><path d="M15 3h6v6"/><path d="M10 14 21 3"/></g><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>', s),
   note: (s) => svg('note', '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path class="p1" pathLength="1" d="M8 11h.01"/><path class="p2" pathLength="1" d="M12 11h4"/><path class="p3" pathLength="1" d="M8 16h.01"/><path class="p4" pathLength="1" d="M12 16h4"/>', s),
+  maximize: (s) => draw('maximize', '<path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/>', s),
+  minimize: (s) => draw('minimize', '<path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/>', s),
   sidebar: (s) => svg('sidebar', '<rect width="18" height="18" x="3" y="3" rx="2"/><path class="p1" d="M9 3v18"/><path class="p2" d="m16 15-3-3 3-3"/>', s),
   sidebarOpen: (s) => svg('sidebar-open', '<rect width="18" height="18" x="3" y="3" rx="2"/><path class="p1" d="M9 3v18"/><path class="p2" d="m14 9 3 3-3 3"/>', s),
   listOrdered: (s) => draw('list-ordered', '<path d="M11 5h10"/><path d="M11 12h10"/><path d="M11 19h10"/><path d="M4 4h1v5"/><path d="M4 9h2"/><path d="M6.5 20H3.4c0-1 2.6-1.925 2.6-3.5a1.5 1.5 0 0 0-2.6-1.02"/>', s),
