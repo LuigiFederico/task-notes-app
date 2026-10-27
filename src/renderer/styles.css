@@ -392,6 +392,23 @@ body.resizing .mascot { transition: none; }
 .md ul, .md ol { padding-left: 20px; margin-bottom: 0; }
 .md code { font-family: var(--mono); font-size: .9em; background: var(--chip); padding: 1px 4px; border-radius: 4px; }
 .md h4 { font-size: 15px; }
+/* GFM: blocchi di codice, citazioni, tabelle, barrato, righe e checklist (md() in lib/util.js). */
+.md :is(pre, blockquote, table, hr), .md > :is(ul, ol, pre, blockquote, table) + p { margin-top: 8px; }
+.md :is(blockquote, table, hr) { margin-left: 0; margin-right: 0; margin-bottom: 0; }
+.md li > :is(ul, ol) { margin-top: 2px; }
+.md pre { font-family: var(--mono); font-size: 13px; background: var(--chip); padding: 10px 12px; border-radius: 8px; overflow-x: auto; }
+.md pre code { background: none; padding: 0; font-size: inherit; }
+.md blockquote { padding-left: 12px; border-left: 3px solid var(--line-strong); color: var(--ink-2); }
+.md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .93em; }
+.md :is(th, td) { padding: 4px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.md th { background: var(--surface-2); font-weight: 600; }
+.md del { color: var(--muted); }
+.md hr { border: 0; border-top: 1px solid var(--line); }
+.md li:has(> .md-check) { list-style: none; }
+.md ul:has(> li > .md-check) { padding-left: 4px; }
+.md li > ul:has(> li > .md-check) { padding-left: 20px; }
+.md-check { margin: 0 6px 0 0; vertical-align: -2px; accent-color: var(--accent); }
+.md-check:not(:disabled) { cursor: pointer; }
 .small-md { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
 
 /* form */

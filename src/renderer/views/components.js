@@ -221,7 +221,7 @@ export function description(t, isNew, un, label = 'DESCRIZIONE') {
     const refTitle = (id) => { const x = ref(id); return x ? x.titolo : null; };
     return `<div class="stack-10">
       ${head('<button class="btn-link small" data-action="desc-edit">Modifica</button>')}
-      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle })}</div>`
+      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle, check: 'md-check-item' })}</div>`
         : '<button class="desc-empty" data-action="desc-edit">Aggiungi note, link, @menzioni… (Markdown)</button>'}
       ${S.ui.saved.descrizione ? `<span class="small save-state">Salvato</span>` : ''}
     </div>`;

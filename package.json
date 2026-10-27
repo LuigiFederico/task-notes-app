@@ -19,7 +19,9 @@
     "@fontsource/geist-mono": "^5.3.0",
     "@fontsource/geist-sans": "^5.3.0",
     "@fontsource/instrument-serif": "^5.3.0",
-    "electron-updater": "^6.8.9"
+    "dompurify": "^3.4.17",
+    "electron-updater": "^6.8.9",
+    "marked": "^18.1.2"
   },
   "devDependencies": {
     "electron": "^44.4.5",
@@ -31,7 +33,9 @@
     "files": [
       "src/**/*",
       "package.json",
-      "node_modules/@fontsource/**/*"
+      "node_modules/@fontsource/**/*",
+      "node_modules/marked/**/*",
+      "node_modules/dompurify/**/*"
     ],
     "win": {
       "icon": "src/renderer/assets/icona.png",

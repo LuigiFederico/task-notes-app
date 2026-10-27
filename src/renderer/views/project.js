@@ -75,7 +75,7 @@ export function projectView(code) {
           ${S.ui.confirm === `decision:${i}` ? '' : `<button class="icon-btn sm" data-action="ask-confirm" data-key="decision:${i}" aria-label="Elimina decisione">${icon.trash(14)}</button>`}</div>
         <span class="strong">${esc(d.titolo)}</span>
         ${S.ui.confirm === `decision:${i}` ? confirmBox('Eliminare questa decisione?', `data-action="decision-delete" data-index="${i}"`) : ''}
-        ${d.testo ? `<div class="md small-md">${md(d.testo)}</div>` : ''}
+        ${d.testo ? `<div class="md small-md" data-index="${i}">${md(d.testo, { check: 'md-check-decision' })}</div>` : ''}
         ${d.task ? `<button class="btn-link small" data-action="open-task" data-id="${esc(d.task)}">Da ${esc(d.task)}</button>` : ''}
       </div>
     </li>`).join('');
@@ -105,7 +105,7 @@ export function projectView(code) {
           <section class="card pad stack-10">
             <div class="row-between"><h2 class="section-label">DESCRIZIONE</h2>${editDesc ? '' : '<button class="btn-link small" data-action="edit" data-key="project-desc">Modifica</button>'}</div>
             ${editDesc ? `<form class="stack-10" data-submit="save-project-desc"><textarea name="descrizione" rows="6" autofocus>${esc(p.descrizione)}</textarea><div class="row-8 end"><button type="button" class="btn" data-action="cancel-edit">Annulla</button><button type="submit" class="btn primary">Salva</button></div></form>`
-              : p.descrizione ? `<div class="md">${md(p.descrizione)}</div>` : '<p class="muted">Nessuna descrizione. Aggiungine una per ricordarti obiettivo e contesto.</p>'}
+              : p.descrizione ? `<div class="md">${md(p.descrizione, { check: 'md-check-project' })}</div>` : '<p class="muted">Nessuna descrizione. Aggiungine una per ricordarti obiettivo e contesto.</p>'}
           </section>
           <section class="stack-12">
             <div class="row-between"><h2 class="h2">Task del progetto</h2>${segmented([['open', 'Aperti', open.length], ['done', 'Completati', done], ['all', 'Tutti', all.length]], tab, 'project-tab', 'Filtro task')}</div>

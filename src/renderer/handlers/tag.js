@@ -1,6 +1,6 @@
 // Tag e categorie: creazione, modifica, ordine (anche dei progetti), unione ed eliminazione.
 import { S, cat, TAG_COLORS } from '../state.js';
-import { moveItem } from '../lib/util.js';
+import { moveItem, toggleCheck } from '../lib/util.js';
 import { api, render, reload, run, toast, stopEditing, dragList, gripMove } from '../core.js';
 import { pickSwatch } from './common.js';
 
@@ -88,6 +88,13 @@ export const keydowns = {
 };
 
 export const changes = {
+  // Casella di una checklist nella descrizione del tag: [ ] ↔ [x], poi si salva.
+  'md-check-tag': (el) => run(async () => {
+    const box = el.closest('.md');
+    const t = targetTag(box);
+    await api.saveTag(box.dataset.cat, { ...t, descrizione: toggleCheck(t.descrizione, Number(el.dataset.index)) });
+    await reload();
+  }),
   'tag-inverse': (el) => run(async () => {
     await api.saveTag(el.dataset.cat, { ...targetTag(el), inverso: el.value.trim() });
     await reload();

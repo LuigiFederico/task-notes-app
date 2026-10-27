@@ -2,7 +2,7 @@
 // Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
 import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, prioOf, TAG_COLORS } from '../state.js';
 import { currentTask, currentNote, currentItem, missingProject, overdueCount, refCandidates } from '../selectors.js';
-import { todayISO, moveItem } from '../lib/util.js';
+import { todayISO, moveItem, toggleCheck } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
 import { api, root, render, reload, run, toast, playOnce, dragList } from '../core.js';
@@ -433,6 +433,8 @@ export const actions = {
 
 export const changes = {
   'task-field': (el) => run(() => saveField(el)),
+  // Casella di una checklist nella descrizione del task o nel testo dell'appunto: si riscrive [ ] ↔ [x] e si salva.
+  'md-check-item': (el) => run(() => updateItem({ descrizione: toggleCheck(currentItem().descrizione, Number(el.dataset.index)) })),
   'link-type': (el) => { S.ui.linkType = el.value; },
   // Un testo vuoto elimina la voce.
   'sub-edit': (el) => run(() => {

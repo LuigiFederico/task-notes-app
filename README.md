@@ -155,6 +155,8 @@ I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <
 
 Nel testo (descrizione del task, ma anche descrizioni di progetti e tag) `@T-012` è una menzione: nel pannello diventa un link al task. Scrivendo `@` nella descrizione compaiono i task da citare. Le menzioni non si salvano nel front matter: si leggono dal testo.
 
+Tutti i testi (descrizioni di task, progetti e tag, testo degli appunti e delle decisioni) sono Markdown GitHub (GFM): titoli, elenchi anche annidati, tabelle, blocchi di codice, citazioni, ~~barrato~~ e link, anche scritti come semplice indirizzo `https://…`. Una riga `- [ ] cosa` è una casella: cliccandola in lettura diventa `- [x] cosa` nel file, e viceversa (è diversa dai sotto-task, che stanno nel front matter). L'HTML scritto nel testo si vede così com'è, come testo, e si aprono solo i link `http` e `https`.
+
 `stato` di un progetto è `attivo` oppure `archiviato`; `ordine` è la posizione scelta nella sezione Priorità progetti (vuoto: in fondo, per nome). Il `progetto` di un appunto è facoltativo. `collegamenti` e `sottotask` si scrivono solo se hanno voci. Il front matter non ammette commenti in linea (`chiave: valore # commento`): il commento diventerebbe parte del valore.
 
 I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
