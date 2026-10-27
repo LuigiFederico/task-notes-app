@@ -175,6 +175,7 @@ handle('note:save', async (n) => requireStore().saveNote(n));
 handle('note:delete', async (id) => requireStore().deleteNote(id));
 handle('project:save', async (p) => requireStore().saveProject(p));
 handle('project:delete', async (codice) => requireStore().deleteProject(codice));
+handle('project:reorder', async (codici) => requireStore().reorderProjects(codici));
 handle('category:save', async (c) => requireStore().saveCategory(c));
 handle('category:delete', async (id) => requireStore().deleteCategory(id));
 handle('tag:save', async (catId, t) => requireStore().saveTag(catId, t));

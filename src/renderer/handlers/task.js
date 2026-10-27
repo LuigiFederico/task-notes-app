@@ -2,10 +2,10 @@
 // Il pannello serve anche gli appunti: i campi in comune passano da currentItem() e updateItem().
 import { S, task, ref, isNoteId, project, cat, activeProjects, openStates, closedState, isClosed, values, openTasks, defaultPrio, prioOf, TAG_COLORS } from '../state.js';
 import { currentTask, currentNote, currentItem, missingProject, overdueCount, refCandidates } from '../selectors.js';
-import { todayISO, moveItem, dropIndex } from '../lib/util.js';
+import { todayISO, moveItem } from '../lib/util.js';
 import { newTagHint, mentionItems } from '../views/components.js';
 import { mascot } from '../mascot.js';
-import { api, root, render, reload, run, toast, playOnce } from '../core.js';
+import { api, root, render, reload, run, toast, playOnce, dragList } from '../core.js';
 
 // Un task nuovo nasce nel progetto solo dalla sua pagina; altrove il progetto si sceglie a mano.
 function defaultProject() {
@@ -231,45 +231,10 @@ function saveSubtasks(fn) {
 }
 
 // Trascinando la maniglia la voce segue il mouse e le altre scorrono per farle posto; si salva al rilascio.
-// Niente render durante il trascinamento, come per la larghezza del pannello (startPanelResize in layout.js).
 export function startSubDrag(e) {
   const grip = e.target.closest('.sub-grip');
   if (!grip || grip.disabled || e.button !== 0) return;
-  e.preventDefault();
-  const items = [...grip.closest('.sub-list').children];
-  const from = Number(grip.dataset.index);
-  // Le voci possono andare a capo: lo slot si calcola dai rettangoli reali, non da un'altezza fissa.
-  const rects = items.map((el) => el.getBoundingClientRect());
-  const mids = rects.map((r) => r.top + r.height / 2);
-  const step = rects[from].height + 2;   // altezza della voce + gap della lista
-  const min = rects[0].top - rects[from].top;
-  const max = rects.at(-1).bottom - rects[from].bottom;
-  let to = from;
-  grip.setPointerCapture(e.pointerId);
-  document.body.classList.add('dragging');
-  items[from].classList.add('lifted');
-  const move = (ev) => {
-    const dy = Math.max(min, Math.min(max, ev.clientY - e.clientY));
-    items[from].style.transform = `translateY(${dy}px) scale(1.02)`;
-    to = dropIndex(mids, mids[from] + dy, from);
-    items.forEach((el, k) => {
-      if (k === from) return;
-      const shift = from < k && k <= to ? -step : to <= k && k < from ? step : 0;
-      el.style.transform = shift ? `translateY(${shift}px)` : '';
-    });
-  };
-  grip.addEventListener('pointermove', move);
-  grip.addEventListener('lostpointercapture', () => {
-    grip.removeEventListener('pointermove', move);
-    document.body.classList.remove('dragging');
-    // La voce si posa nel posto nuovo (.18s), poi il salvataggio ridisegna la lista nell'ordine giusto.
-    const land = to > from ? rects[to].bottom - rects[from].bottom : rects[to].top - rects[from].top;
-    items[from].style.transform = `translateY(${land}px)`;
-    setTimeout(() => {
-      if (to === from) { items[from].classList.remove('lifted'); items[from].style.transform = ''; return; }
-      run(() => saveSubtasks((l) => moveItem(l, from, to)));
-    }, 180);
-  }, { once: true });
+  dragList(e, grip, grip.closest('.sub-item'), (from, to) => run(() => saveSubtasks((l) => moveItem(l, from, to))));
 }
 
 // ---------------------------------------------------------------- tendine di stato e priorità

@@ -76,6 +76,7 @@ root.addEventListener('mouseover', (e) => {
 });
 root.addEventListener('pointerdown', layoutHandlers.startPanelResize);
 root.addEventListener('pointerdown', taskHandlers.startSubDrag);
+root.addEventListener('pointerdown', projectHandlers.startPrioDrag);
 // Le voci dei suggerimenti di @ non prendono il focus: il clic sceglie la voce e il campo resta attivo.
 root.addEventListener('mousedown', (e) => { if (e.target.closest('.mention-item')) e.preventDefault(); });
 root.addEventListener('focusout', (e) => {
@@ -87,12 +88,16 @@ root.addEventListener('focusout', (e) => {
     S.ui.pendingTag = null;
   }
 });
-root.addEventListener('focusout', () => {
+// Un reload rimandato (vedi onDataChanged) si fa quando si lascia il campo o si finisce di trascinare
+// (dragList toglie "dragging" 180ms dopo il rilascio).
+function applyPendingReload(delay) {
   if (!pendingReload) return;
   setTimeout(() => {
     if (pendingReload && !isTyping()) { pendingReload = false; run(reload); }
-  }, 50);
-});
+  }, delay);
+}
+root.addEventListener('focusout', () => applyPendingReload(50));
+root.addEventListener('lostpointercapture', () => applyPendingReload(250));
 
 // Anche il trascinamento di un sotto-task conta: un ridisegno lo interromperebbe.
 function isTyping() {

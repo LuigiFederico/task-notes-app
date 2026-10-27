@@ -2,7 +2,7 @@
 // Gli handler in handlers/ usano queste funzioni; qui non si importa mai un handler.
 import { S, task, openTasks, tagCats } from './state.js';
 import { visibleTasks, visibleNotes } from './selectors.js';
-import { esc } from './lib/util.js';
+import { esc, dropIndex } from './lib/util.js';
 import { icon } from './lib/icons.js';
 import { sidebar } from './views/sidebar.js';
 import { tasksView, taskList } from './views/tasks.js';
@@ -11,6 +11,7 @@ import { notesView, noteList } from './views/notes.js';
 import { notePanel } from './views/notePanel.js';
 import { graphView } from './views/graph.js';
 import { projectsView } from './views/projects.js';
+import { priorityView } from './views/priorita.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView } from './views/tags.js';
 import { tagView } from './views/tag.js';
@@ -26,6 +27,7 @@ function viewHtml() {
   const v = S.view;
   switch (v.name) {
     case 'projects': return projectsView();
+    case 'priorita': return priorityView();
     case 'project': return projectView(v.code);
     case 'new-project': return newProjectView();
     case 'tags': return tagsView();
@@ -141,6 +143,64 @@ function settle() {
   if (!el || !root.contains(el)) return;
   el.classList.add('settled');
   el.addEventListener('pointerleave', () => el.classList.remove('settled'), { once: true });
+}
+
+// ---------------------------------------------------------------- trascinamento
+// Trascinando, la voce segue il mouse e le altre della lista scorrono per farle posto; al rilascio onDrop(from, to).
+// Niente render durante il trascinamento, come per la larghezza del pannello (startPanelResize in layout.js).
+// La usano i sotto-task (startSubDrag) e le schede della pagina Priorità progetti (startPrioDrag).
+export function dragList(e, handle, item, onDrop) {
+  e.preventDefault();
+  const items = [...item.parentElement.children];
+  const from = items.indexOf(item);
+  // Le voci possono andare a capo: lo slot si calcola dai rettangoli reali, non da un'altezza fissa.
+  const rects = items.map((el) => el.getBoundingClientRect());
+  const mids = rects.map((r) => r.top + r.height / 2);
+  const step = rects[from].height + (parseFloat(getComputedStyle(item.parentElement).rowGap) || 0);   // altezza della voce + gap della lista
+  const min = rects[0].top - rects[from].top;
+  const max = rects.at(-1).bottom - rects[from].bottom;
+  // Il contenitore che scorre: lo spostamento conta anche quanto è scorso (rotellina o bordi) dalla presa.
+  const box = item.closest('.scroll, .panel-body');
+  const scroll0 = box ? box.scrollTop : 0;
+  let y = e.clientY;
+  let to = from;
+  let frame = 0;
+  handle.setPointerCapture(e.pointerId);
+  document.body.classList.add('dragging');
+  item.classList.add('lifted');
+  const update = () => {
+    const dy = Math.max(min, Math.min(max, y - e.clientY + (box ? box.scrollTop - scroll0 : 0)));
+    item.style.transform = `translateY(${dy}px) scale(1.02)`;
+    to = dropIndex(mids, mids[from] + dy, from);
+    items.forEach((el, k) => {
+      if (k === from) return;
+      const shift = from < k && k <= to ? -step : to <= k && k < from ? step : 0;
+      el.style.transform = shift ? `translateY(${shift}px)` : '';
+    });
+  };
+  // A meno di 40px dal bordo del contenitore (o oltre) la lista scorre, più veloce quanto più si è vicini.
+  const autoScroll = () => {
+    const r = box.getBoundingClientRect();
+    const over = y < r.top + 40 ? y - r.top - 40 : y > r.bottom - 40 ? y - r.bottom + 40 : 0;
+    if (over) box.scrollTop += Math.max(-20, Math.min(20, over / 2));
+    frame = requestAnimationFrame(autoScroll);
+  };
+  const move = (ev) => { y = ev.clientY; update(); };
+  handle.addEventListener('pointermove', move);
+  if (box) { box.addEventListener('scroll', update); frame = requestAnimationFrame(autoScroll); }
+  handle.addEventListener('lostpointercapture', () => {
+    handle.removeEventListener('pointermove', move);
+    if (box) { box.removeEventListener('scroll', update); cancelAnimationFrame(frame); }
+    // La voce si posa nel posto nuovo (.18s), poi il salvataggio ridisegna la lista nell'ordine giusto.
+    // "dragging" resta fino ad allora: un reload in mezzo cambierebbe la lista a cui si riferiscono from e to.
+    const land = to > from ? rects[to].bottom - rects[from].bottom : rects[to].top - rects[from].top;
+    item.style.transform = `translateY(${land}px)`;
+    setTimeout(() => {
+      document.body.classList.remove('dragging');
+      if (to === from) { item.classList.remove('lifted'); item.style.transform = ''; return; }
+      onDrop(from, to);
+    }, 180);
+  }, { once: true });
 }
 
 // ---------------------------------------------------------------- avvisi

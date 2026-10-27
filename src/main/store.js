@@ -273,6 +273,15 @@ class Store {
     return parseProject(serializeProject(out), codice);
   }
 
+  // Pagina Priorità progetti: i codici dati vanno prima, nell'ordine dato, poi tutti gli altri nell'ordine attuale.
+  // Ogni progetto si rilegge dal disco e cambia solo "ordine": una descrizione arrivata da fuori non si perde.
+  async reorderProjects(codici) {
+    const all = await this.loadProjects();
+    const first = codici.map((c) => all.find((p) => p.codice === c)).filter(Boolean);
+    const list = [...new Set([...first, ...all])];
+    await Promise.all(list.map((p, k) => p.ordine === k + 1 ? null : this.write(this.p('projects', p.codice + '.md'), serializeProject({ ...p, ordine: k + 1 }))));
+  }
+
   async deleteProject(codice) {
     const tasks = await this.loadTasks();
     if (tasks.some((t) => t.progetto === codice)) throw new Error('Il progetto ha dei task: archivialo invece di eliminarlo.');

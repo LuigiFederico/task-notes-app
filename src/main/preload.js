@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('api', {
   deleteNote: (id) => call('note:delete', id),
   saveProject: (p) => call('project:save', p),
   deleteProject: (codice) => call('project:delete', codice),
+  reorderProjects: (codici) => call('project:reorder', codici),
   saveCategory: (c) => call('category:save', c),
   deleteCategory: (id) => call('category:delete', id),
   saveTag: (catId, t) => call('tag:save', catId, t),

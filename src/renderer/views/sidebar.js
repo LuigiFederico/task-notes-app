@@ -39,6 +39,7 @@ export function sidebar() {
       ${nav('notes', 'Appunti', icon.note(18), S.data.notes.length, v === 'notes')}
       ${nav('graph', 'Grafo', icon.graph(18), null, v === 'graph')}
       ${nav('projects', 'Progetti', icon.folder(18), activeProjects().length, v === 'projects' || v === 'project')}
+      ${nav('priorita', 'Priorità progetti', icon.listOrdered(18), null, v === 'priorita')}
       ${nav('tags', 'Tag', icon.tag(18), null, v === 'tags' || v === 'tag')}
     </nav>
     <div class="side-section">
