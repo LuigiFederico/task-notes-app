@@ -42,7 +42,7 @@ export function tagView(catId, tagId) {
           <section class="card pad stack-10">
             <div class="row-between"><h2 class="section-label">A COSA SERVE</h2>${editDesc ? '' : '<button class="btn-link small" data-action="edit" data-key="tag-desc">Modifica</button>'}</div>
             ${editDesc ? `<form class="stack-10" data-submit="save-tag-desc" data-cat="${esc(catId)}" data-tag="${esc(tagId)}"><textarea name="descrizione" rows="6" autofocus>${esc(t.descrizione)}</textarea><div class="row-8 end"><button type="button" class="btn" data-action="cancel-edit">Annulla</button><button class="btn primary">Salva</button></div></form>`
-              : t.descrizione ? `<div class="md">${md(t.descrizione)}</div>` : '<p class="muted">Descrivi quando usare questo tag, così resta coerente nel tempo.</p>'}
+              : t.descrizione ? `<div class="md" ${attrs}>${md(t.descrizione, { check: 'md-check-tag' })}</div>` : '<p class="muted">Descrivi quando usare questo tag, così resta coerente nel tempo.</p>'}
           </section>
           <section class="stack-12">
             <h2 class="h2">Task con questo tag</h2>

@@ -177,6 +177,24 @@ test('renderer: groupDefs divide la lista per progetto, scadenza e categoria', a
   assert.deepStrictEqual(groupDefs('inesistente'), []);
 });
 
+test('renderer: i progetti attivi restano nella lista anche senza task da mostrare, ma non con filtri o ricerca', async () => {
+  const { listGroups, visibleTasks } = await load('selectors.js');
+  const S = await setup([
+    { id: 'T-001', titolo: 'aperto' },
+    { id: 'T-002', titolo: 'chiuso', progetto: 'ECOM', stato: 'fatto' }
+  ]);
+  S.data.projects.push({ codice: 'OLD', nome: 'Vecchio', colore: '#6B675E', stato: 'archiviato', decisioni: [] });
+  const keys = () => listGroups(visibleTasks(), 'progetto').map((g) => `${g.key}:${g.items.length}`);
+  assert.deepStrictEqual(keys(), ['VEND:1', 'ECOM:0'], 'ECOM ha solo completati nascosti; OLD è archiviato');
+  S.ui.search = 'aperto';
+  assert.deepStrictEqual(keys(), ['VEND:1']);
+  S.ui.search = '';
+  S.ui.fPrio = 'alta';
+  assert.deepStrictEqual(keys(), []);
+  S.ui.fPrio = '';
+  assert.deepStrictEqual(listGroups(visibleTasks(), 'stato').map((g) => g.key), ['da-fare'], 'solo raggruppando per progetto');
+});
+
 test('renderer: tagUsage conta i task aperti e totali di un tag', async () => {
   const { tagUsage } = await load('selectors.js');
   await setup([
@@ -205,12 +223,45 @@ test('renderer: dueBucket e dueLabel rispetto a oggi', async () => {
   assert.strictEqual(dueLabel(addDays(t, 1)).text, 'Domani');
 });
 
-test('renderer: md fa l\'escaping e rende il markdown minimale', async () => {
+test('renderer: md fa l\'escaping e rende il Markdown GFM', async () => {
   const { md } = await load('lib/util.js');
-  assert.strictEqual(md('<b>x</b> **y** *z* `c`'), '<p>&lt;b&gt;x&lt;/b&gt; <strong>y</strong> <em>z</em> <code>c</code></p>');
-  assert.strictEqual(md('- a\n- b\n\n1. c'), '<ul><li>a</li><li>b</li></ul><ol><li>c</li></ol>');
-  assert.strictEqual(md('[sito](https://example.com) [no](javascript:alert(1))'),
-    '<p><a href="https://example.com" target="_blank" rel="noreferrer">sito</a> [no](javascript:alert(1))</p>');
+  const flat = (s) => md(s).replace(/\n/g, '');
+  assert.strictEqual(flat('<b>x</b> **y** *z* `c` ~~d~~'), '<p>&lt;b&gt;x&lt;/b&gt; <strong>y</strong> <em>z</em> <code>c</code> <del>d</del></p>');
+  assert.strictEqual(flat('- a\n- b\n\n1. c'), '<ul><li>a</li><li>b</li></ul><ol><li>c</li></ol>');
+  assert.strictEqual(flat('riga 1\nriga 2'), '<p>riga 1<br>riga 2</p>');
+  assert.strictEqual(flat('[sito](https://example.com) [no](javascript:alert(1)) ![img](javascript:x)'),
+    '<p><a href="https://example.com" target="_blank" rel="noreferrer">sito</a> no img</p>');
+  assert.strictEqual(flat('vedi https://x.example/a'), '<p>vedi <a href="https://x.example/a" target="_blank" rel="noreferrer">https://x.example/a</a></p>');
+  assert.strictEqual(flat('<details>\n<summary>x</summary>\n</details>'), '<p>&lt;details&gt;<br>&lt;summary&gt;x&lt;/summary&gt;<br>&lt;/details&gt;</p>');
+  assert.strictEqual(flat('# Titolo'), '<h4>Titolo</h4>');
+  assert.match(flat('| a | b |\n|---|---|\n| 1 | 2 |'), /^<table><thead><tr><th>a<\/th><th>b<\/th><\/tr><\/thead><tbody><tr><td>1<\/td><td>2<\/td><\/tr><\/tbody><\/table>$/);
+  assert.strictEqual(flat('> citato\n\n```\n<b>codice</b>\n```'), '<blockquote><p>citato</p></blockquote><pre><code>&lt;b&gt;codice&lt;/b&gt;</code></pre>');
+  // Dopo un <code> scritto a mano marked segna il testo come già escapato: resta comunque testo.
+  assert.strictEqual(flat('a <code> b <img src=x onerror=alert(1)'), '<p>a &lt;code&gt; b &lt;img src=x onerror=alert(1)</p>');
+  assert.strictEqual(flat('\\* non è corsivo \\& \\<b>'), '<p>* non è corsivo &amp; &lt;b&gt;</p>');
+});
+
+test('renderer: le checklist del Markdown, cliccabili solo con check, e toggleCheck', async () => {
+  const { md, toggleCheck } = await load('lib/util.js');
+  const boxes = (html) => Array.from(html.matchAll(/<input [^>]*>/g), (m) => m[0]);
+  assert.deepStrictEqual(boxes(md('- [ ] a\n- [x] b')), [
+    '<input type="checkbox" class="md-check" data-index="0" disabled>',
+    '<input type="checkbox" class="md-check" data-index="1" checked disabled>'
+  ]);
+  assert.deepStrictEqual(boxes(md('- [ ] a', { check: 'md-check-item' })), ['<input type="checkbox" class="md-check" data-index="0" data-change="md-check-item" aria-label="Spunta la voce">']);
+  // Voci uguali, annidate, in una citazione su più righe e una finta dentro un blocco di codice.
+  const src = '- [ ] a\n  - [x] b\n- [ ] a\n\n> - [ ] q\n> segue\n\n```\n- [ ] a\n```\n- [ ] dopo';
+  assert.strictEqual(boxes(md(src)).length, 5);
+  const box = (s, n) => s.split('\n').filter((l) => /\[[ x]\]/.test(l))[n];
+  assert.strictEqual(box(toggleCheck(src, 0), 0), '- [x] a');
+  assert.strictEqual(box(toggleCheck(src, 1), 1), '  - [ ] b');
+  assert.strictEqual(box(toggleCheck(src, 2), 2), '- [x] a');
+  assert.strictEqual(box(toggleCheck(src, 2), 0), '- [ ] a', 'la prima "a" resta com\'era');
+  assert.strictEqual(box(toggleCheck(src, 3), 3), '> - [x] q');
+  assert.strictEqual(toggleCheck(src, 4), src.replace('- [ ] dopo', '- [x] dopo'), 'il codice non conta e non cambia');
+  assert.strictEqual(toggleCheck(src, 5), src, 'casella inesistente: testo invariato');
+  assert.strictEqual(toggleCheck('- [ ] a\r\n- [ ] b', 1), '- [ ] a\n- [x] b');
+  assert.strictEqual(toggleCheck('- x\n\t- [ ] a\n\t- [ ] b', 1), '- x\n\t- [ ] a\n\t- [x] b', 'rientro con i tab');
 });
 
 test('renderer: link dei valori di una categoria a testo', async () => {

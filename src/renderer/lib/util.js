@@ -1,4 +1,6 @@
-// Utilità condivise dall'interfaccia: escaping, date, markdown minimale.
+// Utilità condivise dall'interfaccia: escaping, date, Markdown.
+import { Marked } from '../../../node_modules/marked/lib/marked.esm.js';
+import DOMPurify from '../../../node_modules/dompurify/dist/purify.es.mjs';
 
 export function esc(v) {
   return String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -61,46 +63,79 @@ export function mentionsOf(src) {
   return Array.from(new Set(Array.from(String(src || '').matchAll(MENTION), (m) => m[2])));
 }
 
-// Markdown minimale e sicuro: paragrafi, elenchi, titoli, grassetto, corsivo, codice, link e menzioni @.
-// refTitle(id) dà il titolo dell'elemento menzionato, oppure null se non esiste.
-export function md(src, { refTitle = null } = {}) {
-  const lines = String(src || '').replace(/\r\n/g, '\n').split('\n');
-  const out = [];
-  let list = null;
-  let para = [];
-  const inline = (t) => esc(t)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>')
-    .replace(MENTION, (_, pre, id) => {
-      const title = refTitle ? refTitle(id) : '';
-      const miss = refTitle && title == null;
-      return `${pre}<button type="button" class="mention${miss ? ' missing' : ''}" data-action="open-ref" data-id="${id}" title="${miss ? 'Non trovato' : esc(title || '')}">@${id}</button>`;
-    });
-  const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inline).join('<br>') + '</p>'); para = []; } };
-  const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map((i) => '<li>' + inline(i) + '</li>').join('') + `</${list.tag}>`); list = null; } };
-  for (const line of lines) {
-    const ul = line.match(/^\s*[-*]\s+(.*)$/);
-    const ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
-    const hd = line.match(/^(#{1,3})\s+(.*)$/);
-    if (ul || ol) {
-      flushPara();
-      const tag = ul ? 'ul' : 'ol';
-      if (!list || list.tag !== tag) { flushList(); list = { tag, items: [] }; }
-      list.items.push((ul || ol)[1]);
-    } else if (hd) {
-      flushPara(); flushList();
-      out.push(`<h4>${inline(hd[2])}</h4>`);
-    } else if (!line.trim()) {
-      flushPara(); flushList();
-    } else {
-      flushList();
-      para.push(line);
+// Markdown GFM (tabelle, checklist, codice, citazioni, barrato, link nudi…) con marked, poi ripulito da DOMPurify.
+// Le librerie si caricano da node_modules come i font: il renderer non ha né bundler né rete.
+const MD = new Marked({ gfm: true, breaks: true });
+let ctx = null;   // opzioni della chiamata a md() in corso: marked è sincrono, quindi non si mescolano
+
+MD.use({
+  renderer: {
+    // L'HTML scritto nel testo resta testo: niente sorprese nei file modificati a mano.
+    html({ text, block }) { return block ? `<p>${esc(text.trim()).replace(/\n/g, '<br>')}</p>` : esc(text); },
+    // Solo http e https diventano link, e si aprono nel browser (setWindowOpenHandler in main.js); le immagini non si caricano.
+    link({ href, text, tokens, autolink }) {
+      const label = autolink ? esc(text) : this.parser.parseInline(tokens);
+      return /^https?:\/\//i.test(href) ? `<a href="${esc(href)}" target="_blank" rel="noreferrer">${label}</a>` : label;
+    },
+    image({ href, text }) {
+      return /^https?:\/\//i.test(href) ? `<a href="${esc(href)}" target="_blank" rel="noreferrer">${esc(text || href)}</a>` : esc(text);
+    },
+    heading({ tokens }) { return `<h4>${this.parser.parseInline(tokens)}</h4>`; },
+    // Il testo si escapa sempre: marked lo segna "escaped" dopo un <code> o un <pre> scritto a mano, che qui resta testo,
+    // e i caratteri preceduti da \ (es. \<) arrivano senza escaping.
+    text(token) {
+      if (token.tokens) return this.parser.parseInline(token.tokens);
+      return mentions(esc(token.text));
+    },
+    // La casella n del testo: con ctx.check è cliccabile (data-change) e il clic la riscrive con toggleCheck.
+    checkbox({ checked }) {
+      const n = ctx.checks++;
+      return `<input type="checkbox" class="md-check" data-index="${n}"${checked ? ' checked' : ''}${ctx.check ? ` data-change="${ctx.check}" aria-label="Spunta la voce"` : ' disabled'}> `;
     }
   }
-  flushPara(); flushList();
-  return out.join('');
+});
+
+// Menzioni in un testo già passato da esc(). refTitle(id) dà il titolo dell'elemento menzionato, oppure null se non esiste.
+function mentions(html) {
+  const { refTitle } = ctx;
+  return html.replace(MENTION, (_, pre, id) => {
+    const title = refTitle ? refTitle(id) : '';
+    const miss = refTitle && title == null;
+    return `${pre}<button type="button" class="mention${miss ? ' missing' : ''}" data-action="open-ref" data-id="${id}" title="${miss ? 'Non trovato' : esc(title || '')}">@${id}</button>`;
+  });
+}
+
+// check è il data-change delle caselle delle checklist; senza, le caselle si vedono ma non si cliccano.
+export function md(src, { refTitle = null, check = '' } = {}) {
+  ctx = { refTitle, check, checks: 0 };
+  try {
+    const html = MD.parse(String(src || ''));
+    // Senza DOM (i test in Node) DOMPurify non c'è: l'HTML del testo è comunque già stato reso innocuo dal renderer.
+    return DOMPurify.isSupported ? DOMPurify.sanitize(html, { ADD_ATTR: ['target'] }) : html;
+  } finally { ctx = null; }
+}
+
+// Spunta (o toglie la spunta al)la casella n del testo, contata come fa md(). Ogni voce si cerca nel testo dalla
+// prima riga del suo blocco in avanti, così le voci uguali, annidate o in una citazione cadono al posto giusto.
+export function toggleCheck(src, n) {
+  const text = String(src || '').replace(/\r\n?/g, '\n');
+  let pos = 0;
+  let k = 0;
+  let out = null;
+  for (const block of MD.lexer(text)) {
+    let cur = pos;
+    pos += block.raw.length;
+    MD.walkTokens([block], (t) => {
+      if (out != null || t.type !== 'list_item' || !t.task) return;
+      const line = t.raw.split('\n')[0].trimStart();   // marked converte in spazi i tab del rientro
+      const at = text.indexOf(line, cur);
+      const box = at === -1 ? -1 : at + line.search(/\[[ xX]\]/);
+      if (box >= at && at !== -1) cur = box + 3;
+      if (k++ === n && at !== -1) out = text.slice(0, box) + (t.checked ? '[ ]' : '[x]') + text.slice(box + 3);
+    });
+    if (out != null) return out;
+  }
+  return text;
 }
 
 // Link di un valore di una categoria a testo: il modello con {valore} sostituito, oppure il valore stesso se è già un link.

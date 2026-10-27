@@ -10,10 +10,11 @@ function go(el) {
   stopEditing();
   S.ui.hoverWeek = null;
   S.ui.recentDone = {};
+  S.ui.panelFull = false;   // il pannello a tutta area coprirebbe la pagina appena aperta
   if (d.view === 'project') S.ui.projectTab = 'open';
   render();
-  const main = root.querySelector('.scroll');
-  if (main) main.scrollTop = 0;
+  // La pagina nuova parte dall'alto: render() le avrebbe dato le posizioni di quella vecchia.
+  root.querySelectorAll('.scroll, .scroll-box').forEach((el) => { el.scrollTop = 0; });
 }
 
 // Evidenzia il pallino scelto senza ridisegnare e ne restituisce il colore.

@@ -221,7 +221,7 @@ export function description(t, isNew, un, label = 'DESCRIZIONE') {
     const refTitle = (id) => { const x = ref(id); return x ? x.titolo : null; };
     return `<div class="stack-10">
       ${head('<button class="btn-link small" data-action="desc-edit">Modifica</button>')}
-      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle })}</div>`
+      ${(t.descrizione || '').trim() ? `<div class="md desc-view">${md(t.descrizione, { refTitle, check: 'md-check-item' })}</div>`
         : '<button class="desc-empty" data-action="desc-edit">Aggiungi note, link, @menzioni… (Markdown)</button>'}
       ${S.ui.saved.descrizione ? `<span class="small save-state">Salvato</span>` : ''}
     </div>`;
@@ -236,6 +236,12 @@ export function description(t, isNew, un, label = 'DESCRIZIONE') {
     </div>
     <span class="row-between small"><span class="muted">Markdown · @ per citare · Esc per chiudere</span>${saveState('descrizione', un)}</span>
   </div>`;
+}
+
+// Allarga il pannello su tutta l'area dei contenuti (la sidebar resta) e lo riporta di lato.
+export function panelFullButton() {
+  const on = !!S.ui.panelFull;
+  return `<button class="icon-btn" data-action="panel-full" aria-pressed="${on}" aria-label="${on ? 'Riduci il pannello' : 'Espandi il pannello'}" title="${on ? 'Riduci' : 'Espandi'}">${on ? icon.minimize(17) : icon.maximize(17)}</button>`;
 }
 
 // "Non salvato" mentre si scrive, "Salvato" dopo il salvataggio. Il testo è aggiornato anche da app.js senza render.

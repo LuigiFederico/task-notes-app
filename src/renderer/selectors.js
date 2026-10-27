@@ -1,5 +1,5 @@
 // Letture che dipendono dallo stato dell'interfaccia (filtri, pannello aperto) o dalla data di oggi.
-import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks, prioOf } from './state.js';
+import { S, cat, tagOf, task, note, ref, isNoteId, project, isClosed, values, taskChips, openTasks, prioOf, sortTasks } from './state.js';
 import { todayISO, addDays, weekStart, dueBucket, mentionsOf } from './lib/util.js';
 
 export function currentTask() {
@@ -97,7 +97,8 @@ export function taskColumns({ showProject = true, showPrio = true } = {}) {
 // Gruppi della lista per il raggruppamento scelto: ognuno ha etichetta, colore e un test sul task.
 export function groupDefs(by) {
   if (by === 'progetto') {
-    const known = S.data.projects.map((p) => ({ key: p.codice, label: p.nome, color: p.colore, test: (t) => t.progetto === p.codice, link: p.codice }));
+    // keep: un progetto attivo resta nella lista anche senza task da mostrare (vedi listGroups).
+    const known = S.data.projects.map((p) => ({ key: p.codice, label: p.nome, color: p.colore, test: (t) => t.progetto === p.codice, link: p.codice, keep: p.stato !== 'archiviato' }));
     return [...known, { key: '__none', label: 'Senza progetto', color: '#B8B4A9', test: (t) => !project(t.progetto) }];
   }
   if (by === 'scadenza') {
@@ -132,11 +133,25 @@ export function groupDefs(by) {
   return defs;
 }
 
+export function filtersActive() {
+  const u = S.ui;
+  return !!(u.fProject || u.fPrio || u.fTag || u.search.trim());
+}
+
+// Gruppi della lista con i loro task, ordinati. Si tolgono quelli vuoti, tranne i progetti attivi quando non ci sono
+// filtri né ricerca: compaiono con "Nessun task", anche se hanno solo task completati e nascosti.
+export function listGroups(list, by) {
+  const keepEmpty = by === 'progetto' && !filtersActive();
+  return groupDefs(by)
+    .map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) }))
+    .filter((g) => g.items.length || (keepEmpty && g.keep));
+}
+
 // Perché la lista è vuota: nessun task, filtri che escludono tutto, oppure tutti completati e nascosti.
 export function emptyReason() {
   const u = S.ui;
   if (!S.data.tasks.length) return 'Ancora nessun task: scrivine uno qui sopra.';
-  if (u.fProject || u.fPrio || u.fTag || u.search.trim()) return 'Nessun task corrisponde ai filtri attivi.';
+  if (filtersActive()) return 'Nessun task corrisponde ai filtri attivi.';
   if (!u.showDone && S.data.tasks.every(isClosed)) return 'Tutti i task sono completati.';
   return 'Nessun task da mostrare.';
 }

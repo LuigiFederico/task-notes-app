@@ -98,6 +98,10 @@ La mascotte vive in basso a destra e reagisce alle azioni:
 
 Le immagini sono in `src/renderer/assets/mascotte/`, la logica in `src/renderer/mascot.js` (tabella `REACTIONS`) e le animazioni in fondo a `styles.css`. Nelle Impostazioni si può nascondere il corvo o attivare il movimento ridotto, che si attiva da solo anche quando Windows ha le animazioni disattivate.
 
+## Priorità progetti
+
+La sezione Priorità progetti mostra i progetti attivi come schede, nell'ordine di priorità: il primo è il focus. Si riordinano trascinando una scheda; l'ordine si salva come `ordine` nei file dei progetti (gli archiviati restano in coda) e vale in tutta l'app: barra a sinistra, pagina Progetti, task raggruppati per progetto e Grafo.
+
 ## Grafo
 
 La sezione Grafo mostra task e appunti su un cerchio, un arco per progetto (nell'ordine dei progetti) con il suo colore, e i collegamenti come curve che passano per il centro; le menzioni `@` sono tratteggiate e gli appunti sono cerchi vuoti. Il pallino è più grande quanto più l'elemento è collegato. I filtri scelgono task e/o appunti, progetti, stati e tipi di collegamento, e se colorare gli archi per progetto o per tipo. Passando sopra un nodo si evidenziano i suoi collegamenti; un clic lo apre.
@@ -151,7 +155,9 @@ I collegamenti si scrivono nel file del task da cui partono, una riga `"<tipo> <
 
 Nel testo (descrizione del task, ma anche descrizioni di progetti e tag) `@T-012` è una menzione: nel pannello diventa un link al task. Scrivendo `@` nella descrizione compaiono i task da citare. Le menzioni non si salvano nel front matter: si leggono dal testo.
 
-`stato` di un progetto è `attivo` oppure `archiviato`; `ordine` è la posizione scelta nella sezione Tag (vuoto: in fondo, per nome). Il `progetto` di un appunto è facoltativo. `collegamenti` e `sottotask` si scrivono solo se hanno voci. Il front matter non ammette commenti in linea (`chiave: valore # commento`): il commento diventerebbe parte del valore.
+Tutti i testi (descrizioni di task, progetti e tag, testo degli appunti e delle decisioni) sono Markdown GitHub (GFM): titoli, elenchi anche annidati, tabelle, blocchi di codice, citazioni, ~~barrato~~ e link, anche scritti come semplice indirizzo `https://…`. Una riga `- [ ] cosa` è una casella: cliccandola in lettura diventa `- [x] cosa` nel file, e viceversa (è diversa dai sotto-task, che stanno nel front matter). L'HTML scritto nel testo si vede così com'è, come testo, e si aprono solo i link `http` e `https`.
+
+`stato` di un progetto è `attivo` oppure `archiviato`; `ordine` è la posizione scelta nella sezione Priorità progetti (vuoto: in fondo, per nome). Il `progetto` di un appunto è facoltativo. `collegamenti` e `sottotask` si scrivono solo se hanno voci. Il front matter non ammette commenti in linea (`chiave: valore # commento`): il commento diventerebbe parte del valore.
 
 I sotto-task sono una checklist dentro il file del task: una riga `"[x] testo"` (fatto) o `"[ ] testo"` per voce, senza ID, stato o scadenza propri. Si spuntano, modificano, riordinano ed eliminano dal pannello, e non scrivono righe di storico.
 
@@ -187,6 +193,7 @@ colore: "#2F5BD3"
 stato: attivo
 creato: 2026-09-02
 ordine: 1
+repository: "https://github.com/esempio/dashboard-vendite"
 ---
 
 ## Descrizione
@@ -201,6 +208,8 @@ Niente estrazioni manuali da Excel.
 
 Task: T-029
 ```
+
+`repository` è testo libero (un indirizzo, un percorso, un nome) mostrato così com'è, senza link; se è vuoto la chiave non si scrive.
 
 ### Categorie e tag
 

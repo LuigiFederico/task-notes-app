@@ -1,6 +1,7 @@
-// Tag e categorie: creazione, modifica, ordine, unione ed eliminazione.
+// Tag e categorie: creazione, modifica, ordine (anche dei progetti), unione ed eliminazione.
 import { S, cat, TAG_COLORS } from '../state.js';
-import { api, render, reload, run, toast, stopEditing } from '../core.js';
+import { moveItem, toggleCheck } from '../lib/util.js';
+import { api, render, reload, run, toast, stopEditing, dragList, gripMove, serial } from '../core.js';
 import { pickSwatch } from './common.js';
 
 // Tag indicato da data-cat e data-tag. Se la categoria non esiste più l'errore sale, e non si salva un tag nuovo.
@@ -10,16 +11,6 @@ export const actions = {
   'tag-color': (el) => { S.ui.tagColor = pickSwatch(el); },
   'tag-page-color': (el) => run(async () => {
     await api.saveTag(el.dataset.cat, { ...targetTag(el), colore: el.dataset.value });
-    await reload();
-  }),
-  'tag-move': (el) => run(async () => {
-    const c = cat(el.dataset.cat);
-    const i = Number(el.dataset.index);
-    const j = i + Number(el.dataset.dir);
-    if (j < 0 || j >= c.tags.length) return;
-    const list = c.tags.slice();
-    [list[i], list[j]] = [list[j], list[i]];
-    for (let k = 0; k < list.length; k++) if (list[k].ordine !== k + 1) await api.saveTag(c.id, { ...list[k], ordine: k + 1 });
     await reload();
   }),
   'tag-merge-confirm': (el) => run(async () => {
@@ -47,7 +38,49 @@ export const actions = {
   })
 };
 
+// ---------------------------------------------------------------- ordine
+// Le tre liste della pagina Tag che si riordinano, come erano quando la voce è stata presa: la voce in posizione
+// from va in to. Lo Store rilegge i file e riscrive solo "ordine", come per la pagina Priorità progetti.
+function reorderer(grip) {
+  const { list, cat: catId } = grip.dataset;
+  const ids = list === 'proj' ? S.data.projects.map((p) => p.codice)   // archiviati compresi
+    : list === 'cat' ? S.data.categories.map((c) => c.id)
+    : cat(catId).tags.map((t) => t.id);
+  const save = list === 'proj' ? api.reorderProjects : list === 'cat' ? api.reorderCategories : (l) => api.reorderTags(catId, l);
+  return { length: ids.length, move: (from, to) => save(moveItem(ids, from, to)) };
+}
+
+// Trascinando la maniglia la voce segue il mouse e le altre scorrono; si salva al rilascio.
+export function startTagDrag(e) {
+  const grip = e.target.closest('.tag-grip');
+  if (!grip || grip.disabled || e.button !== 0) return;
+  const r = reorderer(grip);
+  dragList(e, grip, grip.closest('.cat-row, .tag-row'), (from, to) => run(async () => {
+    try { await r.move(from, to); } finally { await reload(); }
+  }));
+}
+
+export const keydowns = {
+  // Alt+↑ ↓ sulla maniglia sposta la voce di un posto; il focus la segue.
+  'tag-grip-key': (el, e) => {
+    const r = reorderer(el);
+    const j = gripMove(el, e, r.length);
+    if (j == null) return;
+    run(async () => {
+      try { await r.move(Number(el.dataset.index), j); } finally { await reload(); }
+      document.getElementById(`grip-${el.dataset.list}-${j}`)?.focus();
+    });
+  }
+};
+
 export const changes = {
+  // Casella di una checklist nella descrizione del tag: [ ] ↔ [x], poi si salva.
+  'md-check-tag': (el) => run(() => serial(async () => {
+    const box = el.closest('.md');
+    const t = targetTag(box);
+    await api.saveTag(box.dataset.cat, { ...t, descrizione: toggleCheck(t.descrizione, Number(el.dataset.index)) });
+    await reload();
+  })),
   'tag-inverse': (el) => run(async () => {
     await api.saveTag(el.dataset.cat, { ...targetTag(el), inverso: el.value.trim() });
     await reload();

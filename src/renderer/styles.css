@@ -81,7 +81,8 @@ pre { margin: 0; }
 .app { display: flex; height: 100vh; }
 .main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 .page { display: flex; flex-direction: column; gap: 20px; height: 100%; padding: 28px 36px 0; min-height: 0; }
-.page.narrow { max-width: 820px; overflow: auto; padding-bottom: 32px; }
+/* Larga 820px e centrata: il margine è nel padding, così la barra di scorrimento resta sul bordo della finestra. */
+.page.narrow { overflow: auto; padding-bottom: 32px; padding-inline: max(36px, calc((100% - 748px) / 2)); }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 .scroll { flex: 1 1 auto; overflow: auto; min-height: 0; padding-bottom: 28px; margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
 .display { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1; letter-spacing: -0.005em; }
@@ -202,6 +203,7 @@ pre { margin: 0; }
 /* Le colonne (ordine e larghezze) sono nello style della riga: vedi taskColumns in selectors.js. */
 .task-row { display: grid; column-gap: 12px; align-items: center; min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line-soft); }
 .card.list .task-row:last-child { border-bottom: 0; }
+.group-empty { display: flex; align-items: center; min-height: 48px; padding: 0 16px; }
 .task-row:hover { background: var(--surface-2); }
 .task-row.selected { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
 .task-row.head { min-height: 0; padding-bottom: 8px; border: 0; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: none; }
@@ -236,10 +238,15 @@ pre { margin: 0; }
 .sub-list { display: flex; flex-direction: column; gap: 2px; }
 .sub-item { display: flex; align-items: center; gap: 10px; min-height: 32px; padding: 0 4px; border-radius: 6px; transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
 /* Trascinamento: le voci scorrono per fare posto, quella presa si solleva e segue il mouse senza ritardo. */
-.sub-item.lifted { position: relative; z-index: 2; background: var(--surface); box-shadow: 0 8px 22px rgba(20,37,27,.16), 0 0 0 1px var(--line); transition: transform .18s cubic-bezier(.2, .8, .2, 1), box-shadow .15s; }
-.dragging .sub-item.lifted { transition: box-shadow .15s; }
+.cat-row, .tag-rows > .tag-row, .col-item { transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+.sub-item.lifted, .prio-card.lifted, .cat-row.lifted, .tag-row.lifted, .col-item.lifted { position: relative; z-index: 2; background: var(--surface); box-shadow: 0 8px 22px rgba(20,37,27,.16), 0 0 0 1px var(--line); transition: transform .18s cubic-bezier(.2, .8, .2, 1), box-shadow .15s; }
+.dragging :is(.sub-item, .prio-card, .cat-row, .tag-row, .col-item).lifted { transition: box-shadow .15s; }
 .sub-grip { display: flex; margin: 0 -6px 0 -2px; padding: 2px 0; border-radius: 4px; color: var(--faint); cursor: grab; touch-action: none; }
 .sub-item:hover .sub-grip:not(:disabled), .sub-grip:focus-visible { color: var(--muted); }
+/* Maniglie della pagina Tag e delle colonne nelle Impostazioni: come quella dei sotto-task. */
+.tag-grip, .col-grip { display: flex; padding: 2px 0; border-radius: 4px; color: var(--faint); cursor: grab; touch-action: none; }
+.tag-grip:disabled { cursor: default; opacity: .4; }
+:is(.cat-row, .tag-row, .col-item):hover :is(.tag-grip, .col-grip):not(:disabled), :is(.tag-grip, .col-grip):focus-visible { color: var(--muted); }
 .dragging, .dragging * { cursor: grabbing !important; user-select: none; }
 .sub-item:hover { background: var(--surface-2); }
 .sub-text { text-align: left; font-size: 14px; padding: 4px 0; min-width: 0; overflow-wrap: anywhere; }
@@ -250,11 +257,24 @@ pre { margin: 0; }
 .sub-add { width: 100%; }
 .sub-progress { display: inline-flex; align-items: center; gap: 3px; flex-shrink: 0; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .sub-progress.all { color: var(--accent); }
+
+/* Pagina Priorità progetti: schede trascinabili da qualsiasi punto (dragList in core.js, come i sotto-task). */
+.prio-list { display: flex; flex-direction: column; gap: 8px; max-width: 900px; }
+.prio-card { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 20px 0 14px; transition: transform .2s cubic-bezier(.2, .8, .2, 1); }
+.prio-card.movable { cursor: grab; touch-action: none; user-select: none; }
+.prio-grip { display: flex; color: var(--faint); }
+.prio-card:hover .prio-grip { color: var(--muted); }
+.prio-rank { width: 26px; text-align: center; font-family: var(--serif); font-size: 26px; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+.prio-focus { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
 .list-sub { padding: 10px 16px; font-size: 11px; font-weight: 600; letter-spacing: .06em; color: var(--muted); background: var(--surface-2); border-bottom: 1px solid var(--line-soft); }
 
 /* pannello dettaglio */
 .panel { position: relative; width: var(--panel-w, 540px); flex-shrink: 0; height: 100vh; background: var(--surface); border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgba(20,37,27,.06); display: flex; flex-direction: column; }
 /* Maniglia sul bordo sinistro del pannello: si trascina per allargarlo o stringerlo. */
+/* Pannello a tutta area: prende il posto della pagina, la sidebar resta. */
+.panel-full .main { display: none; }
+.panel-full .panel { flex: 1 1 auto; width: auto; }
+.panel-full .panel-resize { display: none; }
 .panel-resize { position: absolute; top: 0; bottom: 0; left: -4px; width: 8px; z-index: 2; cursor: col-resize; }
 .panel-resize:hover, .resizing .panel-resize { background: linear-gradient(to right, transparent 3px, var(--accent) 3px, var(--accent) 5px, transparent 5px); }
 /* Linguetta sul bordo sinistro del pannello: lo chiude come Esc. Sta sopra la maniglia, che resta trascinabile sopra e sotto. */
@@ -372,6 +392,23 @@ body.resizing .mascot { transition: none; }
 .md ul, .md ol { padding-left: 20px; margin-bottom: 0; }
 .md code { font-family: var(--mono); font-size: .9em; background: var(--chip); padding: 1px 4px; border-radius: 4px; }
 .md h4 { font-size: 15px; }
+/* GFM: blocchi di codice, citazioni, tabelle, barrato, righe e checklist (md() in lib/util.js). */
+.md :is(pre, blockquote, table, hr), .md > :is(ul, ol, pre, blockquote, table) + p { margin-top: 8px; }
+.md :is(blockquote, table, hr) { margin-left: 0; margin-right: 0; margin-bottom: 0; }
+.md li > :is(ul, ol) { margin-top: 2px; }
+.md pre { font-family: var(--mono); font-size: 13px; background: var(--chip); padding: 10px 12px; border-radius: 8px; overflow-x: auto; }
+.md pre code { background: none; padding: 0; font-size: inherit; }
+.md blockquote { padding-left: 12px; border-left: 3px solid var(--line-strong); color: var(--ink-2); }
+.md table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: .93em; }
+.md :is(th, td) { padding: 4px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.md th { background: var(--surface-2); font-weight: 600; }
+.md del { color: var(--muted); }
+.md hr { border: 0; border-top: 1px solid var(--line); }
+.md li:has(> .md-check) { list-style: none; }
+.md ul:has(> li > .md-check) { padding-left: 4px; }
+.md li > ul:has(> li > .md-check) { padding-left: 20px; }
+.md-check { margin: 0 6px 0 0; vertical-align: -2px; accent-color: var(--accent); }
+.md-check:not(:disabled) { cursor: pointer; }
 .small-md { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
 
 /* form */
@@ -394,7 +431,11 @@ body.resizing .mascot { transition: none; }
 /* tag */
 .tags-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; padding-bottom: 28px; }
 .tags-grid > div { overflow-y: auto; }
-.cat-item { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 12px; border-radius: 9px; border: 1px solid transparent; width: 100%; }
+.cat-item { display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 8px 12px 8px 24px; border-radius: 9px; border: 1px solid transparent; width: 100%; }
+/* Categorie riordinabili: la maniglia sta nel margine sinistro della voce (Progetto, fisso, non ce l'ha). */
+.cat-list { display: flex; flex-direction: column; gap: 4px; }
+.cat-row { position: relative; border-radius: 9px; }
+.cat-row > .tag-grip { position: absolute; z-index: 1; left: 5px; top: 50%; translate: 0 -50%; }
 .cat-item:hover { background: rgba(255,255,255,.6); }
 .cat-item.on { background: var(--surface); border-color: var(--input-line); box-shadow: 0 1px 2px rgba(20,37,27,.08); }
 .cat-detail { display: flex; flex-direction: column; overflow: auto; min-height: 0; }
@@ -469,7 +510,7 @@ svg.graph.dim .gnode.hl text { font-weight: 600; }
 .trash-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line-soft); }
 .trash-row .confirm { flex-basis: 100%; }
 .col-list { display: flex; flex-direction: column; max-width: 320px; }
-.col-item { display: flex; align-items: center; gap: 2px; min-height: 36px; padding: 0 4px 0 10px; border-bottom: 1px solid var(--line-soft); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--ink-2); }
+.col-item { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 10px 0 6px; border-bottom: 1px solid var(--line-soft); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--ink-2); }
 .col-item:last-child { border-bottom: 0; }
 .path { padding: 10px 12px; background: var(--bg); border-radius: 8px; font-size: 13px; word-break: break-all; }
 

@@ -27,6 +27,7 @@ export const S = {
     draft: null,        // task nuovo non ancora salvato
     openNote: null,     // id dell'appunto aperto nel pannello, oppure 'new' (mai insieme a openTask)
     noteDraft: null,    // appunto nuovo non ancora salvato
+    panelFull: false,   // pannello allargato su tutta l'area dei contenuti; si richiude chiudendolo o cambiando pagina
     noteSearch: '',
     // Filtri del grafo: gli elenchi dicono cosa nascondere (vuoti = tutto visibile).
     graph: { kind: 'tutti', edgeColor: 'progetto', hideProjects: [], hideStates: [], hideTypes: [] },

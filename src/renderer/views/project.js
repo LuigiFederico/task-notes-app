@@ -5,7 +5,7 @@ import { icon } from '../lib/icons.js';
 import { taskRow, taskHeader, noteRow, noteHeader, segmented, emptyState, confirmBox, kpiTile, colorPicker, options, select } from './components.js';
 
 export function newProjectView() {
-  const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '' };
+  const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '', repository: '' };
   S.ui.projectDraft = d;
   return `
   <div class="page narrow">
@@ -16,6 +16,7 @@ export function newProjectView() {
       <label class="field"><span>Codice (tag del progetto)</span><input name="codice" required maxlength="8" value="${esc(d.codice)}" data-input="project-draft" data-field="codice" class="mono" placeholder="VEND"><small class="muted">Da 2 a 8 lettere o numeri. Dà il nome al file e non si può cambiare in seguito.</small></label>
       <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, d.colore, 'draft-color', { custom: 'draft-color-custom' })}</div>
       <label class="field"><span>Descrizione</span><textarea name="descrizione" rows="5" data-input="project-draft" data-field="descrizione" placeholder="A cosa serve il progetto (Markdown)">${esc(d.descrizione)}</textarea></label>
+      <label class="field"><span>Repository</span><input name="repository" value="${esc(d.repository)}" data-input="project-draft" data-field="repository" class="mono" placeholder="Es. https://github.com/… o un percorso (facoltativo)"></label>
       <div class="row-10 end"><button type="button" class="btn" data-action="go" data-view="projects">Annulla</button><button type="submit" class="btn primary">Crea progetto</button></div>
     </form>
   </div>`;
@@ -43,6 +44,7 @@ export function projectView(code) {
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(p.nome)}"></label>
         <label class="field"><span>Stato</span>${select('name="stato"', options([['attivo', 'Attivo'], ['archiviato', 'Archiviato']], p.stato === 'archiviato' ? 'archiviato' : 'attivo'))}</label>
       </div>
+      <label class="field"><span>Repository</span><input name="repository" value="${esc(p.repository)}" class="mono" placeholder="Es. https://github.com/… o un percorso (facoltativo)"></label>
       <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, p.colore, 'project-color', { custom: 'project-color-custom' })}</div>
       ${confirmDel ? confirmBox(`Eliminare «${p.nome}»? Potrai ripristinarlo dal Cestino.`, 'data-action="project-delete"') : ''}
       <div class="row-10">
@@ -59,6 +61,7 @@ export function projectView(code) {
             <span class="pill" style="${p.stato === 'archiviato' ? '' : 'color:#146C43;background:#E3F2EA'}">${p.stato === 'archiviato' ? 'Archiviato' : 'Attivo'}</span>
             <span>Tag progetto <span class="mono strong">${esc(p.codice)}</span></span><span>·</span><span>Creato ${esc(fmtFull(p.creato))}</span>
           </div>
+          ${p.repository ? `<div class="row-8 muted small minw0"><span>Repository</span><span class="mono strong ellipsis">${esc(p.repository)}</span></div>` : ''}
         </div>
       </div>
       <div class="row-8"><button class="btn" data-action="edit" data-key="project-head">Modifica</button><button class="btn primary" data-action="new-task" data-code="${esc(code)}">${icon.plus(16)}Nuovo task</button></div>
@@ -72,7 +75,7 @@ export function projectView(code) {
           ${S.ui.confirm === `decision:${i}` ? '' : `<button class="icon-btn sm" data-action="ask-confirm" data-key="decision:${i}" aria-label="Elimina decisione">${icon.trash(14)}</button>`}</div>
         <span class="strong">${esc(d.titolo)}</span>
         ${S.ui.confirm === `decision:${i}` ? confirmBox('Eliminare questa decisione?', `data-action="decision-delete" data-index="${i}"`) : ''}
-        ${d.testo ? `<div class="md small-md">${md(d.testo)}</div>` : ''}
+        ${d.testo ? `<div class="md small-md" data-index="${i}">${md(d.testo, { check: 'md-check-decision' })}</div>` : ''}
         ${d.task ? `<button class="btn-link small" data-action="open-task" data-id="${esc(d.task)}">Da ${esc(d.task)}</button>` : ''}
       </div>
     </li>`).join('');
@@ -102,7 +105,7 @@ export function projectView(code) {
           <section class="card pad stack-10">
             <div class="row-between"><h2 class="section-label">DESCRIZIONE</h2>${editDesc ? '' : '<button class="btn-link small" data-action="edit" data-key="project-desc">Modifica</button>'}</div>
             ${editDesc ? `<form class="stack-10" data-submit="save-project-desc"><textarea name="descrizione" rows="6" autofocus>${esc(p.descrizione)}</textarea><div class="row-8 end"><button type="button" class="btn" data-action="cancel-edit">Annulla</button><button type="submit" class="btn primary">Salva</button></div></form>`
-              : p.descrizione ? `<div class="md">${md(p.descrizione)}</div>` : '<p class="muted">Nessuna descrizione. Aggiungine una per ricordarti obiettivo e contesto.</p>'}
+              : p.descrizione ? `<div class="md">${md(p.descrizione, { check: 'md-check-project' })}</div>` : '<p class="muted">Nessuna descrizione. Aggiungine una per ricordarti obiettivo e contesto.</p>'}
           </section>
           <section class="stack-12">
             <div class="row-between"><h2 class="h2">Task del progetto</h2>${segmented([['open', 'Aperti', open.length], ['done', 'Completati', done], ['all', 'Tutti', all.length]], tab, 'project-tab', 'Filtro task')}</div>

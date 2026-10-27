@@ -2,7 +2,7 @@
 // Gli handler in handlers/ usano queste funzioni; qui non si importa mai un handler.
 import { S, task, openTasks, tagCats } from './state.js';
 import { visibleTasks, visibleNotes } from './selectors.js';
-import { esc } from './lib/util.js';
+import { esc, dropIndex } from './lib/util.js';
 import { icon } from './lib/icons.js';
 import { sidebar } from './views/sidebar.js';
 import { tasksView, taskList } from './views/tasks.js';
@@ -11,6 +11,7 @@ import { notesView, noteList } from './views/notes.js';
 import { notePanel } from './views/notePanel.js';
 import { graphView } from './views/graph.js';
 import { projectsView } from './views/projects.js';
+import { priorityView } from './views/priorita.js';
 import { projectView, newProjectView } from './views/project.js';
 import { tagsView } from './views/tags.js';
 import { tagView } from './views/tag.js';
@@ -26,6 +27,7 @@ function viewHtml() {
   const v = S.view;
   switch (v.name) {
     case 'projects': return projectsView();
+    case 'priorita': return priorityView();
     case 'project': return projectView(v.code);
     case 'new-project': return newProjectView();
     case 'tags': return tagsView();
@@ -45,8 +47,14 @@ function toastHtml() {
   return `<div class="toast ${S.toast.kind}" role="status">${esc(S.toast.text)}</div>`;
 }
 
+// Contenitori che scorrono: render() ne rimette la posizione e dragList() li fa scorrere vicino ai bordi.
+// .scroll-box è per quelli che non hanno lo stile di .scroll (colonne della pagina Tag, Impostazioni).
+const SCROLLERS = '.scroll, .panel-body, .scroll-box';
+
 // Elementi con un'animazione d'ingresso: la fanno solo nel render in cui compaiono.
 const ENTERING = ['.panel', '.toast'];
+
+let shownView = '';   // la pagina dell'ultimo render, per accorgersi di quando cambia
 
 // Ridisegna tutto, poi rimette focus, selezione del testo e posizioni di scorrimento.
 export function render() {
@@ -54,20 +62,25 @@ export function render() {
   const active = document.activeElement;
   const focusId = active && active.id;
   const sel = focusId && 'selectionStart' in active ? [active.selectionStart, active.selectionEnd] : null;
-  const scrolls = [...document.querySelectorAll('.scroll, .panel-body')].map((el) => el.scrollTop);
+  const scrolls = [...document.querySelectorAll(SCROLLERS)].map((el) => el.scrollTop);
 
   if (!S.config || !S.config.ready || S.view.name === 'setup') {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
-    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
+    // Il pannello a tutta area torna di lato quando si chiude, da qualsiasi parte (Esc, eliminazione, task sparito
+    // al reload), e quando cambia la pagina sotto (Ctrl+K, Nuovo progetto…), che altrimenti resterebbe nascosta.
+    const viewKey = JSON.stringify(S.view);
+    if (!panel || viewKey !== shownView) S.ui.panelFull = false;
+    shownView = viewKey;
+    root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${panel && S.ui.panelFull ? ' panel-full' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
   ENTERING.forEach((s) => { if (!present.includes(s)) playOnce(s); });
   settle();
   applyPanelWidth();
 
-  [...document.querySelectorAll('.scroll, .panel-body')].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
+  [...document.querySelectorAll(SCROLLERS)].forEach((el, i) => { if (scrolls[i] != null) el.scrollTop = scrolls[i]; });
   if (focusId) {
     const el = document.getElementById(focusId);
     if (el) {
@@ -93,7 +106,8 @@ export function applyPanelWidth() {
 // Posa di base del corvo in funzione di ciò che si vede.
 function updateMascot() {
   const ready = S.config && S.config.ready && S.data && S.view.name !== 'setup';
-  mascot.setLayout({ panelOpen: !!(S.ui.openTask || S.ui.openNote), hidden: !ready });
+  // Col pannello a tutta area il corvo torna al suo posto, a destra.
+  mascot.setLayout({ panelOpen: !!(S.ui.openTask || S.ui.openNote) && !S.ui.panelFull, hidden: !ready });
   if (!ready) return;
   const open = openTasks().length;
   let base = 'riposo';
@@ -141,6 +155,83 @@ function settle() {
   if (!el || !root.contains(el)) return;
   el.classList.add('settled');
   el.addEventListener('pointerleave', () => el.classList.remove('settled'), { once: true });
+}
+
+// ---------------------------------------------------------------- trascinamento
+// Trascinando, la voce segue il mouse e le altre della lista scorrono per farle posto; al rilascio onDrop(from, to).
+// Niente render durante il trascinamento, come per la larghezza del pannello (startPanelResize in layout.js).
+// La usano i sotto-task (startSubDrag), le schede della pagina Priorità progetti (startPrioDrag), le liste della
+// pagina Tag (startTagDrag) e le colonne nelle Impostazioni (startColDrag).
+export function dragList(e, handle, item, onDrop) {
+  e.preventDefault();
+  const items = [...item.parentElement.children];
+  const from = items.indexOf(item);
+  // Le voci possono andare a capo: lo slot si calcola dai rettangoli reali, non da un'altezza fissa.
+  const rects = items.map((el) => el.getBoundingClientRect());
+  const mids = rects.map((r) => r.top + r.height / 2);
+  const step = rects[from].height + (parseFloat(getComputedStyle(item.parentElement).rowGap) || 0);   // altezza della voce + gap della lista
+  const min = rects[0].top - rects[from].top;
+  const max = rects.at(-1).bottom - rects[from].bottom;
+  // Il contenitore che scorre: lo spostamento conta anche quanto è scorso (rotellina o bordi) dalla presa.
+  const box = item.closest(SCROLLERS);
+  const scroll0 = box ? box.scrollTop : 0;
+  let y = e.clientY;
+  let to = from;
+  let frame = 0;
+  handle.setPointerCapture(e.pointerId);
+  document.body.classList.add('dragging');
+  item.classList.add('lifted');
+  const update = () => {
+    const dy = Math.max(min, Math.min(max, y - e.clientY + (box ? box.scrollTop - scroll0 : 0)));
+    item.style.transform = `translateY(${dy}px) scale(1.02)`;
+    to = dropIndex(mids, mids[from] + dy, from);
+    items.forEach((el, k) => {
+      if (k === from) return;
+      const shift = from < k && k <= to ? -step : to <= k && k < from ? step : 0;
+      el.style.transform = shift ? `translateY(${shift}px)` : '';
+    });
+  };
+  // A meno di 40px dal bordo del contenitore (o oltre) la lista scorre, più veloce quanto più si è vicini.
+  const autoScroll = () => {
+    const r = box.getBoundingClientRect();
+    const over = y < r.top + 40 ? y - r.top - 40 : y > r.bottom - 40 ? y - r.bottom + 40 : 0;
+    if (over) box.scrollTop += Math.max(-20, Math.min(20, over / 2));
+    frame = requestAnimationFrame(autoScroll);
+  };
+  const move = (ev) => { y = ev.clientY; update(); };
+  handle.addEventListener('pointermove', move);
+  if (box) { box.addEventListener('scroll', update); frame = requestAnimationFrame(autoScroll); }
+  handle.addEventListener('lostpointercapture', () => {
+    handle.removeEventListener('pointermove', move);
+    if (box) { box.removeEventListener('scroll', update); cancelAnimationFrame(frame); }
+    // La voce si posa nel posto nuovo (.18s), poi il salvataggio ridisegna la lista nell'ordine giusto.
+    // "dragging" resta fino ad allora: un reload in mezzo cambierebbe la lista a cui si riferiscono from e to.
+    const land = to > from ? rects[to].bottom - rects[from].bottom : rects[to].top - rects[from].top;
+    item.style.transform = `translateY(${land}px)`;
+    setTimeout(() => {
+      document.body.classList.remove('dragging');
+      if (to === from) { item.classList.remove('lifted'); item.style.transform = ''; return; }
+      onDrop(from, to);
+    }, 180);
+  }, { once: true });
+}
+
+// Alt+↑ ↓ su una maniglia di trascinamento (data-index): la posizione in cui va la voce, oppure null
+// se il tasto è un altro o la voce è già in cima/in fondo a una lista di length voci.
+export function gripMove(el, e, length) {
+  if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return null;
+  e.preventDefault();
+  const j = Number(el.dataset.index) + (e.key === 'ArrowUp' ? -1 : 1);
+  return j < 0 || j >= length ? null : j;
+}
+
+// Esegue fn dopo quelle già in coda: un secondo clic su una casella di una checklist legge il testo già salvato
+// e ricaricato dal primo, invece di riscrivere quello vecchio.
+let queue = Promise.resolve();
+export function serial(fn) {
+  const p = queue.then(fn);
+  queue = p.catch(() => {});
+  return p;
 }
 
 // ---------------------------------------------------------------- avvisi

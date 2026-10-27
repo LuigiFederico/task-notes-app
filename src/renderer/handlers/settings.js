@@ -2,7 +2,8 @@
 import { S } from '../state.js';
 import { DEFAULT_COLUMNS, columnOrder } from '../selectors.js';
 import { mascot } from '../mascot.js';
-import { api, render, reload, run, toast } from '../core.js';
+import { moveItem } from '../lib/util.js';
+import { api, render, reload, run, toast, dragList, gripMove } from '../core.js';
 import { flush } from './task.js';
 
 export const actions = {
@@ -61,16 +62,6 @@ export const actions = {
     await reload();
     toast('Eliminato per sempre');
   }),
-  // Scambia due colonne; l'ordine di partenza non si scrive in taccuino.json.
-  'column-move': (el) => run(async () => {
-    const list = columnOrder();
-    const i = Number(el.dataset.index);
-    const j = i + Number(el.dataset.dir);
-    if (j < 0 || j >= list.length) return;
-    [list[i], list[j]] = [list[j], list[i]];
-    await api.saveColumns(list.join() === DEFAULT_COLUMNS.join() ? null : list);
-    await reload();
-  }),
   'columns-reset': () => run(async () => { await api.saveColumns(null); await reload(); }),
   'trash-empty': () => run(async () => {
     await api.emptyTrash();
@@ -85,6 +76,32 @@ export const changes = {
   'mascot-reduced': (el) => { mascot.setPrefs({ reduced: el.checked }); render(); },
   'open-at-login': (el) => run(async () => { await api.setOpenAtLogin(el.checked); S.config.openAtLogin = el.checked; })
 };
+
+// Sposta una colonna; l'ordine di partenza non si scrive in taccuino.json.
+async function moveColumn(from, to) {
+  const list = moveItem(columnOrder(), from, to);
+  await api.saveColumns(list.join() === DEFAULT_COLUMNS.join() ? null : list);
+  await reload();
+}
+
+export const keydowns = {
+  // Alt+↑ ↓ sulla maniglia sposta la colonna di un posto; il focus la segue.
+  'col-grip-key': (el, e) => {
+    const j = gripMove(el, e, columnOrder().length);
+    if (j == null) return;
+    run(async () => {
+      await moveColumn(Number(el.dataset.index), j);
+      document.getElementById('col-grip-' + j)?.focus();
+    });
+  }
+};
+
+// Trascinando la maniglia la colonna segue il mouse; si salva al rilascio.
+export function startColDrag(e) {
+  const handle = e.target.closest('.col-grip');
+  if (!handle || e.button !== 0) return;
+  dragList(e, handle, handle.closest('.col-item'), (from, to) => run(() => moveColumn(from, to)));
+}
 
 export const inputs = {
   'setup-dir': (el) => { S.ui.setupDir = el.value; }

@@ -170,6 +170,18 @@ test('progetto: descrizione e decisioni', async () => {
   await assert.rejects(() => s.saveProject({ codice: '' }));
 });
 
+test('progetto: repository come testo libero, scritto solo se c\'è', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  const repo = 'https://git.example.com/team/vendite.git#main: "prod"';
+  await s.saveProject({ codice: 'VEND', nome: 'Vendite', repository: `  ${repo}  ` });
+  await s.saveProject({ codice: 'ECOM', nome: 'E-commerce', repository: '   ' });
+  const list = await s.loadProjects();
+  assert.strictEqual(list.find((p) => p.codice === 'VEND').repository, repo);
+  assert.strictEqual(list.find((p) => p.codice === 'ECOM').repository, '');
+  assert.ok(!fs.readFileSync(path.join(s.dir, 'projects', 'ECOM.md'), 'utf8').includes('repository'));
+});
+
 test('progetto: l\'ordine scelto viene prima del nome, i progetti senza ordine vanno in fondo', async () => {
   const s = new Store(tmpDir());
   await s.init();
@@ -177,6 +189,54 @@ test('progetto: l\'ordine scelto viene prima del nome, i progetti senza ordine v
   await s.saveProject({ codice: 'ZZZ', nome: 'Zeta', ordine: 1 });
   await s.saveProject({ codice: 'MMM', nome: 'Emme', ordine: 2 });
   assert.deepStrictEqual((await s.loadProjects()).map((p) => p.codice), ['ZZZ', 'MMM', 'AAA']);
+});
+
+test('progetto: riordino dalla pagina Priorità progetti, gli altri in coda e solo "ordine" riscritto dal disco', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveProject({ codice: 'VEND', nome: 'Vendite', ordine: 1 });
+  await s.saveProject({ codice: 'OLD', nome: 'Vecchio', stato: 'archiviato', ordine: 2 });
+  await s.saveProject({ codice: 'ECOM', nome: 'E-commerce', ordine: 3, descrizione: 'Vecchia.' });
+  await s.saveProject({ codice: 'CRM', nome: 'CRM' });
+  // Una descrizione arrivata da fuori (OneDrive) dopo l'ultimo caricamento dell'app.
+  const file = path.join(s.dir, 'projects', 'ECOM.md');
+  fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Vecchia.', 'Scritta da un altro PC.'));
+  const written = [];
+  const write = s.write.bind(s);
+  s.write = (f, c) => { written.push(path.basename(f)); return write(f, c); };
+  await s.reorderProjects(['CRM', 'VEND', 'ECOM', 'BOH']);
+  const list = await s.loadProjects();
+  assert.deepStrictEqual(list.map((p) => `${p.codice}:${p.ordine}`), ['CRM:1', 'VEND:2', 'ECOM:3', 'OLD:4']);
+  assert.deepStrictEqual(written.sort(), ['CRM.md', 'OLD.md', 'VEND.md'], 'ECOM era già 3: non si riscrive');
+  assert.strictEqual(list.find((p) => p.codice === 'ECOM').descrizione, 'Scritta da un altro PC.');
+  written.length = 0;
+  await s.reorderProjects(['ECOM', 'CRM', 'VEND']);
+  assert.deepStrictEqual(written.sort(), ['CRM.md', 'ECOM.md', 'VEND.md'], 'OLD resta 4');
+  assert.ok(fs.readFileSync(file, 'utf8').includes('Scritta da un altro PC.'), 'riscritto dal disco, non da una copia vecchia');
+});
+
+test('tag e categorie: riordino dalla pagina Tag, solo "ordine" riscritto dal disco', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  await s.saveTag('etichette', { nome: 'Uno', ordine: 1 });
+  await s.saveTag('etichette', { nome: 'Due', ordine: 2 });
+  await s.saveTag('etichette', { nome: 'Tre', ordine: 3, descrizione: 'Vecchia.' });
+  fs.mkdirSync(path.join(s.dir, 'tags', 'contesto'));   // categoria senza _categoria.md
+  // Una descrizione arrivata da fuori (OneDrive) dopo l'ultimo caricamento dell'app.
+  const file = path.join(s.dir, 'tags', 'etichette', 'tre.md');
+  fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Vecchia.', 'Scritta da un altro PC.'));
+  await s.reorderTags('etichette', ['tre', 'uno', 'nessuno']);
+  let cats = await s.loadCategories();
+  const tags = cats.find((c) => c.id === 'etichette').tags;
+  assert.deepStrictEqual(tags.map((t) => `${t.id}:${t.ordine}`), ['tre:1', 'uno:2', 'due:3']);
+  assert.strictEqual(tags[0].descrizione, 'Scritta da un altro PC.');
+  await assert.rejects(() => s.reorderTags('boh', []));
+
+  await s.reorderCategories(['contesto', 'stato']);
+  cats = await s.loadCategories();
+  assert.deepStrictEqual(cats.map((c) => c.id), ['contesto', 'stato', 'priorita', 'etichette', 'collegamento']);
+  assert.ok(fs.existsSync(path.join(s.dir, 'tags', 'contesto', '_categoria.md')));
+  assert.strictEqual(cats.find((c) => c.id === 'priorita').tags.length, 5, 'i tag non si toccano');
 });
 
 test('tag: creazione, unione ed eliminazione aggiornano i task', async () => {

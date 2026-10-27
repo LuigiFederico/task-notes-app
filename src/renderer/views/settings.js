@@ -27,13 +27,12 @@ function trashSection() {
     </section>`;
 }
 
-// Ordine delle colonne della lista task: frecce come per i sotto-task; si salva nella cartella dati.
+// Ordine delle colonne della lista task: si trascina la maniglia (o Alt+↑ ↓), come per i sotto-task; si salva nella cartella dati.
 function columnsSection() {
   const order = columnOrder();
   const rows = order.map((id, i) => {
     const label = TASK_COLUMNS.find((c) => c.id === id).label;
-    const arrow = (dir, ico, off) => `<button id="col-${id}-${dir < 0 ? 'up' : 'down'}" class="icon-btn sm" data-action="column-move" data-index="${i}" data-dir="${dir}" aria-label="Sposta ${esc(label)} ${dir < 0 ? 'prima' : 'dopo'}" ${off ? 'disabled' : ''}>${ico}</button>`;
-    return `<div class="col-item"><span class="grow">${esc(label)}</span>${arrow(-1, icon.up(14), i === 0)}${arrow(1, icon.down(14), i === order.length - 1)}</div>`;
+    return `<div class="col-item"><button id="col-grip-${i}" class="col-grip" data-index="${i}" data-keydown="col-grip-key" aria-label="Riordina ${esc(label)} (Alt+↑ ↓)" title="Trascina per riordinare">${icon.grip(14)}</button><span class="grow">${esc(label)}</span></div>`;
   }).join('');
   return `
     <section class="card pad stack-12">
@@ -69,7 +68,7 @@ function updateSection() {
 export function settingsView() {
   const cfg = S.config;
   return `
-  <div class="page narrow">
+  <div class="page narrow scroll-box">
     <h1 class="display">Impostazioni</h1>
     <section class="card pad stack-16">
       <h2 class="h2">Cartella dati</h2>

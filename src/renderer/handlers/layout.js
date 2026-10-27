@@ -1,9 +1,11 @@
-// Disposizione della finestra: sidebar richiudibile e larghezza del pannello. Preferenze solo di questo PC (vedi saveView in state.js).
+// Disposizione della finestra: sidebar richiudibile, larghezza del pannello e pannello a tutta area.
+// Sidebar e larghezza sono preferenze di questo PC (vedi saveView in state.js); il pannello a tutta area non si ricorda.
 import { S, saveView } from '../state.js';
 import { render, clampPanel, applyPanelWidth, autosizeTitle } from '../core.js';
 
 export const actions = {
-  'toggle-sidebar': () => { S.ui.sideCollapsed = !S.ui.sideCollapsed; saveView(); render(); }
+  'toggle-sidebar': () => { S.ui.sideCollapsed = !S.ui.sideCollapsed; saveView(); render(); },
+  'panel-full': () => { S.ui.panelFull = !S.ui.panelFull; render(); }
 };
 
 // Trascinando il bordo sinistro del pannello la larghezza cambia subito, senza render; si ricorda al rilascio.

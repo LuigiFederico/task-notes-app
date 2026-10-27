@@ -1,11 +1,11 @@
-import { S, cat, tagCats, sortTasks, openTasks } from '../state.js';
-import { visibleTasks, groupDefs, emptyReason } from '../selectors.js';
+import { S, cat, tagCats, openTasks } from '../state.js';
+import { visibleTasks, listGroups, emptyReason } from '../selectors.js';
 import { esc, safeColor, fmtToday } from '../lib/util.js';
 import { icon } from '../lib/icons.js';
 import { taskRow, taskHeader, segmented, emptyState, options } from './components.js';
 
 export function taskList(list, by, { showProject = true } = {}) {
-  const groups = groupDefs(by).map((g) => ({ ...g, items: sortTasks(list.filter(g.test)) })).filter((g) => g.items.length);
+  const groups = listGroups(list, by);
   if (!groups.length) return emptyState(emptyReason());
   return `${taskHeader({ showProject })}<div class="groups">${groups.map((g) => `
     <section class="group">
@@ -14,7 +14,7 @@ export function taskList(list, by, { showProject = true } = {}) {
         ${g.link ? `<button class="group-title link" data-action="go" data-view="project" data-code="${esc(g.link)}">${esc(g.label)}</button>` : `<span class="group-title">${esc(g.label)}</span>`}
         <span class="muted small">${g.items.length}</span>
       </div>
-      <div class="card list">${g.items.map((t) => taskRow(t, { showProject })).join('')}</div>
+      <div class="card list">${g.items.length ? g.items.map((t) => taskRow(t, { showProject })).join('') : '<div class="group-empty muted small">Nessun task</div>'}</div>
     </section>`).join('')}</div>`;
 }
 

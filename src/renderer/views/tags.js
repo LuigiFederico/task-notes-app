@@ -16,13 +16,23 @@ function inverseField(value) {
 
 function kindLabel(c) { return c.id === 'collegamento' ? 'Tipi di collegamento' : KIND_LABELS[c.tipo] || KIND_LABELS.multipla; }
 
+// Maniglia per riordinare una voce trascinandola o con Alt+↑ ↓ (startTagDrag in handlers/tag.js).
+// list dice quale lista: 'cat' (categorie), 'tag' (tag di una categoria) o 'proj' (progetti).
+function grip(list, i, label, { cat = '', off = false } = {}) {
+  return `<button id="grip-${list}-${i}" class="tag-grip" data-list="${list}" data-cat="${esc(cat)}" data-index="${i}" data-keydown="tag-grip-key"
+    aria-label="Riordina ${esc(label)} (Alt+↑ ↓)" title="Trascina per riordinare"${off ? ' disabled' : ''}>${icon.grip(14)}</button>`;
+}
+
 export function tagsView() {
   const sel = S.view.cat || 'progetto';
-  const cats = [{ id: 'progetto', nome: 'Progetto', tipo: 'singola', obbligatoria: true, sistema: true, tags: S.data.projects }, ...S.data.categories];
-  const list = cats.map((c) => `
+  // Progetto resta sempre in testa; le altre categorie si riordinano trascinandole.
+  const item = (c) => `
     <button class="cat-item${c.id === sel ? ' on' : ''}" data-action="go" data-view="tags" data-cat="${esc(c.id)}" aria-pressed="${c.id === sel}">
       <span class="stack-2 grow"><span class="strong">${esc(c.nome)}</span><span class="muted small">${kindLabel(c)}</span></span><span class="muted small">${c.tags.length}</span>
-    </button>`).join('');
+    </button>`;
+  const cats = S.data.categories;
+  const list = item({ id: 'progetto', nome: 'Progetto', tipo: 'singola', tags: S.data.projects })
+    + `<div class="cat-list">${cats.map((c, i) => `<div class="cat-row">${cats.length > 1 ? grip('cat', i, c.nome) : ''}${item(c)}</div>`).join('')}</div>`;
   const newCat = S.ui.editing === 'cat-new' ? `
     <form class="card pad stack-10 form" data-submit="create-category">
       <label class="field"><span>Nome categoria</span><input name="nome" required placeholder="Es. Contesto" autofocus></label>
@@ -33,18 +43,15 @@ export function tagsView() {
   let detail;
   if (sel === 'progetto') {
     detail = `
-      <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">Progetto</h2><span class="muted small">Ogni task appartiene a un progetto. Si creano e modificano dalla sezione Progetti; l'ordine scelto qui vale in tutta l'app.</span></div>
+      <div class="cat-head"><div class="stack-4 grow"><h2 class="h2 lg">Progetto</h2><span class="muted small">Ogni task appartiene a un progetto. Si creano e modificano dalla sezione Progetti; l'ordine si sceglie trascinando le righe qui sotto o dalla pagina <button class="btn-link" data-action="go" data-view="priorita">Priorità progetti</button>.</span></div>
         <span class="pill">Scelta singola</span><span class="pill">Obbligatoria</span></div>
       <div class="tag-row head"><span></span><span>NOME</span><span>DESCRIZIONE</span><span>APERTI</span><span>TOTALE</span><span></span></div>
-      ${S.data.projects.map((p, i) => { const pt = projectTasks(p.codice); return `
+      <div class="tag-rows">${S.data.projects.map((p, i) => { const pt = projectTasks(p.codice); return `
         <div class="tag-row"><span class="swatch-static" style="background:${safeColor(p.colore)}"></span>
           <button class="link strong" data-action="go" data-view="project" data-code="${esc(p.codice)}">${esc(p.nome)}</button>
           <span class="ellipsis small">${esc((p.descrizione || '').split('\n')[0])}</span>
           <span>${openTasks(pt).length}</span><span class="muted">${pt.length}</span>
-          <span class="row-2">
-            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="-1" aria-label="Sposta su ${esc(p.nome)}" ${i === 0 ? 'disabled' : ''}>${icon.up(14)}</button>
-            <button class="icon-btn sm" data-action="project-move" data-index="${i}" data-dir="1" aria-label="Sposta giù ${esc(p.nome)}" ${i === S.data.projects.length - 1 ? 'disabled' : ''}>${icon.down(14)}</button>
-          </span></div>`; }).join('')}
+          <span class="row-2">${S.data.projects.length > 1 ? grip('proj', i, p.nome) : ''}</span></div>`; }).join('')}</div>
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">projects/*.md</span></div>`;
   } else {
     const c = cat(sel);
@@ -52,6 +59,7 @@ export function tagsView() {
     const editingCat = S.ui.editing === 'cat-edit';
     const confirmCat = S.ui.confirm === 'cat:' + c.id;
     const catUsed = S.data.tasks.filter((t) => values(t, c.id).length > 0).length;
+    const editingTag = String(S.ui.editing || '').startsWith('tag:');   // la maniglia è spenta mentre un tag è in modifica
     const rows = c.tags.map((t, i) => {
       const u = tagUsage(c.id, t.id);
       if (S.ui.editing === 'tag:' + t.id) {
@@ -70,8 +78,7 @@ export function tagsView() {
         <span class="ellipsis small">${c.id === 'collegamento' ? `<span class="muted">Dall'altro lato: </span>${esc(t.inverso || t.nome)}` : esc((t.descrizione || '').split('\n')[0])}</span>
         <span>${u.open}</span><span class="muted">${u.total}</span>
         <span class="row-2">
-          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="-1" aria-label="Sposta su" ${i === 0 ? 'disabled' : ''}>${icon.up(14)}</button>
-          <button class="icon-btn sm" data-action="tag-move" data-cat="${esc(c.id)}" data-index="${i}" data-dir="1" aria-label="Sposta giù" ${i === c.tags.length - 1 ? 'disabled' : ''}>${icon.down(14)}</button>
+          ${c.tags.length > 1 ? grip('tag', i, t.nome, { cat: c.id, off: editingTag }) : ''}
           <button class="icon-btn sm" data-action="edit" data-key="tag:${esc(t.id)}" aria-label="Modifica ${esc(t.nome)}">${icon.edit(15)}</button>
         </span>
       </div>`;
@@ -105,7 +112,7 @@ export function tagsView() {
       </div>
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">tags/${esc(c.id)}/_categoria.md</span></div>` : `${head}
       <div class="tag-row head"><span></span><span>NOME</span><span>DESCRIZIONE</span><span>APERTI</span><span>TOTALE</span><span></span></div>
-      ${rows || '<div class="empty small">Nessun tag in questa categoria.</div>'}
+      ${rows ? `<div class="tag-rows">${rows}</div>` : '<div class="empty small">Nessun tag in questa categoria.</div>'}
       ${newTag}
       <div class="grow"></div><div class="file-foot">${icon.file(14)}<span class="mono">tags/${esc(c.id)}/*.md</span></div>`;
   }
@@ -116,8 +123,8 @@ export function tagsView() {
       <div class="stack-6"><h1 class="display">Tag</h1><div class="muted">Ogni categoria diventa un filtro e un raggruppamento nella lista task.</div></div>
     </header>
     <div class="tags-grid">
-      <div class="stack-4"><div class="side-label pad-x">CATEGORIE</div>${list}<div class="mt-8">${newCat}</div></div>
-      <section class="card cat-detail">${detail}</section>
+      <div class="stack-4 scroll-box"><div class="side-label pad-x">CATEGORIE</div>${list}<div class="mt-8">${newCat}</div></div>
+      <section class="card cat-detail scroll-box">${detail}</section>
     </div>
   </div>`;
 }

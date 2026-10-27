@@ -1,6 +1,7 @@
 // Progetti: creazione, modifica, eliminazione e decisioni.
-import { S, project } from '../state.js';
-import { api, render, reload, run, toast, stopEditing } from '../core.js';
+import { S, project, activeProjects } from '../state.js';
+import { moveItem, toggleCheck } from '../lib/util.js';
+import { api, render, reload, run, toast, stopEditing, dragList, serial } from '../core.js';
 import { pickSwatch, pickCustomColor } from './common.js';
 
 export const actions = {
@@ -12,16 +13,6 @@ export const actions = {
   },
   'draft-color': (el) => { S.ui.projectDraft.colore = pickSwatch(el); },
   'project-color': (el) => { S.ui.projectColor = pickSwatch(el); },
-  // Come tag-move: scambia due progetti e riscrive "ordine" solo dove cambia.
-  'project-move': (el) => run(async () => {
-    const i = Number(el.dataset.index);
-    const j = i + Number(el.dataset.dir);
-    const list = S.data.projects.slice();
-    if (j < 0 || j >= list.length) return;
-    [list[i], list[j]] = [list[j], list[i]];
-    for (let k = 0; k < list.length; k++) if (list[k].ordine !== k + 1) await api.saveProject({ ...list[k], ordine: k + 1 });
-    await reload();
-  }),
   'proj-filter': (el) => { S.ui.projFilter = el.dataset.value; render(); },
   'project-tab': (el) => { S.ui.projectTab = el.dataset.value; render(); },
   'project-delete': () => run(async () => {
@@ -41,6 +32,19 @@ export const actions = {
 };
 
 export const changes = {
+  // Caselle delle checklist nella descrizione del progetto e nel testo di una decisione: [ ] ↔ [x], poi si salva.
+  'md-check-project': (el) => run(() => serial(async () => {
+    const p = project(S.view.code);
+    await api.saveProject({ ...p, descrizione: toggleCheck(p.descrizione, Number(el.dataset.index)) });
+    await reload();
+  })),
+  'md-check-decision': (el) => run(() => serial(async () => {
+    const p = project(S.view.code);
+    const i = Number(el.closest('.md').dataset.index);
+    const decisioni = p.decisioni.map((d, k) => (k === i ? { ...d, testo: toggleCheck(d.testo, Number(el.dataset.index)) } : d));
+    await api.saveProject({ ...p, decisioni });
+    await reload();
+  })),
   'draft-color-custom': (el) => { S.ui.projectDraft.colore = pickCustomColor(el); },
   'project-color-custom': (el) => { S.ui.projectColor = pickCustomColor(el); }
 };
@@ -59,7 +63,7 @@ export const submits = {
     const codice = (d.codice || '').toUpperCase();
     if (codice.length < 2) throw new Error('Il codice deve avere almeno 2 caratteri.');
     if (project(codice)) throw new Error('Esiste già un progetto con codice ' + codice + '.');
-    await api.saveProject({ codice, nome: d.nome.trim(), colore: d.colore, descrizione: d.descrizione, decisioni: [] });
+    await api.saveProject({ codice, nome: d.nome.trim(), colore: d.colore, descrizione: d.descrizione, repository: (d.repository || '').trim(), decisioni: [] });
     S.ui.projectDraft = null;
     S.view = { name: 'project', code: codice };
     await reload();
@@ -68,7 +72,7 @@ export const submits = {
   'save-project-head': (form) => run(async () => {
     const p = project(S.view.code);
     const f = new FormData(form);
-    await api.saveProject({ ...p, nome: f.get('nome').trim(), stato: f.get('stato'), colore: S.ui.projectColor || p.colore });
+    await api.saveProject({ ...p, nome: f.get('nome').trim(), stato: f.get('stato'), colore: S.ui.projectColor || p.colore, repository: String(f.get('repository') || '').trim() });
     S.ui.editing = null;
     await reload();
   }),
@@ -88,3 +92,14 @@ export const submits = {
     toast('Decisione registrata');
   })
 };
+
+// Pagina Priorità progetti: la scheda si trascina da qualsiasi punto. Al rilascio lo Store mette questi
+// progetti attivi nel nuovo ordine e gli altri (archiviati) in coda, riscrivendo solo "ordine".
+export function startPrioDrag(e) {
+  const card = e.target.closest('.prio-card.movable');
+  if (!card || e.button !== 0) return;
+  const codes = activeProjects().map((p) => p.codice);   // l'elenco com'era quando la scheda è stata presa
+  dragList(e, card, card, (from, to) => run(async () => {
+    try { await api.reorderProjects(moveItem(codes, from, to)); } finally { await reload(); }
+  }));
+}
