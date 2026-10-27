@@ -65,7 +65,7 @@ export function projectsView() {
     return `<button class="proj-card card" data-action="go" data-view="project" data-code="${esc(p.codice)}">
       <span class="row-10"><span class="code-badge" style="color:${c};background:${tint(c, '1A')}">${esc(p.codice)}</span>
         ${p.stato === 'archiviato' ? '<span class="pill">Archiviato</span>' : ''}<span class="grow"></span><span class="spark" aria-hidden="true">${spark}</span></span>
-      <span class="stack-4"><span class="card-title">${esc(p.nome)}</span><span class="muted small clamp2">${esc((p.descrizione || '').split('\n')[0] || 'Nessuna descrizione')}</span></span>
+      <span class="stack-4"><span class="card-title">${esc(p.nome)}</span>${p.repository ? `<span class="mono muted small ellipsis">${esc(p.repository)}</span>` : ''}<span class="muted small clamp2">${esc((p.descrizione || '').split('\n')[0] || 'Nessuna descrizione')}</span></span>
       <span class="stack-6"><span class="row-between small"><span>${d} di ${pt.length} completati</span><strong>${pct}%</strong></span>
         <span class="progress"><span style="width:${pct}%;background:${c}"></span></span></span>
       <span class="mini-grid small">

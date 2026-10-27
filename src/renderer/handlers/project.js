@@ -50,7 +50,7 @@ export const submits = {
     const codice = (d.codice || '').toUpperCase();
     if (codice.length < 2) throw new Error('Il codice deve avere almeno 2 caratteri.');
     if (project(codice)) throw new Error('Esiste già un progetto con codice ' + codice + '.');
-    await api.saveProject({ codice, nome: d.nome.trim(), colore: d.colore, descrizione: d.descrizione, decisioni: [] });
+    await api.saveProject({ codice, nome: d.nome.trim(), colore: d.colore, descrizione: d.descrizione, repository: (d.repository || '').trim(), decisioni: [] });
     S.ui.projectDraft = null;
     S.view = { name: 'project', code: codice };
     await reload();
@@ -59,7 +59,7 @@ export const submits = {
   'save-project-head': (form) => run(async () => {
     const p = project(S.view.code);
     const f = new FormData(form);
-    await api.saveProject({ ...p, nome: f.get('nome').trim(), stato: f.get('stato'), colore: S.ui.projectColor || p.colore });
+    await api.saveProject({ ...p, nome: f.get('nome').trim(), stato: f.get('stato'), colore: S.ui.projectColor || p.colore, repository: String(f.get('repository') || '').trim() });
     S.ui.editing = null;
     await reload();
   }),

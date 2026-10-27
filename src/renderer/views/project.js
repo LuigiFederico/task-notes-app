@@ -5,7 +5,7 @@ import { icon } from '../lib/icons.js';
 import { taskRow, taskHeader, noteRow, noteHeader, segmented, emptyState, confirmBox, kpiTile, colorPicker, options, select } from './components.js';
 
 export function newProjectView() {
-  const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '' };
+  const d = S.ui.projectDraft || { nome: '', codice: '', colore: PROJECT_COLORS[S.data.projects.length % PROJECT_COLORS.length], descrizione: '', repository: '' };
   S.ui.projectDraft = d;
   return `
   <div class="page narrow">
@@ -16,6 +16,7 @@ export function newProjectView() {
       <label class="field"><span>Codice (tag del progetto)</span><input name="codice" required maxlength="8" value="${esc(d.codice)}" data-input="project-draft" data-field="codice" class="mono" placeholder="VEND"><small class="muted">Da 2 a 8 lettere o numeri. Dà il nome al file e non si può cambiare in seguito.</small></label>
       <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, d.colore, 'draft-color', { custom: 'draft-color-custom' })}</div>
       <label class="field"><span>Descrizione</span><textarea name="descrizione" rows="5" data-input="project-draft" data-field="descrizione" placeholder="A cosa serve il progetto (Markdown)">${esc(d.descrizione)}</textarea></label>
+      <label class="field"><span>Repository</span><input name="repository" value="${esc(d.repository)}" data-input="project-draft" data-field="repository" class="mono" placeholder="Es. https://github.com/… o un percorso (facoltativo)"></label>
       <div class="row-10 end"><button type="button" class="btn" data-action="go" data-view="projects">Annulla</button><button type="submit" class="btn primary">Crea progetto</button></div>
     </form>
   </div>`;
@@ -43,6 +44,7 @@ export function projectView(code) {
         <label class="field grow"><span>Nome</span><input name="nome" required value="${esc(p.nome)}"></label>
         <label class="field"><span>Stato</span>${select('name="stato"', options([['attivo', 'Attivo'], ['archiviato', 'Archiviato']], p.stato === 'archiviato' ? 'archiviato' : 'attivo'))}</label>
       </div>
+      <label class="field"><span>Repository</span><input name="repository" value="${esc(p.repository)}" class="mono" placeholder="Es. https://github.com/… o un percorso (facoltativo)"></label>
       <div class="field"><span>Colore</span>${colorPicker(PROJECT_COLORS, p.colore, 'project-color', { custom: 'project-color-custom' })}</div>
       ${confirmDel ? confirmBox(`Eliminare «${p.nome}»? Potrai ripristinarlo dal Cestino.`, 'data-action="project-delete"') : ''}
       <div class="row-10">
@@ -59,6 +61,7 @@ export function projectView(code) {
             <span class="pill" style="${p.stato === 'archiviato' ? '' : 'color:#146C43;background:#E3F2EA'}">${p.stato === 'archiviato' ? 'Archiviato' : 'Attivo'}</span>
             <span>Tag progetto <span class="mono strong">${esc(p.codice)}</span></span><span>·</span><span>Creato ${esc(fmtFull(p.creato))}</span>
           </div>
+          ${p.repository ? `<div class="row-8 muted small minw0"><span>Repository</span><span class="mono strong ellipsis">${esc(p.repository)}</span></div>` : ''}
         </div>
       </div>
       <div class="row-8"><button class="btn" data-action="edit" data-key="project-head">Modifica</button><button class="btn primary" data-action="new-task" data-code="${esc(code)}">${icon.plus(16)}Nuovo task</button></div>

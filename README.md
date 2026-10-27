@@ -191,6 +191,7 @@ colore: "#2F5BD3"
 stato: attivo
 creato: 2026-09-02
 ordine: 1
+repository: "https://github.com/esempio/dashboard-vendite"
 ---
 
 ## Descrizione
@@ -205,6 +206,8 @@ Niente estrazioni manuali da Excel.
 
 Task: T-029
 ```
+
+`repository` è testo libero (un indirizzo, un percorso, un nome) mostrato così com'è, senza link; se è vuoto la chiave non si scrive.
 
 ### Categorie e tag
 

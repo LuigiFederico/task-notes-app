@@ -182,6 +182,7 @@ function parseProject(text, fallback) {
     stato: data.stato ? String(data.stato) : 'attivo',
     creato: data.creato ? String(data.creato) : null,
     ordine: typeof data.ordine === 'number' ? data.ordine : null,
+    repository: data.repository == null ? '' : String(data.repository),
     descrizione: descr,
     decisioni: decisioni.sort((a, b) => String(b.data).localeCompare(String(a.data)))
   };
@@ -195,6 +196,8 @@ function serializeProject(p) {
     if (d.task) body += `\nTask: ${d.task}\n`;
   }
   const data = { codice: p.codice, nome: p.nome, colore: p.colore, stato: p.stato || 'attivo', creato: p.creato || today(), ordine: p.ordine ?? null };
+  // Il repository è testo libero e si scrive solo se c'è: i file dei progetti senza restano com'erano.
+  if (String(p.repository || '').trim()) data.repository = String(p.repository).trim();
   return fm.stringify(data, body);
 }
 

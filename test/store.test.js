@@ -170,6 +170,18 @@ test('progetto: descrizione e decisioni', async () => {
   await assert.rejects(() => s.saveProject({ codice: '' }));
 });
 
+test('progetto: repository come testo libero, scritto solo se c\'è', async () => {
+  const s = new Store(tmpDir());
+  await s.init();
+  const repo = 'https://git.example.com/team/vendite.git#main: "prod"';
+  await s.saveProject({ codice: 'VEND', nome: 'Vendite', repository: `  ${repo}  ` });
+  await s.saveProject({ codice: 'ECOM', nome: 'E-commerce', repository: '   ' });
+  const list = await s.loadProjects();
+  assert.strictEqual(list.find((p) => p.codice === 'VEND').repository, repo);
+  assert.strictEqual(list.find((p) => p.codice === 'ECOM').repository, '');
+  assert.ok(!fs.readFileSync(path.join(s.dir, 'projects', 'ECOM.md'), 'utf8').includes('repository'));
+});
+
 test('progetto: l\'ordine scelto viene prima del nome, i progetti senza ordine vanno in fondo', async () => {
   const s = new Store(tmpDir());
   await s.init();
