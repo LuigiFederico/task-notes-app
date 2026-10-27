@@ -142,7 +142,6 @@ export function closePanel() {
   S.ui.openNote = null;
   S.ui.noteDraft = null;
   S.ui.confirm = null;
-  S.ui.panelFull = false;
   render();
 }
 

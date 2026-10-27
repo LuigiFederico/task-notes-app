@@ -66,6 +66,8 @@ export function render() {
     root.innerHTML = setupView();
   } else {
     const panel = S.ui.openNote ? notePanel() : taskPanel();
+    // Un pannello chiuso da qualsiasi parte (Esc, eliminazione, task sparito al reload) si riapre sempre di lato.
+    if (!panel) S.ui.panelFull = false;
     root.innerHTML = `<div class="app${panel ? ' with-panel' : ''}${panel && S.ui.panelFull ? ' panel-full' : ''}${S.ui.sideCollapsed ? ' side-collapsed' : ''}">${sidebar()}<main class="main">${viewHtml()}</main>${panel}</div>`;
   }
   root.insertAdjacentHTML('beforeend', toastHtml());
